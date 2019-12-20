@@ -36,11 +36,12 @@ public class ModelCollectionInventoryHolder<T extends Model> extends ModelObject
 				&& models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
 		int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
 
-		this.inventory = Bukkit.createInventory(this, 54, path.getLast().getClass().getSimpleName());
+		this.inventory = Bukkit.createInventory(this, 54, "Collection of " + models.hashCode());
 		
 		toList.forEach(model -> {
 			registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
-				e.getWhoClicked().openInventory(new ModelObjectInventoryHolder<>(plugin, parent, path).getInventory());
+				path.addModel(model);
+				e.getWhoClicked().openInventory(new ModelObjectInventoryHolder<>(plugin, this, path).getInventory());
 			});
 		});
 		

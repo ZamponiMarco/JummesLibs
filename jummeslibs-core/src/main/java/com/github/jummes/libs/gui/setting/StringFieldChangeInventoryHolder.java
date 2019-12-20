@@ -20,7 +20,7 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 
-public class StringSettingChangeInventoryHolder extends SettingChangeInventoryHolder {
+public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
 	private static final String MODIFY_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWE3NWM4ZTUxYzNkMTA1YmFiNGM3ZGUzM2E3NzA5MzczNjRiNWEwMWMxNWI3ZGI4MmNjM2UxZmU2ZWI5MzM5NiJ9fX0==";
 
@@ -31,14 +31,14 @@ public class StringSettingChangeInventoryHolder extends SettingChangeInventoryHo
 
 	private static Map<HumanEntity, Entry<ModelPath<? extends Model>, Entry<Field, InventoryHolder>>> settingsMap = new HashMap<>();
 
-	public StringSettingChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+	public StringFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
 			ModelPath<? extends Model> path, Field field) {
 		super(plugin, parent, path, field);
 	}
 
 	@Override
 	protected void initializeInventory() {
-		this.inventory = Bukkit.createInventory(this, 27, MODIFY_TITLE);
+		this.inventory = Bukkit.createInventory(this, 27, String.format(MODIFY_TITLE, field.getName()));
 
 		registerClickConsumer(13, getStringItem(wrapper.skullFromValue(MODIFY_HEAD)),
 				e -> playerCanWrite(e.getWhoClicked()));

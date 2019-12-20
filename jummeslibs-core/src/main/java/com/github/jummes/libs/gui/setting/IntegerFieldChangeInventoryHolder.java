@@ -18,7 +18,7 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 
-public class IntegerSettingChangeInventoryHolder extends SettingChangeInventoryHolder {
+public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
 	private static final String ARROW_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjk5ZjA0OTI4OGFjNTExZjZlN2VjNWM5MjM4Zjc2NTI3YzJmYmNhZDI4NTc0MzZhYzM4MTU5NmNjMDJlNCJ9fX0==";
 	private static final String ARROW2_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODZlMTQ1ZTcxMjk1YmNjMDQ4OGU5YmI3ZTZkNjg5NWI3Zjk2OWEzYjViYjdlYjM0YTUyZTkzMmJjODRkZjViIn19fQ===";
@@ -37,7 +37,7 @@ public class IntegerSettingChangeInventoryHolder extends SettingChangeInventoryH
 
 	private int result;
 
-	public IntegerSettingChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+	public IntegerFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
 			ModelPath<? extends Model> path, Field field) {
 		super(plugin, parent, path, field);
 		try {

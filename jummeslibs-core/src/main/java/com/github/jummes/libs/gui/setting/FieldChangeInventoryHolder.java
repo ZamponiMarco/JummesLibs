@@ -15,11 +15,11 @@ import com.github.jummes.libs.model.ModelPath;
  * @author Marco
  *
  */
-public abstract class SettingChangeInventoryHolder extends ModelObjectInventoryHolder<Model> {
+public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHolder<Model> {
 
 	protected Field field;
 
-	public SettingChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+	public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
 			ModelPath<? extends Model> path, Field field) {
 		super(plugin, parent, path);
 		this.field = field;

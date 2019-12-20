@@ -12,6 +12,7 @@ import java.util.List;
  *
  * @param <T>
  */
+@SuppressWarnings("unchecked")
 public class ModelPath<T extends Model> {
 
 	private ModelManager<T> modelManager;
@@ -29,7 +30,12 @@ public class ModelPath<T extends Model> {
 	}
 
 	public boolean addModel(Model model) {
-		return modelPath.add(model);
+		if (root == null) {
+			root = (T) model;
+			return true;
+		} else {
+			return modelPath.add(model);
+		}
 	}
 
 	public void updateModel() {
