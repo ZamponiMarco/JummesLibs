@@ -53,6 +53,7 @@ public class ModelCollectionInventoryHolder<T extends Model> extends ModelObject
 			registerClickConsumer(52, new ItemStack(Material.ACACIA_BUTTON), e -> e.getWhoClicked().openInventory(
 					new ModelCollectionInventoryHolder<>(plugin, parent, path, models, page - 1).getInventory()));
 		}
+		registerClickConsumer(53, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
 }

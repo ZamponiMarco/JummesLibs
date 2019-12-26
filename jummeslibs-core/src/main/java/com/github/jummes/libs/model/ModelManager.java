@@ -13,6 +13,6 @@ import lombok.NonNull;
  */
 public interface ModelManager<T extends Model> {
 
-	public void updateModel(@NonNull T object);
+	public void saveModel(@NonNull T object);
 
 }

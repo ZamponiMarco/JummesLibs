@@ -1,5 +1,6 @@
 package com.github.jummes.libs.gui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -18,8 +19,10 @@ import com.github.jummes.libs.wrapper.VersionWrapper;
 
 public abstract class PluginInventoryHolder implements InventoryHolder {
 
+	private static final String BACK_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19";
+
 	protected static final VersionWrapper wrapper = Libs.getInstance().getWrapper();
-	
+
 	protected JavaPlugin plugin;
 	protected PluginInventoryHolder parent;
 
@@ -72,8 +75,18 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 		});
 	}
 
+	protected ItemStack getBackItem() {
+		return ItemUtils.getNamedItem(wrapper.skullFromValue(BACK_HEAD), "Back", new ArrayList<String>());
+	}
+
 	protected Consumer<InventoryClickEvent> getBackConsumer() {
-		return e -> e.getWhoClicked().openInventory(parent.getInventory());
+		return e -> {
+			if (parent != null) {
+				e.getWhoClicked().openInventory(parent.getInventory());
+			} else {
+				e.getWhoClicked().closeInventory();
+			}
+		};
 	}
 
 	@Override

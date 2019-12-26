@@ -1,9 +1,10 @@
-package com.github.jummes.libs.gui.setting;
+package com.github.jummes.libs.gui.model;
+
+import java.lang.reflect.Field;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.gui.PluginInventoryHolder;
-import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 
@@ -14,14 +15,21 @@ import com.github.jummes.libs.model.ModelPath;
  * @author Marco
  *
  */
-public abstract class ModelCreateInventoryHolder extends ModelObjectInventoryHolder<Model> {
+public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder<Model> {
 
+	protected Field field;
 	protected boolean requiresId;
 
 	public ModelCreateInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
-			boolean requiresId) {
+			Field field, boolean requiresId) {
 		super(plugin, parent, path);
+		this.field = field;
 		this.requiresId = requiresId;
 	}
+	
+	@Override
+		protected void initializeInventory() {
+			super.initializeInventory();
+		}
 
 }

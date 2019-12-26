@@ -42,6 +42,7 @@ public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 
 		registerClickConsumer(13, getStringItem(wrapper.skullFromValue(MODIFY_HEAD)),
 				e -> playerCanWrite(e.getWhoClicked()));
+		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
 

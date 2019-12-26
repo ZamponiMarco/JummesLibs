@@ -64,6 +64,7 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 		registerClickConsumer(17, getModifyItem(+100, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)),
 				getModifyConsumer(+100));
 		registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
+		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
 	}

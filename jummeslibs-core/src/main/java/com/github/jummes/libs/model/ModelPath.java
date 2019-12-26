@@ -12,7 +12,6 @@ import java.util.List;
  *
  * @param <T>
  */
-@SuppressWarnings("unchecked")
 public class ModelPath<T extends Model> {
 
 	private ModelManager<T> modelManager;
@@ -25,10 +24,7 @@ public class ModelPath<T extends Model> {
 		modelPath = new ArrayList<>();
 	}
 
-	public List<Model> getModelPath() {
-		return modelPath;
-	}
-
+	@SuppressWarnings("unchecked")
 	public boolean addModel(Model model) {
 		if (root == null) {
 			root = (T) model;
@@ -38,8 +34,20 @@ public class ModelPath<T extends Model> {
 		}
 	}
 
+	public boolean removeModel() {
+		if (root != null) {
+			if (modelPath.isEmpty()) {
+				root = null;
+				return true;
+			} else {
+				modelPath.remove(modelPath.size() - 1);
+			}
+		}
+		return false;
+	}
+
 	public void updateModel() {
-		modelManager.updateModel(root);
+		modelManager.saveModel(root);
 	}
 
 	public T getRoot() {
@@ -48,5 +56,10 @@ public class ModelPath<T extends Model> {
 
 	public Model getLast() {
 		return modelPath.isEmpty() ? root : modelPath.get(modelPath.size() - 1);
+	}
+
+	@Override
+	public String toString() {
+		return "ModelPath [root=" + root + ", modelPath=" + modelPath + "]";
 	}
 }
