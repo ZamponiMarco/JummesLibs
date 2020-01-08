@@ -14,5 +14,7 @@ import lombok.NonNull;
 public interface ModelManager<T extends Model> {
 
 	public void saveModel(@NonNull T object);
+	
+	public void deleteModel(@NonNull T object);
 
 }

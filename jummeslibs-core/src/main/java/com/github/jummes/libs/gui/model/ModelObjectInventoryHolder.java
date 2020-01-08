@@ -44,7 +44,6 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 
 	@Override
 	protected void initializeInventory() {
-		System.out.println(path);
 		this.inventory = Bukkit.createInventory(this, 27, path.getLast().getClass().getSimpleName());
 
 		List<Field> fields = new ArrayList<>();
@@ -55,9 +54,10 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 		}
 		Field[] toPrint = fields.stream().filter(field -> field.isAnnotationPresent(GUISerializable.class))
 				.toArray(size -> new Field[size]);
+		int[] itemPositions = getItemPositions(toPrint.length);
 
 		IntStream.range(0, toPrint.length).forEach(i -> {
-			registerClickConsumer(i,
+			registerClickConsumer(itemPositions[i],
 					ItemUtils.getNamedItem(
 							wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
 							toPrint[i].getName(), new ArrayList<String>()),
@@ -74,19 +74,6 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 		});
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
-	}
-
-	protected Consumer<InventoryClickEvent> getBackConsumer() {
-		return e -> {
-			if (parent != null) {
-				if (this instanceof ModelObjectInventoryHolder<?>) {
-					path.removeModel();
-				}
-				e.getWhoClicked().openInventory(parent.getInventory());
-			} else {
-				e.getWhoClicked().closeInventory();
-			}
-		};
 	}
 
 	/*
@@ -113,8 +100,8 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 		AtomicInteger atomicItemsPushed = new AtomicInteger(0);
 		AtomicInteger atomicItemsToPush = new AtomicInteger(items);
 
-		final BiFunction<Integer, Integer, Integer> calculatePosition = (x, y) -> (center_X + x) * LENGTH
-				+ (center_Y + y);
+		final BiFunction<Integer, Integer, Integer> calculatePosition = (x, y) -> (center_Y + y) * LENGTH
+				+ (center_X + x);
 
 		int center = calculatePosition.apply(0, 0);
 
@@ -191,6 +178,19 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 		}
 
 		return positions;
+	}
+
+	protected Consumer<InventoryClickEvent> getBackConsumer() {
+		return e -> {
+			if (parent != null) {
+				if (this instanceof ModelObjectInventoryHolder<?>) {
+					path.removeModel();
+				}
+				e.getWhoClicked().openInventory(parent.getInventory());
+			} else {
+				e.getWhoClicked().closeInventory();
+			}
+		};
 	}
 
 }

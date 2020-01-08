@@ -1,5 +1,5 @@
 package com.github.jummes.libs.model;
 
-public interface EnumerationModel extends Model {
+public abstract class EnumerationModel extends Model {
 
 }
