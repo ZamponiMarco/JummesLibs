@@ -11,9 +11,11 @@ import org.bukkit.entity.Player;
 
 public class PluginCommandExecutor implements CommandExecutor {
 
+	private Class<? extends AbstractCommand> defaultCommand;
 	private Map<String, Class<? extends AbstractCommand>> commandMap;
 
-	public PluginCommandExecutor() {
+	public PluginCommandExecutor(Class<? extends AbstractCommand> defaultCommand) {
+		this.defaultCommand = defaultCommand;
 		commandMap = new HashMap<String, Class<? extends AbstractCommand>>();
 	}
 
@@ -24,14 +26,16 @@ public class PluginCommandExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		boolean isSenderPlayer = sender instanceof Player;
-		String[] arguments = args.length >= 1 ? Arrays.copyOfRange(args, 0, args.length) : new String[0];
+		String subCommand = args.length >= 1 ? args[0] : "";
+		String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
 		try {
-			commandMap.get(command.getName()).getConstructor(CommandSender.class, String[].class, boolean.class)
+			commandMap.getOrDefault(subCommand, defaultCommand)
+					.getConstructor(CommandSender.class, String[].class, boolean.class)
 					.newInstance(sender, arguments, isSenderPlayer).checkExecution();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
 
 }

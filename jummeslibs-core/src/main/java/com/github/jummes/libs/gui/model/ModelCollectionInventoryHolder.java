@@ -4,14 +4,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -119,15 +117,5 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 	private ItemStack getAddItem() {
 		return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ADD_ITEM), MessageUtils.color("&6&lAdd"),
 				new ArrayList<String>());
-	}
-
-	protected Consumer<InventoryClickEvent> getBackConsumer() {
-		return e -> {
-			if (parent != null) {
-				e.getWhoClicked().openInventory(parent.getInventory());
-			} else {
-				e.getWhoClicked().closeInventory();
-			}
-		};
 	}
 }

@@ -19,8 +19,8 @@ public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHol
 
 	protected Field field;
 
-	public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, Field field) {
+	public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
+			Field field) {
 		super(plugin, parent, path);
 		this.field = field;
 	}
