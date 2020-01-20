@@ -25,6 +25,8 @@ import com.google.common.collect.Lists;
 public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 
 	private static final String ADD_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMGZjNmRjZjczOWMxMWZlY2U0M2NkZDE4NGRlYTc5MWNmNzU3YmY3YmQ5MTUzNmZkYmM5NmZhNDdhY2ZiIn19fQ==";
+	private static final String NEXT_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19==";
+	private static final String PREVIOUS_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19==";
 
 	private static final int MODELS_NUMBER = 50;
 
@@ -100,12 +102,20 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 						.openInventory(new ModelCreateInventoryHolder(plugin, this, path, field).getInventory());
 			});
 			if (page != maxPage) {
-				registerClickConsumer(52, new ItemStack(Material.ACACIA_BOAT), e -> e.getWhoClicked().openInventory(
-						new ModelCollectionInventoryHolder(plugin, parent, path, field, page + 1).getInventory()));
+				registerClickConsumer(52,
+						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
+								MessageUtils.color("&6&lNext page"), new ArrayList<String>()),
+						e -> e.getWhoClicked()
+								.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page + 1)
+										.getInventory()));
 			}
 			if (page != 1) {
-				registerClickConsumer(51, new ItemStack(Material.ACACIA_BUTTON), e -> e.getWhoClicked().openInventory(
-						new ModelCollectionInventoryHolder(plugin, parent, path, field, page - 1).getInventory()));
+				registerClickConsumer(51,
+						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
+								MessageUtils.color("&6&lPrevious page"), new ArrayList<String>()),
+						e -> e.getWhoClicked()
+								.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page - 1)
+										.getInventory()));
 			}
 			registerClickConsumer(53, getBackItem(), getBackConsumer());
 			fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);

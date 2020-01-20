@@ -48,7 +48,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 
 	@Override
 	protected void initializeInventory() {
-		this.inventory = Bukkit.createInventory(this, 27, path.getLast().getClass().getSimpleName());
+		this.inventory = Bukkit.createInventory(this, 27, MessageUtils.color("&c&l" + path.getLast().getClass().getSimpleName()));
 		Class<?> clazz = path.getLast().getClass();
 
 		/*
