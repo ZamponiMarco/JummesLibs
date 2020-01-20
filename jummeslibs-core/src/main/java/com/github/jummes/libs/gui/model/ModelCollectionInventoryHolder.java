@@ -1,11 +1,13 @@
 package com.github.jummes.libs.gui.model;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -13,14 +15,18 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 
 public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
+
+	private static final String ADD_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMGZjNmRjZjczOWMxMWZlY2U0M2NkZDE4NGRlYTc5MWNmNzU3YmY3YmQ5MTUzNmZkYmM5NmZhNDdhY2ZiIn19fQ==";
 
 	private static final int MODELS_NUMBER = 50;
 
@@ -40,10 +46,8 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 		 * Get the list of models to display in the current page
 		 */
 		try {
-			field.setAccessible(true);
-			List<Model> models = Lists.newArrayList(
-					(Collection<Model>) field.get(path.getLast() != null ? path.getLast() : path.getModelManager()));
-			field.setAccessible(false);
+			List<Model> models = Lists.newArrayList((Collection<Model>) FieldUtils.readField(field,
+					path.getLast() != null ? path.getLast() : path.getModelManager(), true));
 			List<Model> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
 					&& models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
 			int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
@@ -60,7 +64,6 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 			toList.forEach(model -> {
 				registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
 					try {
-
 						/*
 						 * If left clicked open the model GUI inventory
 						 */
@@ -74,14 +77,12 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 						 * If right clicked removes the model from the collection
 						 */
 						else if (e.getClick().equals(ClickType.RIGHT)) {
-							field.setAccessible(true);
-							((Collection<Model>) field
-									.get(path.getLast() != null ? path.getLast() : path.getModelManager()))
+							((Collection<Model>) FieldUtils.readField(field,
+									path.getLast() != null ? path.getLast() : path.getModelManager(), true))
 											.remove(model);
 							path.addModel(model);
 							path.deleteModel();
 							path.removeModel();
-							field.setAccessible(false);
 							e.getWhoClicked()
 									.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page)
 											.getInventory());
@@ -96,9 +97,9 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 			 * Sets up a model creator inventory, page scrollers, back button and fills the
 			 * rest
 			 */
-			registerClickConsumer(50, getBackItem(), e -> {
+			registerClickConsumer(50, getAddItem(), e -> {
 				e.getWhoClicked()
-						.openInventory(new ModelCreateInventoryHolder(plugin, parent, path, field).getInventory());
+						.openInventory(new ModelCreateInventoryHolder(plugin, this, path, field).getInventory());
 			});
 			if (page != maxPage) {
 				registerClickConsumer(52, new ItemStack(Material.ACACIA_BOAT), e -> e.getWhoClicked().openInventory(
@@ -113,6 +114,11 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private ItemStack getAddItem() {
+		return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ADD_ITEM), MessageUtils.color("&6&lAdd"),
+				new ArrayList<String>());
 	}
 
 	protected Consumer<InventoryClickEvent> getBackConsumer() {

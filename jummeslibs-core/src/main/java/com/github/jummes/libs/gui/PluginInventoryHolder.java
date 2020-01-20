@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MessageUtils;
 import com.github.jummes.libs.wrapper.VersionWrapper;
 
 public abstract class PluginInventoryHolder implements InventoryHolder {
@@ -81,7 +82,8 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 	 * @return the back button item
 	 */
 	protected ItemStack getBackItem() {
-		return ItemUtils.getNamedItem(wrapper.skullFromValue(BACK_HEAD), "Back", new ArrayList<String>());
+		return ItemUtils.getNamedItem(wrapper.skullFromValue(BACK_HEAD), MessageUtils.color("&6&lBack"),
+				new ArrayList<String>());
 	}
 
 	/**

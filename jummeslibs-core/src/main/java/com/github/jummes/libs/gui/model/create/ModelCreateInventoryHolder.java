@@ -1,7 +1,6 @@
 package com.github.jummes.libs.gui.model.create;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 
@@ -9,12 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.jummes.libs.annotation.Enumerable;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.setting.factory.FieldInventoryHolderFactory;
-import com.github.jummes.libs.model.EnumerationModel;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.MessageUtils;
+import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
 
 /**
  * Class that handles the creation of new Model objects throught the use of a
@@ -35,19 +37,20 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 
 	@Override
 	protected void initializeInventory() {
-		this.inventory = Bukkit.createInventory(this, 27, "sas");
+		this.inventory = Bukkit.createInventory(this, 27,
+				MessageUtils.color("&6&lCreate a " + field.getType().getSimpleName()));
 
 		try {
 			field.setAccessible(true);
 			Class<?> modelClass = field.getType();
-			if (EnumerationModel.class.isAssignableFrom(modelClass) || Collection.class.isAssignableFrom(modelClass)
-					&& EnumerationModel.class.isAssignableFrom(Class.forName(
-							((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()))) {
-				Class<EnumerationModel> model = Collection.class.isAssignableFrom(modelClass)
-						? (Class<EnumerationModel>) Class.forName(
-								((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName())
-						: (Class<EnumerationModel>) field.getType();
-				List<Class<?>> classes = (List<Class<?>>) model.getMethod("getClassList").invoke(null);
+			if (modelClass.isAnnotationPresent(Enumerable.class) || Collection.class.isAssignableFrom(modelClass)
+					&& TypeToken.of(field.getGenericType()).resolveType(modelClass.getTypeParameters()[0]).getRawType()
+							.isAnnotationPresent(Enumerable.class)) {
+				Class<Model> model = Collection.class.isAssignableFrom(modelClass)
+						? (Class<Model>) TypeToken.of(field.getGenericType())
+								.resolveType(modelClass.getTypeParameters()[0]).getRawType()
+						: (Class<Model>) field.getType();
+				List<Class<?>> classes = Lists.newArrayList(model.getAnnotation(Enumerable.class).classArray());
 				classes.forEach(clazz2 -> {
 					registerClickConsumer(classes.indexOf(clazz2), getBackItem(), e -> {
 						field.setAccessible(true);
@@ -81,17 +84,17 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 					try {
 						field.setAccessible(true);
 						if (Collection.class.isAssignableFrom(modelClass)) {
-							Class<Model> collectionClass = (Class<Model>) Class
-									.forName(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]
-											.getTypeName());
+							Class<?> collectionClass = TypeToken.of(field.getGenericType())
+									.resolveType(modelClass.getTypeParameters()[0]).getRawType();
 							if (path.getLast() == null) {
-								Model newModel = collectionClass.newInstance();
+								Model newModel = (Model) collectionClass.newInstance();
 								((Collection<Model>) field.get(path.getModelManager())).add(newModel);
 								path.addModel(newModel);
 								path.updateModel();
 								path.removeModel();
 							} else {
-								((Collection<Model>) field.get(path.getLast())).add(collectionClass.newInstance());
+								((Collection<Model>) field.get(path.getLast()))
+										.add((Model) collectionClass.newInstance());
 								path.updateModel();
 							}
 						} else {
@@ -111,6 +114,7 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 			e.printStackTrace();
 		}
 
+		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
 

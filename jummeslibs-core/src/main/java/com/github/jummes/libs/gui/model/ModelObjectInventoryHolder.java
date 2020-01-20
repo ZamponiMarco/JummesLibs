@@ -3,6 +3,7 @@ package com.github.jummes.libs.gui.model;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
@@ -11,6 +12,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -51,11 +54,9 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		/*
 		 * Fill the list of fields with all declared fields on superclasses
 		 */
-		List<Field> fields = new ArrayList<>();
-		while (clazz != Object.class) {
-			fields.addAll(0, Lists.newArrayList(clazz.getDeclaredFields()));
-			clazz = clazz.getSuperclass();
-		}
+		List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
+		ClassUtils.getAllSuperclasses(clazz).forEach(
+				superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
 
 		/*
 		 * Filter only the fields with GUISerializable annotation and get the positions
@@ -71,30 +72,17 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		 * inventory holder
 		 */
 		IntStream.range(0, toPrint.length).forEach(i -> {
-			try {
-				toPrint[i].setAccessible(true);
-				String valueToPrint = toPrint[i].get(path.getLast()).toString();
-				if (valueToPrint.length() > 30) {
-					valueToPrint = valueToPrint.substring(0, 28).concat("...");
-				}
-				toPrint[i].setAccessible(false);
-				registerClickConsumer(itemPositions[i],
-						ItemUtils.getNamedItem(
-								wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
-								MessageUtils.color("&6&l" + toPrint[i].getName() + " → &c&l" + valueToPrint),
-								new ArrayList<String>()),
-						e -> {
-							try {
-								e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+			registerClickConsumer(itemPositions[i],
+					ItemUtils.getNamedItem(
+							wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
+							MessageUtils.color("&6&l" + toPrint[i].getName() + " → &c&l" + getValueString(toPrint[i])),
+							new ArrayList<String>()),
+					e -> {
+						e.getWhoClicked()
+								.openInventory(FieldInventoryHolderFactory
 										.createFieldInventoryHolder(plugin, this, path, toPrint[i], e.getClick())
 										.getInventory());
-							} catch (Exception e1) {
-								e1.printStackTrace();
-							}
-						});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+					});
 		});
 
 		/*
@@ -102,6 +90,25 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		 */
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+	}
+
+	private String getValueString(Field field) {
+		String valueToPrint;
+		try {
+			if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
+				valueToPrint = "Collection";
+			} else if (ClassUtils.isAssignable(field.getType(), Model.class)) {
+				valueToPrint = FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
+			} else {
+				valueToPrint = FieldUtils.readField(field, path.getLast(), true).toString();
+			}
+			if (valueToPrint.length() > 30) {
+				valueToPrint = valueToPrint.substring(0, 28).concat("...");
+			}
+			return valueToPrint;
+		} catch (Exception e) {
+			return "";
+		}
 	}
 
 	/*
@@ -115,7 +122,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 	 * 
 	 * @author dmitry-mingazov
 	 */
-	public int[] getItemPositions(int items) {
+	private int[] getItemPositions(int items) {
 
 		if (items > 17 || items < 0)
 			throw new IllegalArgumentException("Number of items not valid");
@@ -208,6 +215,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		return positions;
 	}
 
+	@Override
 	protected Consumer<InventoryClickEvent> getBackConsumer() {
 		return e -> {
 			if (parent != null) {
