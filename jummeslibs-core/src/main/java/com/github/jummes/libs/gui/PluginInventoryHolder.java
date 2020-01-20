@@ -21,7 +21,7 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 
 	private static final String BACK_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19";
 
-	protected static final VersionWrapper wrapper = Libs.getInstance().getWrapper();
+	protected static final VersionWrapper wrapper = Libs.getWrapper();
 
 	protected JavaPlugin plugin;
 	protected PluginInventoryHolder parent;
@@ -75,10 +75,20 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 		});
 	}
 
+	/**
+	 * Gets the ItemStack that represents the back button
+	 * 
+	 * @return the back button item
+	 */
 	protected ItemStack getBackItem() {
 		return ItemUtils.getNamedItem(wrapper.skullFromValue(BACK_HEAD), "Back", new ArrayList<String>());
 	}
 
+	/**
+	 * Gets the action that will be played when the back button will be pressed
+	 * 
+	 * @return consumer called when the back button is pressed
+	 */
 	protected Consumer<InventoryClickEvent> getBackConsumer() {
 		return e -> {
 			if (parent != null) {
@@ -89,6 +99,9 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 		};
 	}
 
+	/**
+	 * Returns the updated inventory
+	 */
 	@Override
 	public Inventory getInventory() {
 		initializeInventory();

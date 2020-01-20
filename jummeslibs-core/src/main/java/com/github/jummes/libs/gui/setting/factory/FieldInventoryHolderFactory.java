@@ -27,13 +27,13 @@ public class FieldInventoryHolderFactory {
 			return new StringFieldChangeInventoryHolder(plugin, parent, path, field);
 		} else if (Collection.class.isAssignableFrom(clazz) && Model.class.isAssignableFrom(Class
 				.forName(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()))) {
-			return new ModelCollectionInventoryHolder<>(plugin, parent, path, field, 1);
+			return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1);
 		} else if (Model.class.isAssignableFrom(clazz)) {
 			if (clickType.equals(ClickType.LEFT)) {
 				field.setAccessible(true);
 				path.addModel((Model) field.get(path.getLast()));
 				field.setAccessible(false);
-				return new ModelObjectInventoryHolder<>(plugin, parent, path);
+				return new ModelObjectInventoryHolder(plugin, parent, path);
 			} else if (clickType.equals(ClickType.RIGHT)) {
 				return new ModelCreateInventoryHolder(plugin, parent, path, field);
 			}

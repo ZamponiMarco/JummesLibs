@@ -22,6 +22,7 @@ import com.github.jummes.libs.gui.setting.factory.FieldInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 
 /**
@@ -32,7 +33,7 @@ import com.google.common.collect.Lists;
  * @author Marco
  *
  */
-public class ModelObjectInventoryHolder<T extends Model> extends PluginInventoryHolder {
+public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 
 	protected ModelPath<? extends Model> path;
 
@@ -45,33 +46,60 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 	@Override
 	protected void initializeInventory() {
 		this.inventory = Bukkit.createInventory(this, 27, path.getLast().getClass().getSimpleName());
-
-		List<Field> fields = new ArrayList<>();
 		Class<?> clazz = path.getLast().getClass();
+
+		/*
+		 * Fill the list of fields with all declared fields on superclasses
+		 */
+		List<Field> fields = new ArrayList<>();
 		while (clazz != Object.class) {
 			fields.addAll(0, Lists.newArrayList(clazz.getDeclaredFields()));
 			clazz = clazz.getSuperclass();
 		}
+
+		/*
+		 * Filter only the fields with GUISerializable annotation and get the positions
+		 * on the GUI
+		 */
 		Field[] toPrint = fields.stream().filter(field -> field.isAnnotationPresent(GUISerializable.class))
 				.toArray(size -> new Field[size]);
 		int[] itemPositions = getItemPositions(toPrint.length);
 
+		/*
+		 * For every field remaining set the item in its position with the head texture
+		 * from the annotation and when clicked they send the player to the correct
+		 * inventory holder
+		 */
 		IntStream.range(0, toPrint.length).forEach(i -> {
-			registerClickConsumer(itemPositions[i],
-					ItemUtils.getNamedItem(
-							wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
-							toPrint[i].getName(), new ArrayList<String>()),
-					e -> {
-						try {
-							e.getWhoClicked()
-									.openInventory(FieldInventoryHolderFactory
-											.createFieldInventoryHolder(plugin, this, path, toPrint[i], e.getClick())
-											.getInventory());
-						} catch (Exception e1) {
-							e1.printStackTrace();
-						}
-					});
+			try {
+				toPrint[i].setAccessible(true);
+				String valueToPrint = toPrint[i].get(path.getLast()).toString();
+				if (valueToPrint.length() > 30) {
+					valueToPrint = valueToPrint.substring(0, 28).concat("...");
+				}
+				toPrint[i].setAccessible(false);
+				registerClickConsumer(itemPositions[i],
+						ItemUtils.getNamedItem(
+								wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
+								MessageUtils.color("&6&l" + toPrint[i].getName() + " → &c&l" + valueToPrint),
+								new ArrayList<String>()),
+						e -> {
+							try {
+								e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+										.createFieldInventoryHolder(plugin, this, path, toPrint[i], e.getClick())
+										.getInventory());
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
+						});
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
+
+		/*
+		 * Places the back button and fills the rest of the inventory
+		 */
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
@@ -183,9 +211,7 @@ public class ModelObjectInventoryHolder<T extends Model> extends PluginInventory
 	protected Consumer<InventoryClickEvent> getBackConsumer() {
 		return e -> {
 			if (parent != null) {
-				if (this instanceof ModelObjectInventoryHolder<?>) {
-					path.removeModel();
-				}
+				path.removeModel();
 				e.getWhoClicked().openInventory(parent.getInventory());
 			} else {
 				e.getWhoClicked().closeInventory();

@@ -1,5 +1,10 @@
 package com.github.jummes.libs.model;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.github.jummes.libs.database.Database;
+import com.github.jummes.libs.database.factory.DatabaseFactory;
+
 import lombok.NonNull;
 
 /**
@@ -11,10 +16,20 @@ import lombok.NonNull;
  *
  * @param <T> the model the manager will handle
  */
-public interface ModelManager<T extends Model> {
+public abstract class ModelManager<T extends Model> {
 
-	public void saveModel(@NonNull T object);
-	
-	public void deleteModel(@NonNull T object);
+	protected Database<T> database;
+
+	public ModelManager(Class<T> classObject, String databaseType, JavaPlugin plugin) {
+		this.database = DatabaseFactory.createDatabase(databaseType, classObject, plugin);
+	}
+
+	public void saveModel(@NonNull T object) {
+		database.saveObject(object);
+	}
+
+	public void deleteModel(@NonNull T object) {
+		database.deleteObject(object);
+	}
 
 }

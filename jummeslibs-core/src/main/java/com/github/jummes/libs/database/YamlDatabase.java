@@ -12,11 +12,10 @@ import com.github.jummes.libs.model.Model;
 
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public class YamlDatabase<T extends Model> extends Database<T> {
 
 	private static final String FILE_SUFFIX = ".yml";
-	
+
 	private String name;
 	private File dataFile;
 	private YamlConfiguration yamlConfiguration;
@@ -54,7 +53,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 
 	@Override
 	public void saveObject(@NonNull T object) {
-		List<T> list = (List<T>) yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+		List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
 		list.remove(object);
 		list.add(object);
 		yamlConfiguration.set(name, list);
@@ -67,7 +66,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 
 	@Override
 	public void deleteObject(@NonNull T object) {
-		List<T> list = (List<T>) yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+		List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
 		list.remove(object);
 		yamlConfiguration.set(name, list);
 		try {

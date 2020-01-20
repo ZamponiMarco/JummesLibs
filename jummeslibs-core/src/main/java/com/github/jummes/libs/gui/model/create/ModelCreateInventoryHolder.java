@@ -23,7 +23,7 @@ import com.github.jummes.libs.model.ModelPath;
  * @author Marco
  *
  */
-public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder<Model> {
+public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 
 	protected Field field;
 
@@ -33,7 +33,6 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder<Model
 		this.field = field;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void initializeInventory() {
 		this.inventory = Bukkit.createInventory(this, 27, "sas");

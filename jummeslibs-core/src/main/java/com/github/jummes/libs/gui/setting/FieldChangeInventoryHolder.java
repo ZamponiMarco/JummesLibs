@@ -15,7 +15,7 @@ import com.github.jummes.libs.model.ModelPath;
  * @author Marco
  *
  */
-public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHolder<Model> {
+public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHolder {
 
 	protected Field field;
 

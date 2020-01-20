@@ -11,38 +11,28 @@ import lombok.Getter;
 public class Libs {
 
 	private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
-	
-	private static Libs instance;
-	private JavaPlugin plugin;
 
 	@Getter
-	private VersionWrapper wrapper;
-
-	private Libs(JavaPlugin plugin) {
-		this.plugin = plugin;
-
-		plugin.getServer().getPluginManager().registerEvents(new PluginInventoryHolderClickListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new StringSettingChangeChatListener(plugin), plugin);
-		setUpWrapper();
-	}
+	private static VersionWrapper wrapper;
 
 	public static void initializeLibrary(JavaPlugin plugin) {
-		if (instance == null) {
-			instance = new Libs(plugin);
+		if (wrapper == null) {
+			setUpWrapper(plugin);
 		}
+		registerEvents(plugin);
 	}
 
-	public static Libs getInstance() {
-		return instance;
+	private static void registerEvents(JavaPlugin plugin) {
+		plugin.getServer().getPluginManager().registerEvents(new PluginInventoryHolderClickListener(), plugin);
+		plugin.getServer().getPluginManager().registerEvents(new StringSettingChangeChatListener(plugin), plugin);
 	}
 
-	private void setUpWrapper() {
+	private static void setUpWrapper(JavaPlugin plugin) {
 		String serverVersion = plugin.getServer().getClass().getPackage().getName();
 		String version = serverVersion.substring(serverVersion.lastIndexOf('.') + 1);
 
 		try {
-			wrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version)
-					.getConstructor().newInstance();
+			wrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

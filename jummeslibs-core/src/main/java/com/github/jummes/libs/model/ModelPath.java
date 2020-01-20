@@ -22,7 +22,7 @@ public class ModelPath<T extends Model> {
 	private ModelManager<T> modelManager;
 	@Getter
 	private T root;
-	
+
 	private List<Model> modelPath;
 
 	public ModelPath(ModelManager<T> modelManager, T root) {
@@ -31,14 +31,13 @@ public class ModelPath<T extends Model> {
 		modelPath = new ArrayList<>();
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean addModel(Model model) {
 		if (root == null) {
 			root = (T) model;
 			return true;
-		} else {
-			return modelPath.add(model);
 		}
+		return modelPath.add(model);
+
 	}
 
 	public boolean removeModel() {
@@ -46,9 +45,9 @@ public class ModelPath<T extends Model> {
 			if (modelPath.isEmpty()) {
 				root = null;
 				return true;
-			} else {
-				modelPath.remove(modelPath.size() - 1);
 			}
+			modelPath.remove(modelPath.size() - 1);
+
 		}
 		return false;
 	}

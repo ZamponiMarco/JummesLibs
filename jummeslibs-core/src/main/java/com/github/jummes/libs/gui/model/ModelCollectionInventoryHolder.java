@@ -17,9 +17,10 @@ import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 
-public class ModelCollectionInventoryHolder<T extends Model> extends ModelObjectInventoryHolder<Model> {
+public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 
 	private static final int MODELS_NUMBER = 50;
 
@@ -33,59 +34,82 @@ public class ModelCollectionInventoryHolder<T extends Model> extends ModelObject
 		this.page = page;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void initializeInventory() {
+		/*
+		 * Get the list of models to display in the current page
+		 */
 		try {
 			field.setAccessible(true);
 			List<Model> models = Lists.newArrayList(
 					(Collection<Model>) field.get(path.getLast() != null ? path.getLast() : path.getModelManager()));
+			field.setAccessible(false);
 			List<Model> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
 					&& models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
 			int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
 
-			this.inventory = Bukkit.createInventory(this, 54, "Collection of " + models.hashCode());
+			/*
+			 * Create the inventory
+			 */
+			this.inventory = Bukkit.createInventory(this, 54,
+					MessageUtils.color("&6Collection of &c&l" + field.getName()));
 
+			/*
+			 * For each model that has to be listed set an item in the GUI
+			 */
 			toList.forEach(model -> {
 				registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
 					try {
-						field.setAccessible(true);
+
+						/*
+						 * If left clicked open the model GUI inventory
+						 */
 						if (e.getClick().equals(ClickType.LEFT)) {
 							path.addModel(model);
 							e.getWhoClicked()
-									.openInventory(new ModelObjectInventoryHolder<>(plugin, this, path).getInventory());
-						} else if (e.getClick().equals(ClickType.RIGHT)) {
-							((Collection<Model>) field.get(path.getLast() != null ? path.getLast() : path.getModelManager()))
-									.remove(model);
+									.openInventory(new ModelObjectInventoryHolder(plugin, this, path).getInventory());
+						}
+
+						/*
+						 * If right clicked removes the model from the collection
+						 */
+						else if (e.getClick().equals(ClickType.RIGHT)) {
+							field.setAccessible(true);
+							((Collection<Model>) field
+									.get(path.getLast() != null ? path.getLast() : path.getModelManager()))
+											.remove(model);
 							path.addModel(model);
 							path.deleteModel();
 							path.removeModel();
-							e.getWhoClicked().openInventory(
-									new ModelCollectionInventoryHolder<>(plugin, parent, path, field, page)
+							field.setAccessible(false);
+							e.getWhoClicked()
+									.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page)
 											.getInventory());
 						}
-						field.setAccessible(false);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
 				});
 			});
 
-			registerClickConsumer(51, getBackItem(), e -> {
+			/*
+			 * Sets up a model creator inventory, page scrollers, back button and fills the
+			 * rest
+			 */
+			registerClickConsumer(50, getBackItem(), e -> {
 				e.getWhoClicked()
 						.openInventory(new ModelCreateInventoryHolder(plugin, parent, path, field).getInventory());
 			});
 			if (page != maxPage) {
-				registerClickConsumer(53, new ItemStack(Material.ACACIA_BOAT), e -> e.getWhoClicked().openInventory(
-						new ModelCollectionInventoryHolder<>(plugin, parent, path, field, page + 1).getInventory()));
+				registerClickConsumer(52, new ItemStack(Material.ACACIA_BOAT), e -> e.getWhoClicked().openInventory(
+						new ModelCollectionInventoryHolder(plugin, parent, path, field, page + 1).getInventory()));
 			}
 			if (page != 1) {
-				registerClickConsumer(52, new ItemStack(Material.ACACIA_BUTTON), e -> e.getWhoClicked().openInventory(
-						new ModelCollectionInventoryHolder<>(plugin, parent, path, field, page - 1).getInventory()));
+				registerClickConsumer(51, new ItemStack(Material.ACACIA_BUTTON), e -> e.getWhoClicked().openInventory(
+						new ModelCollectionInventoryHolder(plugin, parent, path, field, page - 1).getInventory()));
 			}
 			registerClickConsumer(53, getBackItem(), getBackConsumer());
 			fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
-			field.setAccessible(false);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
