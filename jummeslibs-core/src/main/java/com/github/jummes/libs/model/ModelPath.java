@@ -40,19 +40,18 @@ public class ModelPath<T extends Model> {
 
 	}
 
-	public boolean removeModel() {
+	public boolean popModel() {
 		if (root != null) {
 			if (modelPath.isEmpty()) {
 				root = null;
-				return true;
 			}
 			modelPath.remove(modelPath.size() - 1);
-
+			return true;
 		}
 		return false;
 	}
 
-	public void updateModel() {
+	public void saveModel() {
 		modelManager.saveModel(root);
 	}
 
@@ -60,7 +59,7 @@ public class ModelPath<T extends Model> {
 		if (modelPath.isEmpty()) {
 			modelManager.deleteModel(root);
 		} else {
-			modelManager.saveModel(root);
+			saveModel();
 		}
 	}
 

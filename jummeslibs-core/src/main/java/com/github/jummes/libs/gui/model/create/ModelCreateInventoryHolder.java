@@ -47,14 +47,9 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 
 	@Override
 	protected void initializeInventory() {
-
 		try {
-			Class<?> modelClass = field.getType();
-			boolean isCollection = ClassUtils.isAssignable(modelClass, Collection.class);
-			Class<Model> model = isCollection
-					? (Class<Model>) TypeToken.of(field.getGenericType()).resolveType(modelClass.getTypeParameters()[0])
-							.getRawType()
-					: (Class<Model>) modelClass;
+			boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
+			Class<Model> model = getModelClassFromField(field, isCollection);
 			this.inventory = Bukkit.createInventory(this, 27,
 					MessageUtils.color("&6Create a &c&l" + model.getSimpleName()));
 			if (model.isAnnotationPresent(Enumerable.class)) {
@@ -75,28 +70,34 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+	}
+
+	private Class<Model> getModelClassFromField(Field field, boolean isCollection) {
+		Class<?> fieldClass = field.getType();
+		return isCollection
+				? (Class<Model>) TypeToken.of(field.getGenericType()).resolveType(fieldClass.getTypeParameters()[0])
+						.getRawType()
+				: (Class<Model>) fieldClass;
 	}
 
 	private Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
 		return e -> {
 			try {
+				Model newModel = model.newInstance();
 				if (isCollection) {
-					Model newModel = model.newInstance();
 					((Collection<Model>) FieldUtils.readField(field,
 							path.getLast() == null ? path.getModelManager() : path.getLast(), true)).add(newModel);
 					path.addModel(newModel);
-					path.updateModel();
 					e.getWhoClicked()
 							.openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
 				} else {
-					FieldUtils.writeField(field, path.getLast(), model.newInstance(), true);
-					path.updateModel();
+					FieldUtils.writeField(field, path.getLast(), newModel, true);
 					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
 							.createFieldInventoryHolder(plugin, parent, path, field, e.getClick()).getInventory());
 				}
+				path.saveModel();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

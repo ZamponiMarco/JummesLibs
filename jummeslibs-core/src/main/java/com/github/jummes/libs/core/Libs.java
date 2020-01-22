@@ -1,9 +1,12 @@
 package com.github.jummes.libs.core;
 
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.listener.PluginInventoryHolderClickListener;
 import com.github.jummes.libs.listener.StringSettingChangeChatListener;
+import com.github.jummes.libs.model.wrapper.IntRangeWrapper;
+import com.github.jummes.libs.model.wrapper.LocationWrapper;
 import com.github.jummes.libs.wrapper.VersionWrapper;
 
 import lombok.Getter;
@@ -14,6 +17,11 @@ public class Libs {
 
 	@Getter
 	private static VersionWrapper wrapper;
+	
+	static {
+		ConfigurationSerialization.registerClass(LocationWrapper.class);
+		ConfigurationSerialization.registerClass(IntRangeWrapper.class);
+	}
 
 	public static void initializeLibrary(JavaPlugin plugin) {
 		if (wrapper == null) {

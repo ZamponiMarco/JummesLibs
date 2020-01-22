@@ -20,7 +20,7 @@ import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 
-public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
+public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
 	private static final String ARROW_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODEzM2E0MjM2MDY2OTRkYTZjOTFhODRlYTY2ZDQ5ZWZjM2EyM2Y3M2ZhOGFmOGNjMWZlMjk4M2ZlOGJiNWQzIn19fQ";
 	private static final String ARROW2_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19";
@@ -37,13 +37,13 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 	private static final String CONFIRM_ITEM = MessageUtils.color("&6&lResult = &e&l%s");
 	private static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
 
-	private int result;
+	private double result;
 
-	public IntegerFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+	public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
 			ModelPath<? extends Model> path, Field field) {
 		super(plugin, parent, path, field);
 		try {
-			result = (int) FieldUtils.readField(field, path.getLast(), true);
+			result = (double) FieldUtils.readField(field, path.getLast(), true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,26 +54,29 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 
 		this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, field.getName()));
 
-		registerClickConsumer(9, getModifyItem(-100, wrapper.skullFromValue(ARROW3_LEFT_HEAD)),
-				getModifyConsumer(-100));
-		registerClickConsumer(10, getModifyItem(-10, wrapper.skullFromValue(ARROW2_LEFT_HEAD)), getModifyConsumer(-10));
-		registerClickConsumer(11, getModifyItem(-1, wrapper.skullFromValue(ARROW_LEFT_HEAD)), getModifyConsumer(-1));
+		registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
+		registerClickConsumer(10, getModifyItem(-0.1, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
+				getModifyConsumer(-0.1));
+		registerClickConsumer(11, getModifyItem(-0.01, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
+				getModifyConsumer(-0.01));
 		registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
-		registerClickConsumer(15, getModifyItem(+1, wrapper.skullFromValue(ARROW_RIGHT_HEAD)), getModifyConsumer(+1));
-		registerClickConsumer(16, getModifyItem(+10, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
-				getModifyConsumer(+10));
-		registerClickConsumer(17, getModifyItem(+100, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)),
-				getModifyConsumer(+100));
+		registerClickConsumer(15, getModifyItem(+0.01, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
+				getModifyConsumer(+0.01));
+		registerClickConsumer(16, getModifyItem(+0.1, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
+				getModifyConsumer(+0.1));
+		registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
+		// TODO CORREST BUG WITH ZERO ITEM
 		registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
 	}
 
-	private Consumer<InventoryClickEvent> getModifyConsumer(int i) {
+	private Consumer<InventoryClickEvent> getModifyConsumer(double addition) {
 		return e -> {
 			if (e.getClick().equals(ClickType.LEFT)) {
-				result += i;
+				result += addition;
+				result = Math.round(result * 100d) / 100d;
 				inventory.setItem(13, getConfirmItem());
 			}
 		};
@@ -97,7 +100,7 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 		};
 	}
 
-	private ItemStack getModifyItem(int i, ItemStack item) {
+	private ItemStack getModifyItem(double i, ItemStack item) {
 		return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, String.valueOf(i)), new ArrayList<String>());
 	}
 

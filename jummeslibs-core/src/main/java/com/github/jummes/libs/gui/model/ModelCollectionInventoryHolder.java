@@ -82,7 +82,7 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 											.remove(model);
 							path.addModel(model);
 							path.deleteModel();
-							path.removeModel();
+							path.popModel();
 							e.getWhoClicked()
 									.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page)
 											.getInventory());

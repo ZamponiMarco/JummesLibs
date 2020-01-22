@@ -48,29 +48,14 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 
 	@Override
 	protected void initializeInventory() {
-		this.inventory = Bukkit.createInventory(this, 27, MessageUtils.color("&c&l" + path.getLast().getClass().getSimpleName()));
 		Class<?> clazz = path.getLast().getClass();
-
-		/*
-		 * Fill the list of fields with all declared fields on superclasses
-		 */
+		this.inventory = Bukkit.createInventory(this, 27, MessageUtils.color("&c&l" + clazz.getSimpleName()));
 		List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
 		ClassUtils.getAllSuperclasses(clazz).forEach(
 				superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
-
-		/*
-		 * Filter only the fields with GUISerializable annotation and get the positions
-		 * on the GUI
-		 */
 		Field[] toPrint = fields.stream().filter(field -> field.isAnnotationPresent(GUISerializable.class))
 				.toArray(size -> new Field[size]);
 		int[] itemPositions = getItemPositions(toPrint.length);
-
-		/*
-		 * For every field remaining set the item in its position with the head texture
-		 * from the annotation and when clicked they send the player to the correct
-		 * inventory holder
-		 */
 		IntStream.range(0, toPrint.length).forEach(i -> {
 			registerClickConsumer(itemPositions[i],
 					ItemUtils.getNamedItem(
@@ -84,10 +69,6 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 										.getInventory());
 					});
 		});
-
-		/*
-		 * Places the back button and fills the rest of the inventory
-		 */
 		registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
@@ -218,7 +199,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 	protected Consumer<InventoryClickEvent> getBackConsumerAndPopModel() {
 		return e -> {
 			if (parent != null) {
-				path.removeModel();
+				path.popModel();
 				e.getWhoClicked().openInventory(parent.getInventory());
 			} else {
 				e.getWhoClicked().closeInventory();

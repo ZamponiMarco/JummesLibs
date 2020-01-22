@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
  * @author Marco
  *
  */
-public abstract class Model implements ConfigurationSerializable {
+public interface Model extends ConfigurationSerializable {
 	
 	public abstract ItemStack getGUIItem();
 	
