@@ -4,9 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
-import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.Location;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,8 +17,7 @@ import com.github.jummes.libs.gui.setting.IntegerFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.IntRangeWrapper;
-import com.github.jummes.libs.model.wrapper.LocationWrapper;
+import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
 public class FieldInventoryHolderFactory {
 
@@ -34,11 +31,9 @@ public class FieldInventoryHolderFactory {
 				return new DoubleFieldChangeInventoryHolder(plugin, parent, path, field);
 			} else if (clazz.equals(String.class)) {
 				return new StringFieldChangeInventoryHolder(plugin, parent, path, field);
-			} else if (clazz.equals(Location.class)) {
-				path.addModel(new LocationWrapper((Location) FieldUtils.readField(field, path.getLast(), true)));
-				return new ModelObjectInventoryHolder(plugin, parent, path);
-			} else if (clazz.equals(IntRange.class)) {
-				path.addModel(new IntRangeWrapper((IntRange) FieldUtils.readField(field, path.getLast(), true)));
+			} else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
+				path.addModel((Model) ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
+						.newInstance(FieldUtils.readField(field, path.getLast(), true)));
 				return new ModelObjectInventoryHolder(plugin, parent, path);
 			} else if (Collection.class.isAssignableFrom(clazz) && Model.class.isAssignableFrom(Class
 					.forName(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName()))) {
