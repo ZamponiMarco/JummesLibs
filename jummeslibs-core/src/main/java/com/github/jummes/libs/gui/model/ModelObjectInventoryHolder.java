@@ -19,11 +19,13 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.GUISerializable;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.factory.FieldInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
@@ -49,7 +51,8 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 	@Override
 	protected void initializeInventory() {
 		Class<?> clazz = path.getLast().getClass();
-		this.inventory = Bukkit.createInventory(this, 27, MessageUtils.color("&c&l" + clazz.getSimpleName()));
+		String title = getTitleString(clazz);
+		this.inventory = Bukkit.createInventory(this, 27, title);
 		List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
 		ClassUtils.getAllSuperclasses(clazz).forEach(
 				superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
@@ -73,12 +76,19 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 	}
 
+	private String getTitleString(Class<?> clazz) {
+		String name = clazz.isAnnotationPresent(GUINameable.class) ? clazz.getAnnotation(GUINameable.class).GUIName()
+				: clazz.getSimpleName();
+		return MessageUtils.color("&c&l" + name);
+	}
+
 	private String getValueString(Field field) {
 		String valueToPrint;
 		try {
 			if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
 				valueToPrint = "Collection";
-			} else if (ClassUtils.isAssignable(field.getType(), Model.class)) {
+			} else if (ClassUtils.isAssignable(field.getType(), Model.class)
+					|| ModelWrapper.getWrappers().containsKey(field.getType())) {
 				valueToPrint = FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
 			} else {
 				valueToPrint = FieldUtils.readField(field, path.getLast(), true).toString();

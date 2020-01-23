@@ -5,7 +5,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.listener.PluginInventoryHolderClickListener;
 import com.github.jummes.libs.listener.StringSettingChangeChatListener;
-import com.github.jummes.libs.model.wrapper.IntRangeWrapper;
+import com.github.jummes.libs.model.math.IntRange;
+import com.github.jummes.libs.model.wrapper.ItemMetaWrapper;
+import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
 import com.github.jummes.libs.model.wrapper.LocationWrapper;
 import com.github.jummes.libs.wrapper.VersionWrapper;
 
@@ -20,7 +22,9 @@ public class Libs {
 	
 	static {
 		ConfigurationSerialization.registerClass(LocationWrapper.class);
-		ConfigurationSerialization.registerClass(IntRangeWrapper.class);
+		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
+		ConfigurationSerialization.registerClass(ItemMetaWrapper.class);
+		ConfigurationSerialization.registerClass(IntRange.class);
 	}
 
 	public static void initializeLibrary(JavaPlugin plugin) {

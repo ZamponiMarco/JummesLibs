@@ -44,8 +44,9 @@ public class ModelPath<T extends Model> {
 		if (root != null) {
 			if (modelPath.isEmpty()) {
 				root = null;
+			} else {
+				modelPath.remove(modelPath.size() - 1);
 			}
-			modelPath.remove(modelPath.size() - 1);
 			return true;
 		}
 		return false;

@@ -1,6 +1,7 @@
 package com.github.jummes.libs.wrapper;
 
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public interface VersionWrapper {
 
@@ -11,5 +12,7 @@ public interface VersionWrapper {
 	 * @return ItemStack of the head
 	 */
 	public ItemStack skullFromValue(String value);
+	
+	public Class<? extends ItemMeta> getCraftMetaItemClass();
 
 }

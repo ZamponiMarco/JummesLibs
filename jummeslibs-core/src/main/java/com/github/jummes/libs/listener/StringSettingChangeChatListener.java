@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder.StringFieldChangeInfo;
+import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.MessageUtils;
 
 public class StringSettingChangeChatListener implements Listener {
@@ -43,6 +44,9 @@ public class StringSettingChangeChatListener implements Listener {
 			} else {
 				try {
 					FieldUtils.writeField(info.getField(), info.getPath().getLast(), validatedValue, true);
+					if (info.getPath().getLast() instanceof ModelWrapper<?>) {
+						((ModelWrapper<?>) info.getPath().getLast()).notifyObservers(info.getField());
+					}
 					info.getPath().saveModel();
 					p.sendMessage(String.format(MODIFY_SUCCESS, info.getField().getName(), validatedValue));
 				} catch (Exception e) {
