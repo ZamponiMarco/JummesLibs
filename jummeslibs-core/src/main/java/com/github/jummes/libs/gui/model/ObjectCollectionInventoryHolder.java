@@ -4,13 +4,13 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +18,7 @@ import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.CollectionAddInformation;
+import com.github.jummes.libs.gui.setting.change.CollectionRemoveInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
@@ -48,16 +49,21 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
 		try {
 			List<Object> objects = Lists.newArrayList((Collection<Object>) FieldUtils.readField(field,
 					path.getLast() != null ? path.getLast() : path.getModelManager(), true));
-			List<Object> toList = objects.stream().filter(model -> objects.indexOf(model) >= (page - 1) * OBJECTS_NUMBER
-					&& objects.indexOf(model) <= page * OBJECTS_NUMBER - 1).collect(Collectors.toList());
+			List<Object> toList = objects.subList((page - 1) * OBJECTS_NUMBER,
+					Math.min(objects.size(), page * OBJECTS_NUMBER));
 			int maxPage = (int) Math.ceil((objects.size() > 0 ? objects.size() : 1) / (double) OBJECTS_NUMBER);
 			this.inventory = Bukkit.createInventory(this, 54, MessageUtils.color("&c&l" + field.getName()));
 			IntStream.range(0, toList.size()).forEach(i -> {
-				registerClickConsumer(i, ItemUtils.getNamedItem(new ItemStack(Material.PAPER),
-						toList.get(i).toString(), new ArrayList<String>()), e -> {
-							e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-									.createFieldInCollectionInventoryHolder(plugin, this, path, field, toList.get(i))
-									.getInventory());
+				registerClickConsumer(i, ItemUtils.getNamedItem(new ItemStack(Material.PAPER), toList.get(i).toString(),
+						new ArrayList<String>()), e -> {
+							if (e.getClick().equals(ClickType.LEFT)) {
+								e.getWhoClicked().openInventory(
+										FieldInventoryHolderFactory.createFieldInCollectionInventoryHolder(plugin, this,
+												path, field, toList.get(i)).getInventory());
+							} else if (e.getClick().equals(ClickType.RIGHT)) {
+								new CollectionRemoveInformation(field, toList.get(i)).setValue(path, null);
+								e.getWhoClicked().openInventory(getInventory());
+							}
 						});
 			});
 
@@ -77,16 +83,16 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
 				registerClickConsumer(52,
 						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
 								MessageUtils.color("&6&lNext page"), new ArrayList<String>()),
-						e -> e.getWhoClicked()
-								.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page + 1)
+						e -> e.getWhoClicked().openInventory(
+								new ObjectCollectionInventoryHolder(plugin, parent, path, field, page + 1)
 										.getInventory()));
 			}
 			if (page != 1) {
 				registerClickConsumer(51,
 						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
 								MessageUtils.color("&6&lPrevious page"), new ArrayList<String>()),
-						e -> e.getWhoClicked()
-								.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page - 1)
+						e -> e.getWhoClicked().openInventory(
+								new ObjectCollectionInventoryHolder(plugin, parent, path, field, page - 1)
 										.getInventory()));
 			}
 			registerClickConsumer(53, getBackItem(), getBackConsumer());
