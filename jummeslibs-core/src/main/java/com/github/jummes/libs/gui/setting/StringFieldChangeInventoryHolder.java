@@ -1,6 +1,5 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
+import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
@@ -36,13 +36,13 @@ public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 	private static Set<StringFieldChangeInfo> changeStringInfoSet = new HashSet<StringFieldChangeInfo>();
 
 	public StringFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, Field field) {
-		super(plugin, parent, path, field);
+			ModelPath<? extends Model> path, ChangeInformation changeInformation) {
+		super(plugin, parent, path, changeInformation);
 	}
 
 	@Override
 	protected void initializeInventory() {
-		this.inventory = Bukkit.createInventory(this, 27, String.format(MODIFY_TITLE, field.getName()));
+		this.inventory = Bukkit.createInventory(this, 27, String.format(MODIFY_TITLE, changeInformation.getName()));
 		registerClickConsumer(13, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(MODIFY_HEAD),
 				MODIFY_ITEM_NAME, new ArrayList<String>()), e -> playerCanWrite(e.getWhoClicked()));
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
@@ -51,7 +51,7 @@ public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 
 	private void playerCanWrite(HumanEntity entity) {
 		entity.sendMessage(MODIFY_MESSAGE);
-		changeStringInfoSet.add(new StringFieldChangeInfo(entity, path, field, parent));
+		changeStringInfoSet.add(new StringFieldChangeInfo(entity, path, parent, changeInformation));
 		entity.closeInventory();
 	}
 
@@ -63,8 +63,8 @@ public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 		@EqualsAndHashCode.Include
 		private HumanEntity human;
 		private ModelPath<? extends Model> path;
-		private Field field;
 		private InventoryHolder parent;
+		private ChangeInformation changeInformation;
 	}
 
 }

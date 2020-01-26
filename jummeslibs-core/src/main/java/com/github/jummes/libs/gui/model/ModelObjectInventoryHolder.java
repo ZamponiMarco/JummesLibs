@@ -21,8 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.GUISerializable;
+import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
-import com.github.jummes.libs.gui.setting.factory.FieldInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;

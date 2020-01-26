@@ -43,7 +43,9 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 	}
 	
 	public static ItemStackWrapper deserialize(Map<String, Object> map) {
-		return new ItemStackWrapper(ItemStack.deserialize(map));
+		ItemStackWrapper wrapper = new ItemStackWrapper(ItemStack.deserialize(map));
+		wrapper.meta = (ItemMetaWrapper) map.get("meta");
+		return wrapper;
 	}
 
 	@Override

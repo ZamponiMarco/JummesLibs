@@ -1,11 +1,13 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
+import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 
@@ -17,12 +19,20 @@ import com.github.jummes.libs.model.ModelPath;
  */
 public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHolder {
 
-	protected Field field;
+	protected ChangeInformation changeInformation;
 
 	public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
-			Field field) {
+			ChangeInformation changeInformation) {
 		super(plugin, parent, path);
-		this.field = field;
+		this.changeInformation = changeInformation;
+	}
+
+	public static Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> getInventories() {
+		Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> map = new HashMap<Class<?>, Class<? extends FieldChangeInventoryHolder>>();
+		map.put(int.class, IntegerFieldChangeInventoryHolder.class);
+		map.put(double.class, DoubleFieldChangeInventoryHolder.class);
+		map.put(String.class, StringFieldChangeInventoryHolder.class);
+		return map;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.github.jummes.libs.model.wrapper;
 
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +27,14 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
 	@GUISerializable(headTexture = MATERIAL_HEAD)
 	@SetterMappable(setterMethod = "setDisplayName")
 	private String displayName;
+	@GUISerializable(headTexture = MATERIAL_HEAD)
 	@SetterMappable(setterMethod = "setLore")
 	private List<String> lore;
 
 	public ItemMetaWrapper(ItemMeta wrapped) {
 		super(wrapped);
 		this.displayName = wrapped.getDisplayName();
-		this.lore = wrapped.getLore();
+		this.lore = wrapped.getLore() == null ? new ArrayList<String>() : wrapped.getLore();
 	}
 
 	@Override
@@ -44,7 +46,8 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
 		try {
 			Constructor<?> cons = Libs.getWrapper().getCraftMetaItemClass().getDeclaredConstructor(Map.class);
 			cons.setAccessible(true);
-			return new ItemMetaWrapper((ItemMeta) cons.newInstance(map));
+			ItemMeta meta = (ItemMeta) cons.newInstance(map);
+			return new ItemMetaWrapper(meta);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

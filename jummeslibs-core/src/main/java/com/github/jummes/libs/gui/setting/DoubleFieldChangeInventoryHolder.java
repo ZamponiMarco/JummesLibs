@@ -1,10 +1,8 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -14,9 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.gui.PluginInventoryHolder;
+import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 
@@ -40,19 +38,15 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 	private double result;
 
 	public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, Field field) {
-		super(plugin, parent, path, field);
-		try {
-			result = (double) FieldUtils.readField(field, path.getLast(), true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			ModelPath<? extends Model> path, ChangeInformation changeInformation) {
+		super(plugin, parent, path, changeInformation);
+		result = (double) changeInformation.getValue(path);
 	}
 
 	@Override
 	protected void initializeInventory() {
 
-		this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, field.getName()));
+		this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
 
 		registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
 		registerClickConsumer(10, getModifyItem(-0.1, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
@@ -85,17 +79,9 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 	private Consumer<InventoryClickEvent> getConfirmConsumer() {
 		return e -> {
 			HumanEntity p = e.getWhoClicked();
-			try {
-				FieldUtils.writeField(field, path.getLast(), result, true);
-				if (path.getLast() instanceof ModelWrapper<?>) {
-					((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-				}
-				path.saveModel();
-				p.sendMessage(String.format(MODIFY_SUCCESS, field.getName(), String.valueOf(result)));
-				getBackConsumer().accept(e);
-			} catch (Exception ex) {
-				p.closeInventory();
-			}
+			changeInformation.setValue(path, result);
+			p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(result)));
+			getBackConsumer().accept(e);
 		};
 	}
 
