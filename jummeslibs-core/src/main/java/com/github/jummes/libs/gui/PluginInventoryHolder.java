@@ -45,7 +45,11 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
 	 * @param e the event that has been fired
 	 */
 	public void handleClickEvent(InventoryClickEvent e) {
-		clickMap.get(e.getSlot()).accept(e);
+		try {
+			clickMap.get(e.getSlot()).accept(e);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 		e.setCancelled(true);
 	}
 

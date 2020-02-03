@@ -13,6 +13,9 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface GUISerializable {
-	public String headTexture();
+public @interface Serializable {
+	
+	public boolean stringValue() default false;
+	
+	public String headTexture() default "";
 }

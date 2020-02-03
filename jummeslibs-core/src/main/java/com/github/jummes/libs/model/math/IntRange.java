@@ -6,7 +6,7 @@ import java.util.Map;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.jummes.libs.annotation.GUISerializable;
+import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.model.Model;
 
 import lombok.AllArgsConstructor;
@@ -24,9 +24,9 @@ public class IntRange implements Model {
 	private static final String MIN_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ3MmM5ZDYyOGJiMzIyMWVmMzZiNGNiZDBiOWYxNWVkZDU4ZTU4NjgxODUxNGQ3ZTgyM2Q1NWM0OGMifX19=";
 	private static final String MAX_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTUxNDlkZGRhZGVkMjBkMjQ0ZTBiYjYyYTJkOWZhMGRjNmM2YTc4NjI1NTkzMjhhOTRmNzc3MjVmNTNjMzU4In19fQ=";
 	
-	@GUISerializable(headTexture = MIN_HEAD)
+	@Serializable(headTexture = MIN_HEAD)
 	private int min;
-	@GUISerializable(headTexture = MAX_HEAD)
+	@Serializable(headTexture = MAX_HEAD)
 	private int max;
 	
 	@Override

@@ -20,7 +20,7 @@ public class Libs {
 	@Getter
 	private static VersionWrapper wrapper;
 	
-	static {
+	public static void registerSerializables() {
 		ConfigurationSerialization.registerClass(LocationWrapper.class);
 		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
 		ConfigurationSerialization.registerClass(ItemMetaWrapper.class);

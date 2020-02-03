@@ -20,7 +20,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.annotation.GUINameable;
-import com.github.jummes.libs.annotation.GUISerializable;
+import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.model.Model;
@@ -56,13 +56,15 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 		List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
 		ClassUtils.getAllSuperclasses(clazz).forEach(
 				superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
-		Field[] toPrint = fields.stream().filter(field -> field.isAnnotationPresent(GUISerializable.class))
+		Field[] toPrint = fields.stream()
+				.filter(field -> field.isAnnotationPresent(Serializable.class)
+						&& !field.getAnnotation(Serializable.class).headTexture().equals(""))
 				.toArray(size -> new Field[size]);
 		int[] itemPositions = getItemPositions(toPrint.length);
 		IntStream.range(0, toPrint.length).forEach(i -> {
 			registerClickConsumer(itemPositions[i],
 					ItemUtils.getNamedItem(
-							wrapper.skullFromValue(toPrint[i].getAnnotation(GUISerializable.class).headTexture()),
+							wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()),
 							MessageUtils.color("&6&l" + toPrint[i].getName() + " → &c&l" + getValueString(toPrint[i])),
 							new ArrayList<String>()),
 					e -> {
@@ -89,7 +91,9 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 				valueToPrint = "Collection";
 			} else if (ClassUtils.isAssignable(field.getType(), Model.class)
 					|| ModelWrapper.getWrappers().containsKey(field.getType())) {
-				valueToPrint = FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
+				valueToPrint = field.getType().isAnnotationPresent(GUINameable.class)
+						? field.getType().getAnnotation(GUINameable.class).GUIName()
+						: FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
 			} else {
 				valueToPrint = FieldUtils.readField(field, path.getLast(), true).toString();
 			}

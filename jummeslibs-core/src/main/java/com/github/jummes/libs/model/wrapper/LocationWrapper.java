@@ -7,11 +7,11 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.jummes.libs.annotation.GUINameable;
-import com.github.jummes.libs.annotation.GUISerializable;
+import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.model.Model;
 
-@SerializableAs("Location")
+@SerializableAs("LocationWrapper")
 @GUINameable(GUIName = "Location")
 public class LocationWrapper extends ModelWrapper<Location> implements Model {
 	
@@ -21,19 +21,19 @@ public class LocationWrapper extends ModelWrapper<Location> implements Model {
 	private static final String YAW_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTNmYzUyMjY0ZDhhZDllNjU0ZjQxNWJlZjAxYTIzOTQ3ZWRiY2NjY2Y2NDkzNzMyODliZWE0ZDE0OTU0MWY3MCJ9fX0====";
 	private static final String PITCH_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk5YWFmMjQ1NmE2MTIyZGU4ZjZiNjI2ODNmMmJjMmVlZDlhYmI4MWZkNWJlYTFiNGMyM2E1ODE1NmI2NjkifX19===";
 	
-	@GUISerializable(headTexture = Y_HEAD)
+	@Serializable(headTexture = Y_HEAD)
 	@SetterMappable(setterMethod = "setY")
 	private double y;
-	@GUISerializable(headTexture = X_HEAD)
+	@Serializable(headTexture = X_HEAD)
 	@SetterMappable(setterMethod = "setX")
 	private double x;
-	@GUISerializable(headTexture = Z_HEAD)
+	@Serializable(headTexture = Z_HEAD)
 	@SetterMappable(setterMethod = "setZ")
 	private double z;
-	@GUISerializable(headTexture = YAW_HEAD)
+	@Serializable(headTexture = YAW_HEAD)
 	@SetterMappable(setterMethod = "setYaw")
 	private double yaw;
-	@GUISerializable(headTexture = PITCH_HEAD)
+	@Serializable(headTexture = PITCH_HEAD)
 	@SetterMappable(setterMethod = "setPitch")
 	private double pitch;
 	

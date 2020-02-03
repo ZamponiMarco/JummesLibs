@@ -13,8 +13,10 @@ import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.ObjectCollectionInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
 import com.github.jummes.libs.gui.setting.FieldChangeInventoryHolder;
+import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.gui.setting.change.CollectionChangeInformation;
+import com.github.jummes.libs.gui.setting.change.EnumChangeInformation;
 import com.github.jummes.libs.gui.setting.change.FieldChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
@@ -50,6 +52,8 @@ public class FieldInventoryHolderFactory {
 				} else if (clickType.equals(ClickType.RIGHT)) {
 					return new ModelCreateInventoryHolder(plugin, parent, path, field);
 				}
+			} else if (clazz.isEnum()) {
+				return new StringFieldChangeInventoryHolder(plugin, parent, path, new EnumChangeInformation(field));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -7,27 +7,27 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.jummes.libs.annotation.GUINameable;
-import com.github.jummes.libs.annotation.GUISerializable;
+import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.model.Model;
 
 import lombok.ToString;
 
 @ToString
-@GUINameable(GUIName = "ItemStack")
-@SerializableAs("ItemStack")
+@GUINameable(GUIName = "Item")
+@SerializableAs("ItemStackWrapper")
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
-	
+
 	private static final String MIN_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ3MmM5ZDYyOGJiMzIyMWVmMzZiNGNiZDBiOWYxNWVkZDU4ZTU4NjgxODUxNGQ3ZTgyM2Q1NWM0OGMifX19=";
-	
-	@GUISerializable(headTexture = MIN_HEAD)
+
+	@Serializable(headTexture = MIN_HEAD)
 	private Material type;
-	@GUISerializable(headTexture = MIN_HEAD)
+	@Serializable(headTexture = MIN_HEAD)
 	@SetterMappable(setterMethod = "setAmount")
 	private int amount;
-	@GUISerializable(headTexture = MIN_HEAD)
+	@Serializable(headTexture = MIN_HEAD)
 	private ItemMetaWrapper meta;
-	
+
 	public ItemStackWrapper(ItemStack wrapped) {
 		super(wrapped);
 		this.type = wrapped.getType();
@@ -41,10 +41,12 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 		map.put("meta", meta);
 		return map;
 	}
-	
+
 	public static ItemStackWrapper deserialize(Map<String, Object> map) {
-		ItemStackWrapper wrapper = new ItemStackWrapper(ItemStack.deserialize(map));
-		wrapper.meta = (ItemMetaWrapper) map.get("meta");
+		ItemStack wrapped = ItemStack.deserialize(map);
+		ItemMetaWrapper metaWrapper = (ItemMetaWrapper) map.getOrDefault("meta", null);
+		wrapped.setItemMeta(metaWrapper != null ? metaWrapper.wrapped : null);
+		ItemStackWrapper wrapper = new ItemStackWrapper(wrapped);
 		return wrapper;
 	}
 
