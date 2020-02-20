@@ -1,6 +1,5 @@
 package com.github.jummes.libs.model.math;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.bukkit.configuration.serialization.SerializableAs;
@@ -10,6 +9,7 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.model.Model;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,6 +18,7 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @ToString
+@EqualsAndHashCode
 @SerializableAs("IntRange")
 public class IntRange implements Model {
 
@@ -29,13 +30,8 @@ public class IntRange implements Model {
 	@Serializable(headTexture = MAX_HEAD)
 	private int max;
 	
-	@Override
-	public Map<String, Object> serialize() {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		map.put("==", "IntRange");
-		map.put("min", min);
-		map.put("max", max);
-		return map;
+	public int getDifference() {
+		return max - min;
 	}
 	
 	public static IntRange deserialize(Map<String, Object> map) {

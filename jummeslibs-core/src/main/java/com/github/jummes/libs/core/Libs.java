@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.listener.PluginInventoryHolderClickListener;
 import com.github.jummes.libs.listener.StringSettingChangeChatListener;
+import com.github.jummes.libs.localization.PluginLocale;
 import com.github.jummes.libs.model.math.IntRange;
 import com.github.jummes.libs.model.wrapper.ItemMetaWrapper;
 import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
@@ -13,6 +14,7 @@ import com.github.jummes.libs.wrapper.VersionWrapper;
 
 import lombok.Getter;
 
+@Getter
 public class Libs {
 
 	private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
@@ -20,6 +22,9 @@ public class Libs {
 	@Getter
 	private static VersionWrapper wrapper;
 	
+	@Getter
+	private static PluginLocale locale;
+
 	public static void registerSerializables() {
 		ConfigurationSerialization.registerClass(LocationWrapper.class);
 		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
@@ -27,10 +32,9 @@ public class Libs {
 		ConfigurationSerialization.registerClass(IntRange.class);
 	}
 
-	public static void initializeLibrary(JavaPlugin plugin) {
-		if (wrapper == null) {
-			setUpWrapper(plugin);
-		}
+	public static void initializeLibrary(JavaPlugin plugin, PluginLocale thisLocale) {
+		setUpWrapper(plugin);
+		locale = thisLocale;
 		registerEvents(plugin);
 	}
 

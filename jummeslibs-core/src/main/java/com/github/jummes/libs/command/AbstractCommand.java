@@ -12,6 +12,7 @@ public abstract class AbstractCommand {
 	private static final String INCORRECT_USAGE = MessageUtils.color("&cIncorrect command syntax, type /mc help");
 
 	protected CommandSender sender;
+	protected String subCommand;
 	protected String[] arguments;
 	protected boolean isSenderPlayer;
 
@@ -23,8 +24,9 @@ public abstract class AbstractCommand {
 	 * @param arguments      arguments given to subcommand
 	 * @param isSenderPlayer whether the sender is a player
 	 */
-	public AbstractCommand(CommandSender sender, String[] arguments, boolean isSenderPlayer) {
+	public AbstractCommand(CommandSender sender, String subCommand, String[] arguments, boolean isSenderPlayer) {
 		this.sender = sender;
+		this.subCommand = subCommand;
 		this.arguments = arguments;
 		this.isSenderPlayer = isSenderPlayer;
 	}

@@ -37,6 +37,7 @@ public class StringSettingChangeChatListener implements Listener {
 	private void runModifySyncTask(Player p, String message, StringFieldChangeInfo info) {
 		Bukkit.getScheduler().runTask(plugin, () -> {
 			String validatedValue = message.trim();
+			validatedValue = MessageUtils.color(validatedValue);
 			if (validatedValue.equalsIgnoreCase("exit")) {
 				p.sendMessage(MODIFY_BLOCKED);
 			} else {

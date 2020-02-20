@@ -95,7 +95,7 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 				} else {
 					FieldUtils.writeField(field, path.getLast(), newModel, true);
 					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-							.createFieldInventoryHolder(plugin, parent, path, field, e.getClick()).getInventory());
+							.createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
 				}
 				path.saveModel();
 			} catch (Exception ex) {

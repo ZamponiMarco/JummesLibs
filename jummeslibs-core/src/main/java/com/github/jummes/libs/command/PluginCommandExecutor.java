@@ -36,8 +36,8 @@ public class PluginCommandExecutor implements CommandExecutor, TabCompleter {
 		String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
 		try {
 			commandMap.getOrDefault(subCommand, defaultCommand)
-					.getConstructor(CommandSender.class, String[].class, boolean.class)
-					.newInstance(sender, arguments, isSenderPlayer).checkExecution();
+					.getConstructor(CommandSender.class, String.class, String[].class, boolean.class)
+					.newInstance(sender, subCommand, arguments, isSenderPlayer).checkExecution();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

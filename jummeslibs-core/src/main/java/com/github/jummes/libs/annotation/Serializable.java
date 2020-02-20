@@ -18,4 +18,6 @@ public @interface Serializable {
 	public boolean stringValue() default false;
 	
 	public String headTexture() default "";
+	
+	public String description() default "";
 }

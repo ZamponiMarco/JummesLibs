@@ -6,8 +6,10 @@ import java.util.Collection;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.gui.model.ModelCollectionInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.ObjectCollectionInventoryHolder;
@@ -26,7 +28,7 @@ import com.google.common.reflect.TypeToken;
 public class FieldInventoryHolderFactory {
 
 	public static PluginInventoryHolder createFieldInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, Field field, ClickType clickType) {
+			ModelPath<? extends Model> path, Field field, InventoryClickEvent e) {
 		try {
 			Class<?> clazz = field.getType();
 			if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
@@ -46,17 +48,25 @@ public class FieldInventoryHolderFactory {
 				}
 				return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
 			} else if (Model.class.isAssignableFrom(clazz)) {
-				if (clickType.equals(ClickType.LEFT)) {
+				if (clazz.isAnnotationPresent(CustomClickable.class)) {
+					return (PluginInventoryHolder) clazz
+							.getMethod(clazz.getAnnotation(CustomClickable.class).customClickConsumer(),
+									JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
+									InventoryClickEvent.class)
+							.invoke(FieldUtils.readDeclaredField(path.getLast(), field.getName(), true), plugin, parent,
+									path, field, e);
+				}
+				if (e.getClick().equals(ClickType.LEFT)) {
 					path.addModel((Model) FieldUtils.readField(field, path.getLast(), true));
 					return new ModelObjectInventoryHolder(plugin, parent, path);
-				} else if (clickType.equals(ClickType.RIGHT)) {
+				} else if (e.getClick().equals(ClickType.RIGHT)) {
 					return new ModelCreateInventoryHolder(plugin, parent, path, field);
 				}
 			} else if (clazz.isEnum()) {
 				return new StringFieldChangeInventoryHolder(plugin, parent, path, new EnumChangeInformation(field));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		return parent;
 	}

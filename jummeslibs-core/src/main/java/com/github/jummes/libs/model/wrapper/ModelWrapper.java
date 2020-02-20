@@ -16,13 +16,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.util.ReflectUtils;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public abstract class ModelWrapper<T> extends Observable {
 
+	@EqualsAndHashCode.Include
 	protected T wrapped;
 
 	public ModelWrapper(T wrapped) {

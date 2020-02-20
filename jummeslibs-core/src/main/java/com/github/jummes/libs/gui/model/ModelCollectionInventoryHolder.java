@@ -17,6 +17,7 @@ import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
 import com.github.jummes.libs.model.Model;
+import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
@@ -38,6 +39,11 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 		super(plugin, parent, path);
 		this.field = field;
 		this.page = page;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<? extends Model> manager, String fieldName) throws NoSuchFieldException, SecurityException {
+		this(plugin, null, new ModelPath(manager, null), manager.getClass().getDeclaredField(fieldName), 1);
 	}
 
 	@Override
