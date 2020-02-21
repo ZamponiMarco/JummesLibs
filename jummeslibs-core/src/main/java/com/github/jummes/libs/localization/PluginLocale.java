@@ -14,6 +14,7 @@ import com.google.common.collect.Lists;
 public class PluginLocale {
 
 	private final static String FOLDERNAME = "locale";
+	private File dataFile;
 	private YamlConfiguration config;
 
 	public PluginLocale(JavaPlugin plugin, List<String> defaultLocales, String filename) {
@@ -30,7 +31,7 @@ public class PluginLocale {
 			}
 		});
 
-		File dataFile = new File(folder, filename);
+		dataFile = new File(folder, filename);
 		if (!dataFile.exists()) {
 			dataFile = new File(folder, "en-US.yml");
 		}
@@ -51,6 +52,10 @@ public class PluginLocale {
 					.map(string -> MessageFormat.format(MessageUtils.color(string), args)).collect(Collectors.toList());
 		}
 		return Lists.newArrayList(ref);
+	}
+	
+	public void reloadData() {
+		config = YamlConfiguration.loadConfiguration(dataFile);
 	}
 
 }

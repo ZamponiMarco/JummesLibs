@@ -59,7 +59,6 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 		registerClickConsumer(16, getModifyItem(+0.1, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
 				getModifyConsumer(+0.1));
 		registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
-		// TODO CORREST BUG WITH ZERO ITEM
 		registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
 		registerClickConsumer(26, getBackItem(), getBackConsumer());
 		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);

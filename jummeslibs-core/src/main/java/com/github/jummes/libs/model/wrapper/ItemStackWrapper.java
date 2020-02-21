@@ -58,6 +58,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 					path.saveModel();
 					e.getWhoClicked().getInventory().addItem(newItem);
 					e.getCursor().setAmount(0);
+					return parent;
 				}
 				path.addModel(this);
 				return new ModelObjectInventoryHolder(plugin, parent, path);

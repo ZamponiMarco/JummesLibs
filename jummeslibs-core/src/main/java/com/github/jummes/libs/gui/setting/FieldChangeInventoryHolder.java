@@ -32,6 +32,7 @@ public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHol
 		map.put(int.class, IntegerFieldChangeInventoryHolder.class);
 		map.put(double.class, DoubleFieldChangeInventoryHolder.class);
 		map.put(String.class, StringFieldChangeInventoryHolder.class);
+		map.put(boolean.class, BooleanFieldChangeInventoryHolder.class);
 		return map;
 	}
 
