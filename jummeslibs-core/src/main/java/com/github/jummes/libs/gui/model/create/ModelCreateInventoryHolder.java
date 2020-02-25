@@ -1,5 +1,6 @@
 package com.github.jummes.libs.gui.model.create;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +11,7 @@ import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -85,7 +87,15 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 	private Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
 		return e -> {
 			try {
-				Model newModel = model.newInstance();
+				Constructor<?> cons;
+				Model newModel = null;
+				try {
+					cons = model.getConstructor();
+					newModel = (Model) cons.newInstance();
+				} catch (NoSuchMethodException ex) {
+					cons = model.getConstructor(Player.class);
+					newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
+				}
 				if (isCollection) {
 					((Collection<Model>) FieldUtils.readField(field,
 							path.getLast() == null ? path.getModelManager() : path.getLast(), true)).add(newModel);

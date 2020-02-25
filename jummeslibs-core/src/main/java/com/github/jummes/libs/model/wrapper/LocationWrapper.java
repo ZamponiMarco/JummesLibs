@@ -3,7 +3,6 @@ package com.github.jummes.libs.model.wrapper;
 import java.util.Map;
 
 import org.bukkit.Location;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.jummes.libs.annotation.GUINameable;
@@ -11,7 +10,6 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.model.Model;
 
-@SerializableAs("LocationWrapper")
 @GUINameable(GUIName = "Location")
 public class LocationWrapper extends ModelWrapper<Location> implements Model {
 	

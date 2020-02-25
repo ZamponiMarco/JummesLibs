@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,15 +18,15 @@ import lombok.ToString;
 
 @ToString
 @GUINameable(GUIName = "Meta")
-@SerializableAs("ItemMetaWrapper")
 public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
 
-	private final static String MATERIAL_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWM5ZDZmMTE1Y2MwNzg0MTgzZGZjNzU4NDdmZGI0ZWRkYzI2ZGMxNzgyM2U2ZTA0YTZmNjU1MzUyYTExNzliIn19fQ";
+	private final static String NAME_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDU4NGNmN2Q3OWYxYWViMjU1NGMxYmZkNDZlNmI3OGNhNmFlM2FhMmEyMTMyMzQ2YTQxMGYxNWU0MjZmMzEifX19";
+	private final static String LORE_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAzMDgyZjAzM2Y5NzI0Y2IyMmZlMjdkMGRlNDk3NTA5MDMzNTY0MWVlZTVkOGQ5MjdhZGY1YThiNjdmIn19fQ==";
 
-	@Serializable(headTexture = MATERIAL_HEAD)
+	@Serializable(headTexture = NAME_HEAD)
 	@SetterMappable(setterMethod = "setDisplayName")
 	private String displayName;
-	@Serializable(headTexture = MATERIAL_HEAD)
+	@Serializable(headTexture = LORE_HEAD)
 	@SetterMappable(setterMethod = "setLore")
 	private List<String> lore;
 
