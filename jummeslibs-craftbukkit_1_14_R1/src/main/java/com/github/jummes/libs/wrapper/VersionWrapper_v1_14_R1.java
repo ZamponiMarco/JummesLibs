@@ -35,7 +35,7 @@ public class VersionWrapper_v1_14_R1 implements VersionWrapper {
 	@Override
 	public Class<? extends ItemMeta> getCraftMetaItemClass() {
 		try {
-			return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_15_R1.inventory.CraftMetaItem");
+			return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_14_R1.inventory.CraftMetaItem");
 		} catch (Exception e) {
 			return null;
 		}

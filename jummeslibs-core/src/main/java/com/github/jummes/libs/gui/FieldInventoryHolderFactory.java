@@ -2,6 +2,7 @@ package com.github.jummes.libs.gui;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -10,11 +11,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.annotation.CustomClickable;
+import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.gui.model.ModelCollectionInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.ObjectCollectionInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
 import com.github.jummes.libs.gui.setting.FieldChangeInventoryHolder;
+import com.github.jummes.libs.gui.setting.FromListFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.gui.setting.change.CollectionChangeInformation;
@@ -31,7 +34,14 @@ public class FieldInventoryHolderFactory {
 			ModelPath<? extends Model> path, Field field, InventoryClickEvent e) {
 		try {
 			Class<?> clazz = field.getType();
-			if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
+			if (field.isAnnotationPresent(Serializable.class)
+					&& !field.getAnnotation(Serializable.class).fromList().equals("")) {
+				return new FromListFieldChangeInventoryHolder(plugin, parent, path, new FieldChangeInformation(field),
+						1,
+						(List<Object>) path.getLast().getClass()
+								.getMethod(field.getAnnotation(Serializable.class).fromList(), ModelPath.class)
+								.invoke(path.getLast(), path));
+			} else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
 				return FieldChangeInventoryHolder.getInventories().get(clazz)
 						.getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
 								ChangeInformation.class)

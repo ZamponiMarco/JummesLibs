@@ -42,10 +42,10 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 			plugin.saveResource(classObject.getSimpleName().toLowerCase().concat(FILE_SUFFIX), false);
 		}
 
-		this.yamlConfiguration =  new YamlConfiguration();
+		this.yamlConfiguration = new YamlConfiguration();
 		try {
 			this.yamlConfiguration.load(dataFile);
-		} catch (IOException | InvalidConfigurationException e) {
+		} catch (InvalidConfigurationException e) {
 			try {
 				Charset charset = StandardCharsets.UTF_8;
 				String content = new String(Files.readAllBytes(dataFile.toPath()), charset);
@@ -57,6 +57,8 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 

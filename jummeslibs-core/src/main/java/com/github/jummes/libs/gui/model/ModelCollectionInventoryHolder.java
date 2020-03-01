@@ -21,7 +21,6 @@ import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-import com.google.common.collect.Lists;
 
 public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 
@@ -40,9 +39,10 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 		this.field = field;
 		this.page = page;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
-	public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<? extends Model> manager, String fieldName) throws NoSuchFieldException, SecurityException {
+	public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<? extends Model> manager, String fieldName)
+			throws NoSuchFieldException, SecurityException {
 		this(plugin, null, new ModelPath(manager, null), manager.getClass().getDeclaredField(fieldName), 1);
 	}
 
@@ -52,8 +52,9 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 		 * Get the list of models to display in the current page
 		 */
 		try {
-			List<Model> models = Lists.newArrayList((Collection<Model>) FieldUtils.readField(field,
-					path.getLast() != null ? path.getLast() : path.getModelManager(), true));
+			List<Model> models = ((Collection<Model>) FieldUtils.readField(field,
+					path.getLast() != null ? path.getLast() : path.getModelManager(), true)).stream()
+							.filter(model -> model.getGUIItem() != null).collect(Collectors.toList());
 			List<Model> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
 					&& models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
 			int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
@@ -89,6 +90,7 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
 							path.addModel(model);
 							path.deleteModel();
 							path.popModel();
+							model.onRemoval();
 							e.getWhoClicked()
 									.openInventory(new ModelCollectionInventoryHolder(plugin, parent, path, field, page)
 											.getInventory());

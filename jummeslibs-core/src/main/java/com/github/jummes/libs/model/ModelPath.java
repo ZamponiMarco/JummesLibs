@@ -53,6 +53,8 @@ public class ModelPath<T extends Model> {
 	}
 
 	public void saveModel() {
+		root.onModify();
+		modelPath.forEach(model -> model.onModify());
 		modelManager.saveModel(root);
 	}
 

@@ -10,7 +10,10 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.model.Model;
 
+import lombok.ToString;
+
 @GUINameable(GUIName = "Location")
+@ToString
 public class LocationWrapper extends ModelWrapper<Location> implements Model {
 	
 	private static final String X_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzkxZDZlZGE4M2VkMmMyNGRjZGNjYjFlMzNkZjM2OTRlZWUzOTdhNTcwMTIyNTViZmM1NmEzYzI0NGJjYzQ3NCJ9fX0=";

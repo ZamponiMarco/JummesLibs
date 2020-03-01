@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.ConstructorUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -87,15 +88,32 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 	private Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
 		return e -> {
 			try {
+				// Call beforeComponentCreation
+				if (path.getLast() != null)
+					path.getLast().beforeComponentCreation(model);
+				
+				// Determine one of the suitable constructors
 				Constructor<?> cons;
 				Model newModel = null;
-				try {
+				if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
 					cons = model.getConstructor();
 					newModel = (Model) cons.newInstance();
-				} catch (NoSuchMethodException ex) {
+				} else if (ConstructorUtils.getAccessibleConstructor(model, new Class[] { Player.class }) != null) {
 					cons = model.getConstructor(Player.class);
 					newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
+				} else if (ConstructorUtils.getAccessibleConstructor(model, new Class[] { ModelPath.class }) != null) {
+					cons = model.getConstructor(ModelPath.class);
+					newModel = (Model) cons.newInstance(path);
+				} else {
+					throw new NoSuchMethodException();
 				}
+				newModel.onCreation();
+				
+				// Call afterComponentCreation for father class
+				if (path.getLast() != null)
+					path.getLast().afterComponentCreation(newModel);
+				
+				// Put the new model inside the saved data
 				if (isCollection) {
 					((Collection<Model>) FieldUtils.readField(field,
 							path.getLast() == null ? path.getModelManager() : path.getLast(), true)).add(newModel);
@@ -103,7 +121,9 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 					e.getWhoClicked()
 							.openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
 				} else {
+					path.getLast().beforeComponentSetting(newModel);
 					FieldUtils.writeField(field, path.getLast(), newModel, true);
+					path.getLast().afterComponentSetting(newModel);
 					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
 							.createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
 				}

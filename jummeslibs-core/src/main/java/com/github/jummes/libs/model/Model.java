@@ -21,10 +21,32 @@ import com.google.common.collect.Lists;
  * @author Marco
  *
  */
+@SuppressWarnings("unused")
 public interface Model extends ConfigurationSerializable {
 
 	public default ItemStack getGUIItem() {
 		return null;
+	}
+
+	public default void beforeComponentCreation(Class<? extends Model> modelClass) {
+	}
+
+	public default void afterComponentCreation(Model model) {
+	}
+
+	public default void beforeComponentSetting(Model model) {
+	}
+
+	public default void afterComponentSetting(Model model) {
+	}
+
+	public default void onModify() {
+	}
+
+	public default void onCreation() {
+	}
+
+	public default void onRemoval() {
 	}
 
 	public default Map<String, Object> serialize() {

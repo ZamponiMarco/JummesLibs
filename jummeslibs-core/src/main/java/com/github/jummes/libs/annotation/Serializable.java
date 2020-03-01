@@ -20,4 +20,6 @@ public @interface Serializable {
 	public String headTexture() default "";
 	
 	public String description() default "";
+	
+	public String fromList() default "";
 }
