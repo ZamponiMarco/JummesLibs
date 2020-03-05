@@ -22,7 +22,7 @@ import com.github.jummes.libs.model.ModelPath;
 import lombok.ToString;
 
 @ToString
-@CustomClickable(customClickConsumer = "getCustomClickConsumer")
+@CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
 @GUINameable(GUIName = "Item")
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 

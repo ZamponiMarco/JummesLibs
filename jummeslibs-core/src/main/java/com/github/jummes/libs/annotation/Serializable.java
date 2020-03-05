@@ -22,4 +22,6 @@ public @interface Serializable {
 	public String description() default "";
 	
 	public String fromList() default "";
+	
+	public String fromListMapper() default "";
 }

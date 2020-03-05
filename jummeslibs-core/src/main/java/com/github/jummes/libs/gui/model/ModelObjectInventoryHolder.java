@@ -25,7 +25,6 @@ import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
@@ -68,10 +67,8 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 							MessageUtils.color("&6&l" + toPrint[i].getName() + " → &c&l" + getValueString(toPrint[i])),
 							Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description())),
 					e -> {
-						e.getWhoClicked()
-								.openInventory(FieldInventoryHolderFactory
-										.createFieldInventoryHolder(plugin, this, path, toPrint[i], e)
-										.getInventory());
+						e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+								.createFieldInventoryHolder(plugin, this, path, toPrint[i], e).getInventory());
 					});
 		});
 		registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
@@ -90,18 +87,21 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 			if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
 				valueToPrint = "Collection";
 			} else if (ClassUtils.isAssignable(field.getType(), Model.class)
-					|| ModelWrapper.getWrappers().containsKey(field.getType())) {
+					&& !(field.getType().isAnnotationPresent(GUINameable.class)
+							&& field.getType().getAnnotation(GUINameable.class).stringValue())) {
 				valueToPrint = field.getType().isAnnotationPresent(GUINameable.class)
-						? field.getType().getAnnotation(GUINameable.class).GUIName()
-						: FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
+						&& !field.getType().getAnnotation(GUINameable.class).GUIName().equalsIgnoreCase("")
+								? field.getType().getAnnotation(GUINameable.class).GUIName()
+								: FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
 			} else {
 				valueToPrint = FieldUtils.readField(field, path.getLast(), true).toString();
 			}
-			if (valueToPrint.length() > 30) {
-				valueToPrint = valueToPrint.substring(0, 28).concat("...");
+			if (valueToPrint.length() > 60) {
+				valueToPrint = valueToPrint.substring(0, 58).concat("...");
 			}
 			return valueToPrint;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}

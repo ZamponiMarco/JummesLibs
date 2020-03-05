@@ -8,5 +8,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface GUINameable {
-	public String GUIName();
+	
+	public String GUIName() default "";
+
+	boolean stringValue() default false;
 }

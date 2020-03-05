@@ -2,6 +2,7 @@ package com.github.jummes.libs.gui.setting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -24,16 +25,19 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
 	private static final String NEXT_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19==";
 	private static final String PREVIOUS_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19==";
 
-	private static final int OBJECTS_NUMBER = 50;
+	private static final int OBJECTS_NUMBER = 51;
 
 	private int page;
 	private List<Object> objects;
+	private Function<Object, ItemStack> mapper;
 
 	public FromListFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, ChangeInformation changeInformation, int page, List<Object> objects) {
+			ModelPath<? extends Model> path, ChangeInformation changeInformation, int page, List<Object> objects,
+			Function<Object, ItemStack> mapper) {
 		super(plugin, parent, path, changeInformation);
 		this.page = page;
 		this.objects = objects;
+		this.mapper = mapper;
 	}
 
 	@Override
@@ -56,7 +60,10 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
 			 */
 			toList.forEach(object -> {
 				registerClickConsumer(toList.indexOf(object),
-						ItemUtils.getNamedItem(new ItemStack(Material.CARROT), object.toString(), Lists.newArrayList()),
+						mapper == null
+								? ItemUtils.getNamedItem(new ItemStack(Material.CARROT), object.toString(),
+										Lists.newArrayList())
+								: mapper.apply(object),
 						e -> {
 							try {
 								/*
@@ -76,14 +83,14 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
 						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
 								MessageUtils.color("&6&lNext page"), new ArrayList<String>()),
 						e -> e.getWhoClicked().openInventory(new FromListFieldChangeInventoryHolder(plugin, parent,
-								path, changeInformation, page + 1, objects).getInventory()));
+								path, changeInformation, page + 1, objects, mapper).getInventory()));
 			}
 			if (page != 1) {
 				registerClickConsumer(51,
 						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
 								MessageUtils.color("&6&lPrevious page"), new ArrayList<String>()),
 						e -> e.getWhoClicked().openInventory(new FromListFieldChangeInventoryHolder(plugin, parent,
-								path, changeInformation, page - 1, objects).getInventory()));
+								path, changeInformation, page - 1, objects, mapper).getInventory()));
 			}
 			registerClickConsumer(53, getBackItem(), getBackConsumer());
 			fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);

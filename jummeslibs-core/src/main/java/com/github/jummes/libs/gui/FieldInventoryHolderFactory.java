@@ -3,11 +3,13 @@ package com.github.jummes.libs.gui;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.jummes.libs.annotation.CustomClickable;
@@ -36,11 +38,15 @@ public class FieldInventoryHolderFactory {
 			Class<?> clazz = field.getType();
 			if (field.isAnnotationPresent(Serializable.class)
 					&& !field.getAnnotation(Serializable.class).fromList().equals("")) {
+				List<Object> objects = (List<Object>) path.getLast().getClass()
+						.getMethod(field.getAnnotation(Serializable.class).fromList(), ModelPath.class)
+						.invoke(null, path);
+				Function<Object, ItemStack> mapper = field.getAnnotation(Serializable.class).fromListMapper().equals("")
+						? null
+						: (Function<Object, ItemStack>) path.getLast().getClass()
+								.getMethod(field.getAnnotation(Serializable.class).fromListMapper()).invoke(null);
 				return new FromListFieldChangeInventoryHolder(plugin, parent, path, new FieldChangeInformation(field),
-						1,
-						(List<Object>) path.getLast().getClass()
-								.getMethod(field.getAnnotation(Serializable.class).fromList(), ModelPath.class)
-								.invoke(path.getLast(), path));
+						1, objects, mapper);
 			} else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
 				return FieldChangeInventoryHolder.getInventories().get(clazz)
 						.getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
@@ -58,9 +64,10 @@ public class FieldInventoryHolderFactory {
 				}
 				return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
 			} else if (Model.class.isAssignableFrom(clazz)) {
-				if (clazz.isAnnotationPresent(CustomClickable.class)) {
+				if (clazz.isAnnotationPresent(CustomClickable.class)
+						&& !clazz.getAnnotation(CustomClickable.class).customFieldClickConsumer().equals("")) {
 					return (PluginInventoryHolder) clazz
-							.getMethod(clazz.getAnnotation(CustomClickable.class).customClickConsumer(),
+							.getMethod(clazz.getAnnotation(CustomClickable.class).customFieldClickConsumer(),
 									JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
 									InventoryClickEvent.class)
 							.invoke(FieldUtils.readDeclaredField(path.getLast(), field.getName(), true), plugin, parent,

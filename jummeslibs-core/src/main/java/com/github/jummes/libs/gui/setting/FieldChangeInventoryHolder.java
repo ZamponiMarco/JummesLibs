@@ -31,6 +31,7 @@ public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHol
 		Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> map = new HashMap<Class<?>, Class<? extends FieldChangeInventoryHolder>>();
 		map.put(int.class, IntegerFieldChangeInventoryHolder.class);
 		map.put(double.class, DoubleFieldChangeInventoryHolder.class);
+		map.put(float.class, FloatFieldChangeInventoryHolder.class);
 		map.put(String.class, StringFieldChangeInventoryHolder.class);
 		map.put(boolean.class, BooleanFieldChangeInventoryHolder.class);
 		return map;
