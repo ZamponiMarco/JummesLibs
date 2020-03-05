@@ -15,5 +15,7 @@
     <module>jummeslibs-craftbukkit_1_14_R1</module>
   	<module>jummeslibs-craftbukkit_1_15_R1</module>
   	<module>jummeslibs-dist</module>
+    <module>jummeslibs-craftbukkit_1_13_R2</module>
+    <module>jummeslibs-craftbukkit_1_13_R1</module>
   </modules>
 </project>
