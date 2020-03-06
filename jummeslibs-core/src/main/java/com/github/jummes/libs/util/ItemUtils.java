@@ -35,4 +35,15 @@ public class ItemUtils {
 		return getNamedItem(new ItemStack(material), " ", new ArrayList<String>());
 	}
 
+	public static boolean isSimilar(ItemStack first, ItemStack second) {
+		if (first == null || second == null) {
+			return false;
+		}
+		boolean sameType = (first.getType() == second.getType());
+		boolean sameHasItemMeta = (first.hasItemMeta() == second.hasItemMeta());
+		boolean sameEnchantments = (first.getEnchantments().equals(second.getEnchantments()));
+		boolean sameItemMeta = first.getItemMeta().toString().equals(second.getItemMeta().toString());
+		return sameType && sameHasItemMeta && sameItemMeta && sameEnchantments;
+	}
+
 }

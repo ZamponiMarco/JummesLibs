@@ -94,7 +94,8 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 								? field.getType().getAnnotation(GUINameable.class).GUIName()
 								: FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
 			} else {
-				valueToPrint = FieldUtils.readField(field, path.getLast(), true).toString();
+				Object obj = FieldUtils.readField(field, path.getLast(), true);
+				valueToPrint = obj == null ? "null" : obj.toString();
 			}
 			if (valueToPrint.length() > 60) {
 				valueToPrint = valueToPrint.substring(0, 58).concat("...");

@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,12 +48,21 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 			this.yamlConfiguration.load(dataFile);
 		} catch (InvalidConfigurationException e) {
 			try {
+				Bukkit.getLogger().warning("Error in " + name + FILE_SUFFIX + ". Trying to fix it.");
 				Charset charset = StandardCharsets.UTF_8;
 				String content = new String(Files.readAllBytes(dataFile.toPath()), charset);
-				content = content.replaceAll("IntRange", IntRange.class.getName());
-				content = content.replaceAll("LocationWrapper", LocationWrapper.class.getName());
-				content = content.replaceAll("ItemStackWrapper", ItemStackWrapper.class.getName());
-				content = content.replaceAll("ItemMetaWrapper", ItemMetaWrapper.class.getName());
+				content = content.replaceAll("==: IntRange", "==: " + IntRange.class.getName());
+				content = content.replaceAll("==: com.github.jummes.libs.model.math.IntRange",
+						"==: " + IntRange.class.getName());
+				content = content.replaceAll("==: LocationWrapper", "==: " + LocationWrapper.class.getName());
+				content = content.replaceAll("==: com.github.jummes.libs.model.wrapper.LocationWrapper",
+						"==: " + LocationWrapper.class.getName());
+				content = content.replaceAll("==: ItemStackWrapper", "==: " + ItemStackWrapper.class.getName());
+				content = content.replaceAll("==: com.github.jummes.libs.model.wrapper.ItemStackWrapper",
+						"==: " + ItemStackWrapper.class.getName());
+				content = content.replaceAll("==: ItemMetaWrapper", "==: " + ItemMetaWrapper.class.getName());
+				content = content.replaceAll("==: com.github.jummes.libs.model.wrapper.ItemMetaWrapper",
+						"==: " + ItemMetaWrapper.class.getName());
 				Files.write(dataFile.toPath(), content.getBytes(charset));
 			} catch (IOException ex) {
 				ex.printStackTrace();
