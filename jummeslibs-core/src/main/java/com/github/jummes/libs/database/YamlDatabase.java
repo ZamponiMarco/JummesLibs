@@ -64,6 +64,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 				content = content.replaceAll("==: com.github.jummes.libs.model.wrapper.ItemMetaWrapper",
 						"==: " + ItemMetaWrapper.class.getName());
 				Files.write(dataFile.toPath(), content.getBytes(charset));
+				e.printStackTrace();
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}

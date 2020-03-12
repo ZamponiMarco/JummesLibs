@@ -42,7 +42,10 @@ public class ItemUtils {
 		boolean sameType = (first.getType() == second.getType());
 		boolean sameHasItemMeta = (first.hasItemMeta() == second.hasItemMeta());
 		boolean sameEnchantments = (first.getEnchantments().equals(second.getEnchantments()));
-		boolean sameItemMeta = first.getItemMeta().toString().equals(second.getItemMeta().toString());
+		boolean sameItemMeta = true;
+		if (first.hasItemMeta() && second.hasItemMeta()) {
+			sameItemMeta = first.getItemMeta().toString().equals(second.getItemMeta().toString());
+		}
 		return sameType && sameHasItemMeta && sameItemMeta && sameEnchantments;
 	}
 

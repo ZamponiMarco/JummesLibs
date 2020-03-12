@@ -1,5 +1,6 @@
 package com.github.jummes.libs.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 
 public class MessageUtils {
@@ -18,8 +19,8 @@ public class MessageUtils {
 		return color(String.format("&e=--- &c%s &e---=\n", string));
 	}
 
-	public static String delimiter() {
-		return color("&e-----------------------------------------------------");
+	public static String delimiter(String string) {
+		return color("&e-------" + StringUtils.repeat("-", string.length()));
 	}
 
 }

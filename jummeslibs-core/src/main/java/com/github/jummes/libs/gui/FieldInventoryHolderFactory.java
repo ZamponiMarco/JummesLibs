@@ -36,6 +36,10 @@ public class FieldInventoryHolderFactory {
 			ModelPath<? extends Model> path, Field field, InventoryClickEvent e) {
 		try {
 			Class<?> clazz = field.getType();
+			
+			/*
+			 * Choose from a list
+			 */
 			if (field.isAnnotationPresent(Serializable.class)
 					&& !field.getAnnotation(Serializable.class).fromList().equals("")) {
 				List<Object> objects = (List<Object>) path.getLast().getClass()
@@ -47,23 +51,39 @@ public class FieldInventoryHolderFactory {
 								.getMethod(field.getAnnotation(Serializable.class).fromListMapper()).invoke(null);
 				return new FromListFieldChangeInventoryHolder(plugin, parent, path, new FieldChangeInformation(field),
 						1, objects, mapper);
-			} else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
+			} 
+			/*
+			 * Is a primitive type
+			 */
+			else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
 				return FieldChangeInventoryHolder.getInventories().get(clazz)
 						.getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
 								ChangeInformation.class)
 						.newInstance(plugin, parent, path, new FieldChangeInformation(field));
-			} else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
+			} 
+			/*
+			 * Is a model wrapper
+			 */
+			else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
 				path.addModel((Model) ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
 						.newInstance(FieldUtils.readField(field, path.getLast(), true)));
 				return new ModelObjectInventoryHolder(plugin, parent, path);
-			} else if (ClassUtils.isAssignable(clazz, Collection.class)) {
+			} 
+			/*
+			 * Is a collection
+			 */
+			else if (ClassUtils.isAssignable(clazz, Collection.class)) {
 				Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
 						.getRawType();
 				if (ClassUtils.isAssignable(containedClass, Model.class)) {
 					return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1);
 				}
 				return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
-			} else if (Model.class.isAssignableFrom(clazz)) {
+			} 
+			/*
+			 * Is a model
+			 */
+			else if (Model.class.isAssignableFrom(clazz)) {
 				if (clazz.isAnnotationPresent(CustomClickable.class)
 						&& !clazz.getAnnotation(CustomClickable.class).customFieldClickConsumer().equals("")) {
 					return (PluginInventoryHolder) clazz
@@ -79,7 +99,11 @@ public class FieldInventoryHolderFactory {
 				} else if (e.getClick().equals(ClickType.RIGHT)) {
 					return new ModelCreateInventoryHolder(plugin, parent, path, field);
 				}
-			} else if (clazz.isEnum()) {
+			} 
+			/*
+			 * Is an enum
+			 */
+			else if (clazz.isEnum()) {
 				return new StringFieldChangeInventoryHolder(plugin, parent, path, new EnumChangeInformation(field));
 			}
 		} catch (Exception ex) {

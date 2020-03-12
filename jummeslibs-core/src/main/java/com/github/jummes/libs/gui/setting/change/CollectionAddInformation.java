@@ -3,6 +3,8 @@ package com.github.jummes.libs.gui.setting.change;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+import org.apache.commons.lang.reflect.FieldUtils;
+
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
@@ -18,7 +20,8 @@ public class CollectionAddInformation implements ChangeInformation {
 	public void setValue(ModelPath<?> path, Object value) {
 		Collection<Object> collection;
 		try {
-			collection = (Collection<Object>) field.get(path.getLast());
+			collection = (Collection<Object>) FieldUtils.readField(field,
+					path.getLast() == null ? path.getModelManager() : path.getLast(), true);
 			collection.add(value);
 			if (path.getLast() instanceof ModelWrapper<?>) {
 				((ModelWrapper<?>) path.getLast()).notifyObservers(field);

@@ -9,7 +9,6 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -21,6 +20,8 @@ import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
+import com.github.jummes.libs.gui.setting.change.CollectionAddInformation;
+import com.github.jummes.libs.gui.setting.change.FieldChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
@@ -91,7 +92,7 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 				// Call beforeComponentCreation
 				if (path.getLast() != null)
 					path.getLast().beforeComponentCreation(model);
-				
+
 				// Determine one of the suitable constructors
 				Constructor<?> cons;
 				Model newModel = null;
@@ -108,21 +109,20 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 					throw new NoSuchMethodException();
 				}
 				newModel.onCreation();
-				
+
 				// Call afterComponentCreation for father class
 				if (path.getLast() != null)
 					path.getLast().afterComponentCreation(newModel);
-				
+
 				// Put the new model inside the saved data
 				if (isCollection) {
-					((Collection<Model>) FieldUtils.readField(field,
-							path.getLast() == null ? path.getModelManager() : path.getLast(), true)).add(newModel);
+					new CollectionAddInformation(field).setValue(path, newModel);
 					path.addModel(newModel);
 					e.getWhoClicked()
 							.openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
 				} else {
 					path.getLast().beforeComponentSetting(newModel);
-					FieldUtils.writeField(field, path.getLast(), newModel, true);
+					new FieldChangeInformation(field).setValue(path, newModel);
 					path.getLast().afterComponentSetting(newModel);
 					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
 							.createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
