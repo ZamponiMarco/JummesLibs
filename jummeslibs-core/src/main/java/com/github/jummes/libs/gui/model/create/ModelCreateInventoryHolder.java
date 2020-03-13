@@ -117,7 +117,6 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 				// Put the new model inside the saved data
 				if (isCollection) {
 					new CollectionAddInformation(field).setValue(path, newModel);
-					path.addModel(newModel);
 					e.getWhoClicked()
 							.openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
 				} else {
@@ -127,7 +126,6 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
 							.createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
 				}
-				path.saveModel();
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

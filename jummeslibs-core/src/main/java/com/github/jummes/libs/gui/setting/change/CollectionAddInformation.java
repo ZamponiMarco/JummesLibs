@@ -5,6 +5,7 @@ import java.util.Collection;
 
 import org.apache.commons.lang.reflect.FieldUtils;
 
+import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
@@ -26,6 +27,8 @@ public class CollectionAddInformation implements ChangeInformation {
 			if (path.getLast() instanceof ModelWrapper<?>) {
 				((ModelWrapper<?>) path.getLast()).notifyObservers(field);
 			}
+			if (value instanceof Model)
+				path.addModel((Model) value);
 			path.saveModel();
 		} catch (Exception e) {
 			e.printStackTrace();
