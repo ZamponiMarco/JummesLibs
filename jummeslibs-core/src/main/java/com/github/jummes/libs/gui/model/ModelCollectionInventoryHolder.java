@@ -58,9 +58,10 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
                     .filter(model -> model.getGUIItem() != null).collect(Collectors.toList());
             List<Model> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
                     && models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
+            int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
 
             this.inventory = Bukkit.createInventory(this, 54,
-                    MessageUtils.color("&6Collection of &c&l" + field.getName()));
+                    MessageUtils.color("&6Collection of &c&l" + field.getName() + " &6&l(&c" + page + "&6&l/&c" + maxPage + "&6&l)"));
 
             toList.forEach(model -> {
                 registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
@@ -82,7 +83,7 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
                     }
                 });
             });
-            placeCollectionOnlyItems(models);
+            placeCollectionOnlyItems(maxPage);
             registerClickConsumer(53, getBackItem(), getBackConsumer());
             fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
         } catch (Exception e) {
@@ -90,8 +91,7 @@ public class ModelCollectionInventoryHolder extends ModelObjectInventoryHolder {
         }
     }
 
-    private void placeCollectionOnlyItems(List<Model> models) {
-        int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
+    private void placeCollectionOnlyItems(int maxPage) {
         registerClickConsumer(50, getAddItem(), e -> {
             e.getWhoClicked().openInventory(new ModelCreateInventoryHolder(plugin, this, path, field).getInventory());
         });

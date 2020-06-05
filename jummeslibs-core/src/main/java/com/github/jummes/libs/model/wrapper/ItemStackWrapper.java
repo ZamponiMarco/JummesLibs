@@ -1,8 +1,13 @@
 package com.github.jummes.libs.model.wrapper;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -30,7 +35,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     private static final String AMOUNT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdkYzNlMjlhMDkyM2U1MmVjZWU2YjRjOWQ1MzNhNzllNzRiYjZiZWQ1NDFiNDk1YTEzYWJkMzU5NjI3NjUzIn19fQ===";
     private static final String META_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4MzM0MTUxYzIzNGY0MTY0NzExM2JlM2VhZGYyODdkMTgxNzExNWJhYzk0NDVmZmJiYmU5Y2IyYjI4NGIwIn19fQ=====";
 
-    @Serializable(headTexture = MATERIAL_HEAD)
+    @Serializable(headTexture = MATERIAL_HEAD, fromList = "materialList", fromListMapper = "materialListMapper")
     private Material type;
     @Serializable(headTexture = AMOUNT_HEAD)
     @SetterMappable(setterMethod = "setAmount")
@@ -83,6 +88,17 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
         wrapped.setItemMeta(metaWrapper != null ? metaWrapper.wrapped : null);
         ItemStackWrapper wrapper = new ItemStackWrapper(wrapped);
         return wrapper;
+    }
+
+    public static List<Object> materialList(ModelPath<?> path) {
+        return Arrays.stream(Material.values()).filter(m -> !m.name().toLowerCase().contains("legacy") && m.isItem()).collect(Collectors.toList());
+    }
+
+    public static Function<Object, ItemStack> materialListMapper() {
+        return obj -> {
+            Material m = (Material) obj;
+            return new ItemStack(m);
+        };
     }
 
     @Override

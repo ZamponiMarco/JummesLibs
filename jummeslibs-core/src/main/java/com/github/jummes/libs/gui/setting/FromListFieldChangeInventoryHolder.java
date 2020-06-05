@@ -53,7 +53,7 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
             /*
              * Create the inventory
              */
-            this.inventory = Bukkit.createInventory(this, 54);
+            this.inventory = Bukkit.createInventory(this, 54, MessageUtils.color("&cChoose from these &6&l(&c" + page + "&6&l/&c" + maxPage + "&6&l)"));
 
             /*
              * For each model that has to be listed set an item in the GUI
