@@ -1,23 +1,5 @@
 package com.github.jummes.libs.gui.model;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.core.Libs;
@@ -28,6 +10,24 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * An InventoryHolder that contains in memory them modelPath used to arrive to
@@ -56,19 +56,24 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                 superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
         Field[] toPrint = fields.stream()
                 .filter(field -> field.isAnnotationPresent(Serializable.class)
-                        && !field.getAnnotation(Serializable.class).headTexture().equals(""))
-                .toArray(size -> new Field[size]);
+                        && (!field.getAnnotation(Serializable.class).headTexture().equals("") || !field.getAnnotation(Serializable.class).displayItem().equals("")))
+                .toArray(Field[]::new);
         int[] itemPositions = getItemPositions(toPrint.length);
         IntStream.range(0, toPrint.length).forEach(i -> {
-            registerClickConsumer(itemPositions[i],
-                    ItemUtils.getNamedItem(
-                            wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()),
-                            MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i])),
-                            Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description())),
-                    e -> {
-                        e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-                                .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).getInventory());
-                    });
+            try {
+                ItemStack displayItem = !toPrint[i].getAnnotation(Serializable.class).headTexture().equals("") ?
+                        wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) : (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
+                registerClickConsumer(itemPositions[i],
+                        ItemUtils.getNamedItem(displayItem,
+                                MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i])),
+                                Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description())),
+                        e -> {
+                            e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+                                    .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).getInventory());
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
         registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
