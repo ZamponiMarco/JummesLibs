@@ -16,42 +16,42 @@ import org.bukkit.util.StringUtil;
 
 public class PluginCommandExecutor implements CommandExecutor, TabCompleter {
 
-	private Class<? extends AbstractCommand> defaultCommand;
-	private Map<String, Class<? extends AbstractCommand>> commandMap;
+    private Class<? extends AbstractCommand> defaultCommand;
+    private Map<String, Class<? extends AbstractCommand>> commandMap;
 
-	public PluginCommandExecutor(Class<? extends AbstractCommand> defaultCommand, String defaultCommandString) {
-		this.defaultCommand = defaultCommand;
-		commandMap = new HashMap<String, Class<? extends AbstractCommand>>();
-		commandMap.put(defaultCommandString, defaultCommand);
-	}
+    public PluginCommandExecutor(Class<? extends AbstractCommand> defaultCommand, String defaultCommandString) {
+        this.defaultCommand = defaultCommand;
+        commandMap = new HashMap<String, Class<? extends AbstractCommand>>();
+        commandMap.put(defaultCommandString, defaultCommand);
+    }
 
-	public void registerCommand(String name, Class<? extends AbstractCommand> commandClass) {
-		commandMap.put(name, commandClass);
-	}
+    public void registerCommand(String name, Class<? extends AbstractCommand> commandClass) {
+        commandMap.put(name, commandClass);
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		boolean isSenderPlayer = sender instanceof Player;
-		String subCommand = args.length >= 1 ? args[0] : "";
-		String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
-		try {
-			commandMap.getOrDefault(subCommand, defaultCommand)
-					.getConstructor(CommandSender.class, String.class, String[].class, boolean.class)
-					.newInstance(sender, subCommand, arguments, isSenderPlayer).checkExecution();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        boolean isSenderPlayer = sender instanceof Player;
+        String subCommand = args.length >= 1 ? args[0] : "";
+        String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+        try {
+            commandMap.getOrDefault(subCommand, defaultCommand)
+                    .getConstructor(CommandSender.class, String.class, String[].class, boolean.class)
+                    .newInstance(sender, subCommand, arguments, isSenderPlayer).checkExecution();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		final List<String> completions = new ArrayList<>();
-		if (args.length == 1) {
-			StringUtil.copyPartialMatches(args[0], commandMap.keySet(), completions);
-		}
-		Collections.sort(completions);
-		return completions;
-	}
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        final List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            StringUtil.copyPartialMatches(args[0], commandMap.keySet(), completions);
+        }
+        Collections.sort(completions);
+        return completions;
+    }
 
 }

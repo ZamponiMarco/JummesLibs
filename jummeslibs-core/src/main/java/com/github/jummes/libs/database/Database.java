@@ -10,24 +10,24 @@ import lombok.NonNull;
 
 public abstract class Database<T extends Model> {
 
-	protected final Class<T> classObject;
-	protected JavaPlugin plugin;
+    protected final Class<T> classObject;
+    protected JavaPlugin plugin;
 
-	public Database(@NonNull Class<T> classObject, @NonNull JavaPlugin plugin) {
-		this.classObject = classObject;
-		this.plugin = plugin;
+    public Database(@NonNull Class<T> classObject, @NonNull JavaPlugin plugin) {
+        this.classObject = classObject;
+        this.plugin = plugin;
 
-		openConnection();
-	}
+        openConnection();
+    }
 
-	protected abstract void openConnection();
+    protected abstract void openConnection();
 
-	protected abstract void closeConnection();
+    protected abstract void closeConnection();
 
-	public abstract List<T> loadObjects();
+    public abstract List<T> loadObjects();
 
-	public abstract void saveObject(@NonNull T object);
-	
-	public abstract void deleteObject(@NonNull T object);
+    public abstract void saveObject(@NonNull T object);
+
+    public abstract void deleteObject(@NonNull T object);
 
 }

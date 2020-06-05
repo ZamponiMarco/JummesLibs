@@ -20,81 +20,81 @@ import com.github.jummes.libs.util.MessageUtils;
 
 public class FloatFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
-	private static final String ARROW_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2NzExOTgzODJkZTkzZTFkM2M3ODM0ZGU4NjcwNGE2ZWNjNzkxNDE5ZjBkZGI0OWE0MWE5NjA4YWQ0NzIifX19";
-	private static final String ARROW2_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19";
-	private static final String ARROW3_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzMDFhMTdjOTU1ODA3ZDg5ZjljNzJhMTkyMDdkMTM5M2I4YzU4YzRlNmU0MjBmNzE0ZjY5NmE4N2ZkZCJ9fX0";
-	private static final String ARROW_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODEzM2E0MjM2MDY2OTRkYTZjOTFhODRlYTY2ZDQ5ZWZjM2EyM2Y3M2ZhOGFmOGNjMWZlMjk4M2ZlOGJiNWQzIn19fQ";
-	private static final String ARROW2_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19";
-	private static final String ARROW3_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjU0ZmFiYjE2NjRiOGI0ZDhkYjI4ODk0NzZjNmZlZGRiYjQ1MDVlYmE0Mjg3OGM2NTNhNWQ3OTNmNzE5YjE2In19fQ";
-	private static final String ZERO_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY4ODZkOWM0MGVmN2Y1MGMyMzg4MjQ3OTJjNDFmYmZiNTRmNjY1ZjE1OWJmMWJjYjBiMjdiM2VhZDM3M2IifX19";
-	private static final String SUBMIT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
+    private static final String ARROW_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2NzExOTgzODJkZTkzZTFkM2M3ODM0ZGU4NjcwNGE2ZWNjNzkxNDE5ZjBkZGI0OWE0MWE5NjA4YWQ0NzIifX19";
+    private static final String ARROW2_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19";
+    private static final String ARROW3_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzMDFhMTdjOTU1ODA3ZDg5ZjljNzJhMTkyMDdkMTM5M2I4YzU4YzRlNmU0MjBmNzE0ZjY5NmE4N2ZkZCJ9fX0";
+    private static final String ARROW_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODEzM2E0MjM2MDY2OTRkYTZjOTFhODRlYTY2ZDQ5ZWZjM2EyM2Y3M2ZhOGFmOGNjMWZlMjk4M2ZlOGJiNWQzIn19fQ";
+    private static final String ARROW2_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19";
+    private static final String ARROW3_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjU0ZmFiYjE2NjRiOGI0ZDhkYjI4ODk0NzZjNmZlZGRiYjQ1MDVlYmE0Mjg3OGM2NTNhNWQ3OTNmNzE5YjE2In19fQ";
+    private static final String ZERO_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY4ODZkOWM0MGVmN2Y1MGMyMzg4MjQ3OTJjNDFmYmZiNTRmNjY1ZjE1OWJmMWJjYjBiMjdiM2VhZDM3M2IifX19";
+    private static final String SUBMIT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
 
-	private static final String MENU_TITLE = MessageUtils.color("&6&lModify &e&l %s");
-	private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified: &6%s: &e%s");
-	private static final String MODIFY_ITEM = MessageUtils.color("&6&lModify -> &e&l%s");
-	private static final String CONFIRM_ITEM = MessageUtils.color("&6&lResult = &e&l%s");
-	private static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
+    private static final String MENU_TITLE = MessageUtils.color("&6&lModify &e&l %s");
+    private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified: &6%s: &e%s");
+    private static final String MODIFY_ITEM = MessageUtils.color("&6&lModify -> &e&l%s");
+    private static final String CONFIRM_ITEM = MessageUtils.color("&6&lResult = &e&l%s");
+    private static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
 
-	private float result;
+    private float result;
 
-	public FloatFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-			ModelPath<? extends Model> path, ChangeInformation changeInformation) {
-		super(plugin, parent, path, changeInformation);
-		result = (float) changeInformation.getValue(path);
-	}
+    public FloatFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+                                           ModelPath<? extends Model> path, ChangeInformation changeInformation) {
+        super(plugin, parent, path, changeInformation);
+        result = (float) changeInformation.getValue(path);
+    }
 
-	@Override
-	protected void initializeInventory() {
+    @Override
+    protected void initializeInventory() {
 
-		this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
+        this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
 
-		registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
-		registerClickConsumer(10, getModifyItem(-0.1f, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
-				getModifyConsumer(-0.1f));
-		registerClickConsumer(11, getModifyItem(-0.01f, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
-				getModifyConsumer(-0.01f));
-		registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
-		registerClickConsumer(15, getModifyItem(+0.01f, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
-				getModifyConsumer(+0.01f));
-		registerClickConsumer(16, getModifyItem(+0.1f, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
-				getModifyConsumer(+0.1f));
-		registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
-		registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
-		registerClickConsumer(26, getBackItem(), getBackConsumer());
-		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+        registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
+        registerClickConsumer(10, getModifyItem(-0.1f, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
+                getModifyConsumer(-0.1f));
+        registerClickConsumer(11, getModifyItem(-0.01f, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
+                getModifyConsumer(-0.01f));
+        registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
+        registerClickConsumer(15, getModifyItem(+0.01f, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
+                getModifyConsumer(+0.01f));
+        registerClickConsumer(16, getModifyItem(+0.1f, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
+                getModifyConsumer(+0.1f));
+        registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
+        registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
+        registerClickConsumer(26, getBackItem(), getBackConsumer());
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
-	}
+    }
 
-	private Consumer<InventoryClickEvent> getModifyConsumer(float addition) {
-		return e -> {
-			if (e.getClick().equals(ClickType.LEFT)) {
-				result += addition;
-				result = Math.round(result * 100f) / 100f;
-				inventory.setItem(13, getConfirmItem());
-			}
-		};
-	}
+    private Consumer<InventoryClickEvent> getModifyConsumer(float addition) {
+        return e -> {
+            if (e.getClick().equals(ClickType.LEFT)) {
+                result += addition;
+                result = Math.round(result * 100f) / 100f;
+                inventory.setItem(13, getConfirmItem());
+            }
+        };
+    }
 
-	private Consumer<InventoryClickEvent> getConfirmConsumer() {
-		return e -> {
-			HumanEntity p = e.getWhoClicked();
-			changeInformation.setValue(path, result);
-			p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(result)));
-			getBackConsumer().accept(e);
-		};
-	}
+    private Consumer<InventoryClickEvent> getConfirmConsumer() {
+        return e -> {
+            HumanEntity p = e.getWhoClicked();
+            changeInformation.setValue(path, result);
+            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(result)));
+            getBackConsumer().accept(e);
+        };
+    }
 
-	private ItemStack getModifyItem(float i, ItemStack item) {
-		return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, String.valueOf(i)), new ArrayList<String>());
-	}
+    private ItemStack getModifyItem(float i, ItemStack item) {
+        return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, String.valueOf(i)), new ArrayList<String>());
+    }
 
-	private ItemStack getConfirmItem() {
-		return ItemUtils.getNamedItem(wrapper.skullFromValue(SUBMIT_HEAD),
-				String.format(CONFIRM_ITEM, String.valueOf(result)), new ArrayList<String>());
-	}
+    private ItemStack getConfirmItem() {
+        return ItemUtils.getNamedItem(wrapper.skullFromValue(SUBMIT_HEAD),
+                String.format(CONFIRM_ITEM, String.valueOf(result)), new ArrayList<String>());
+    }
 
-	private ItemStack getZeroItem() {
-		return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<String>());
-	}
+    private ItemStack getZeroItem() {
+        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<String>());
+    }
 
 }

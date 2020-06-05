@@ -14,47 +14,47 @@ import com.github.jummes.libs.util.MessageUtils;
 
 public class StringSettingChangeChatListener implements Listener {
 
-	private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified, &6%s: &e%s");
-	private static final String MODIFY_BLOCKED = MessageUtils.color("&aThe value &6&lhasn't&a been modified.");
+    private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified, &6%s: &e%s");
+    private static final String MODIFY_BLOCKED = MessageUtils.color("&aThe value &6&lhasn't&a been modified.");
 
-	private JavaPlugin plugin;
+    private JavaPlugin plugin;
 
-	public StringSettingChangeChatListener(JavaPlugin plugin) {
-		this.plugin = plugin;
-	}
+    public StringSettingChangeChatListener(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
-	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		Player p = e.getPlayer();
-		StringFieldChangeInfo changeStringInfo = StringFieldChangeInventoryHolder.getChangeStringInfoSet().stream()
-				.filter(info -> info.getHuman().equals(p)).findFirst().orElse(null);
-		if (changeStringInfo != null) {
-			runModifySyncTask(p, e.getMessage(), changeStringInfo);
-			e.setCancelled(true);
-		}
-	}
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent e) {
+        Player p = e.getPlayer();
+        StringFieldChangeInfo changeStringInfo = StringFieldChangeInventoryHolder.getChangeStringInfoSet().stream()
+                .filter(info -> info.getHuman().equals(p)).findFirst().orElse(null);
+        if (changeStringInfo != null) {
+            runModifySyncTask(p, e.getMessage(), changeStringInfo);
+            e.setCancelled(true);
+        }
+    }
 
-	private void runModifySyncTask(Player p, String message, StringFieldChangeInfo info) {
-		Bukkit.getScheduler().runTask(plugin, () -> {
-			String validatedValue = message.trim();
-			validatedValue = MessageUtils.color(validatedValue);
-			if (validatedValue.equalsIgnoreCase("exit")) {
-				p.sendMessage(MODIFY_BLOCKED);
-			} else {
-				info.getChangeInformation().setValue(info.getPath(), validatedValue);
-				p.sendMessage(String.format(MODIFY_SUCCESS, info.getChangeInformation().getName(), validatedValue));
-			}
-			openParentInventory(p, info.getParent());
-			StringFieldChangeInventoryHolder.getChangeStringInfoSet().remove(info);
-		});
-	}
+    private void runModifySyncTask(Player p, String message, StringFieldChangeInfo info) {
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            String validatedValue = message.trim();
+            validatedValue = MessageUtils.color(validatedValue);
+            if (validatedValue.equalsIgnoreCase("exit")) {
+                p.sendMessage(MODIFY_BLOCKED);
+            } else {
+                info.getChangeInformation().setValue(info.getPath(), validatedValue);
+                p.sendMessage(String.format(MODIFY_SUCCESS, info.getChangeInformation().getName(), validatedValue));
+            }
+            openParentInventory(p, info.getParent());
+            StringFieldChangeInventoryHolder.getChangeStringInfoSet().remove(info);
+        });
+    }
 
-	private void openParentInventory(Player p, InventoryHolder parent) {
-		if (parent != null) {
-			p.openInventory(parent.getInventory());
-		} else {
-			p.closeInventory();
-		}
-	}
+    private void openParentInventory(Player p, InventoryHolder parent) {
+        if (parent != null) {
+            p.openInventory(parent.getInventory());
+        } else {
+            p.closeInventory();
+        }
+    }
 
 }

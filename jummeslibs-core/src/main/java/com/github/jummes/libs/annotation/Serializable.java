@@ -7,21 +7,20 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation marks a field that is modifyable throught a GUI
- * 
- * @author Marco
  *
+ * @author Marco
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Serializable {
-	
-	public boolean stringValue() default false;
-	
-	public String headTexture() default "";
-	
-	public String description() default "";
-	
-	public String fromList() default "";
-	
-	public String fromListMapper() default "";
+
+    public boolean stringValue() default false;
+
+    public String headTexture() default "";
+
+    public String description() default "";
+
+    public String fromList() default "";
+
+    public String fromListMapper() default "";
 }

@@ -13,28 +13,27 @@ import com.github.jummes.libs.model.ModelPath;
 
 /**
  * Class that handles the change of fields of a Model throught the use of a GUI
- * 
- * @author Marco
  *
+ * @author Marco
  */
 public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHolder {
 
-	protected ChangeInformation changeInformation;
+    protected ChangeInformation changeInformation;
 
-	public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
-			ChangeInformation changeInformation) {
-		super(plugin, parent, path);
-		this.changeInformation = changeInformation;
-	}
+    public FieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
+                                      ChangeInformation changeInformation) {
+        super(plugin, parent, path);
+        this.changeInformation = changeInformation;
+    }
 
-	public static Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> getInventories() {
-		Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> map = new HashMap<Class<?>, Class<? extends FieldChangeInventoryHolder>>();
-		map.put(int.class, IntegerFieldChangeInventoryHolder.class);
-		map.put(double.class, DoubleFieldChangeInventoryHolder.class);
-		map.put(float.class, FloatFieldChangeInventoryHolder.class);
-		map.put(String.class, StringFieldChangeInventoryHolder.class);
-		map.put(boolean.class, BooleanFieldChangeInventoryHolder.class);
-		return map;
-	}
+    public static Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> getInventories() {
+        Map<Class<?>, Class<? extends FieldChangeInventoryHolder>> map = new HashMap<Class<?>, Class<? extends FieldChangeInventoryHolder>>();
+        map.put(int.class, IntegerFieldChangeInventoryHolder.class);
+        map.put(double.class, DoubleFieldChangeInventoryHolder.class);
+        map.put(float.class, FloatFieldChangeInventoryHolder.class);
+        map.put(String.class, StringFieldChangeInventoryHolder.class);
+        map.put(boolean.class, BooleanFieldChangeInventoryHolder.class);
+        return map;
+    }
 
 }

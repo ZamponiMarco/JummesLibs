@@ -32,104 +32,103 @@ import com.google.common.reflect.TypeToken;
 /**
  * Class that handles the creation of new Model objects throught the use of a
  * GUI
- * 
- * @author Marco
  *
+ * @author Marco
  */
 public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
 
-	private static final String CONFIRM_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
-	private final static String ITEM_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAzMDgyZjAzM2Y5NzI0Y2IyMmZlMjdkMGRlNDk3NTA5MDMzNTY0MWVlZTVkOGQ5MjdhZGY1YThiNjdmIn19fQ==";
+    private static final String CONFIRM_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
+    private final static String ITEM_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzAzMDgyZjAzM2Y5NzI0Y2IyMmZlMjdkMGRlNDk3NTA5MDMzNTY0MWVlZTVkOGQ5MjdhZGY1YThiNjdmIn19fQ==";
 
-	protected Field field;
+    protected Field field;
 
-	public ModelCreateInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
-			Field field) {
-		super(plugin, parent, path);
-		this.field = field;
-	}
+    public ModelCreateInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
+                                      Field field) {
+        super(plugin, parent, path);
+        this.field = field;
+    }
 
-	@Override
-	protected void initializeInventory() {
-		try {
-			boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
-			Class<Model> model = getModelClassFromField(field, isCollection);
-			this.inventory = Bukkit.createInventory(this, 27,
-					MessageUtils.color("&6Create a &c&l" + model.getSimpleName()));
-			if (model.isAnnotationPresent(Enumerable.class)) {
-				List<Class<? extends Model>> classes = Lists
-						.newArrayList(model.getAnnotation(Enumerable.class).classArray());
-				classes.forEach(clazz -> {
-					registerClickConsumer(classes.indexOf(clazz),
-							ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ITEM_HEAD),
-									MessageUtils.color("&6new &c&l" + clazz.getSimpleName()), new ArrayList<String>()),
-							getModelCreateConsumer(clazz, isCollection));
-				});
-			} else {
-				registerClickConsumer(13,
-						ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(CONFIRM_HEAD),
-								MessageUtils.color("&6&lConfirm"), new ArrayList<String>()),
-						getModelCreateConsumer(model, isCollection));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		registerClickConsumer(26, getBackItem(), getBackConsumer());
-		fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
-	}
+    @Override
+    protected void initializeInventory() {
+        try {
+            boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
+            Class<Model> model = getModelClassFromField(field, isCollection);
+            this.inventory = Bukkit.createInventory(this, 27,
+                    MessageUtils.color("&6Create a &c&l" + model.getSimpleName()));
+            if (model.isAnnotationPresent(Enumerable.class)) {
+                List<Class<? extends Model>> classes = Lists
+                        .newArrayList(model.getAnnotation(Enumerable.class).classArray());
+                classes.forEach(clazz -> {
+                    registerClickConsumer(classes.indexOf(clazz),
+                            ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ITEM_HEAD),
+                                    MessageUtils.color("&6new &c&l" + clazz.getSimpleName()), new ArrayList<String>()),
+                            getModelCreateConsumer(clazz, isCollection));
+                });
+            } else {
+                registerClickConsumer(13,
+                        ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(CONFIRM_HEAD),
+                                MessageUtils.color("&6&lConfirm"), new ArrayList<String>()),
+                        getModelCreateConsumer(model, isCollection));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        registerClickConsumer(26, getBackItem(), getBackConsumer());
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+    }
 
-	private Class<Model> getModelClassFromField(Field field, boolean isCollection) {
-		Class<?> fieldClass = field.getType();
-		return isCollection
-				? (Class<Model>) TypeToken.of(field.getGenericType()).resolveType(fieldClass.getTypeParameters()[0])
-						.getRawType()
-				: (Class<Model>) fieldClass;
-	}
+    private Class<Model> getModelClassFromField(Field field, boolean isCollection) {
+        Class<?> fieldClass = field.getType();
+        return isCollection
+                ? (Class<Model>) TypeToken.of(field.getGenericType()).resolveType(fieldClass.getTypeParameters()[0])
+                .getRawType()
+                : (Class<Model>) fieldClass;
+    }
 
-	private Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
-		return e -> {
-			try {
-				// Call beforeComponentCreation
-				if (path.getLast() != null)
-					path.getLast().beforeComponentCreation(model);
+    private Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
+        return e -> {
+            try {
+                // Call beforeComponentCreation
+                if (path.getLast() != null)
+                    path.getLast().beforeComponentCreation(model);
 
-				// Determine one of the suitable constructors
-				Constructor<?> cons;
-				Model newModel = null;
-				if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
-					cons = model.getConstructor();
-					newModel = (Model) cons.newInstance();
-				} else if (ConstructorUtils.getAccessibleConstructor(model, new Class[] { Player.class }) != null) {
-					cons = model.getConstructor(Player.class);
-					newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
-				} else if (ConstructorUtils.getAccessibleConstructor(model, new Class[] { ModelPath.class }) != null) {
-					cons = model.getConstructor(ModelPath.class);
-					newModel = (Model) cons.newInstance(path);
-				} else {
-					throw new NoSuchMethodException();
-				}
-				newModel.onCreation();
+                // Determine one of the suitable constructors
+                Constructor<?> cons;
+                Model newModel = null;
+                if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
+                    cons = model.getConstructor();
+                    newModel = (Model) cons.newInstance();
+                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{Player.class}) != null) {
+                    cons = model.getConstructor(Player.class);
+                    newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
+                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{ModelPath.class}) != null) {
+                    cons = model.getConstructor(ModelPath.class);
+                    newModel = (Model) cons.newInstance(path);
+                } else {
+                    throw new NoSuchMethodException();
+                }
+                newModel.onCreation();
 
-				// Call afterComponentCreation for father class
-				if (path.getLast() != null)
-					path.getLast().afterComponentCreation(newModel);
+                // Call afterComponentCreation for father class
+                if (path.getLast() != null)
+                    path.getLast().afterComponentCreation(newModel);
 
-				// Put the new model inside the saved data
-				if (isCollection) {
-					new CollectionAddInformation(field).setValue(path, newModel);
-					e.getWhoClicked()
-							.openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
-				} else {
-					path.getLast().beforeComponentSetting(newModel);
-					new FieldChangeInformation(field).setValue(path, newModel);
-					path.getLast().afterComponentSetting(newModel);
-					e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-							.createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		};
-	}
+                // Put the new model inside the saved data
+                if (isCollection) {
+                    new CollectionAddInformation(field).setValue(path, newModel);
+                    e.getWhoClicked()
+                            .openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
+                } else {
+                    path.getLast().beforeComponentSetting(newModel);
+                    new FieldChangeInformation(field).setValue(path, newModel);
+                    path.getLast().afterComponentSetting(newModel);
+                    e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+                            .createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        };
+    }
 
 }

@@ -9,39 +9,39 @@ import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
 public class FieldChangeInformation implements ChangeInformation {
 
-	private Field field;
-	
-	public FieldChangeInformation(Field field) {
-		this.field = field;
-	}
-	
-	@Override
-	public void setValue(ModelPath<?> path, Object value) {
-		try {
-			FieldUtils.writeField(field, path.getLast(), value, true);
-		if (path.getLast() instanceof ModelWrapper<?>) {
-			((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-		}
-		path.saveModel();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
+    private Field field;
 
-	@Override
-	public Object getValue(ModelPath<?> path) {
-		Object value = null;
-		try {
-			value = FieldUtils.readField(field, path.getLast(), true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return value;
-	}
+    public FieldChangeInformation(Field field) {
+        this.field = field;
+    }
 
-	@Override
-	public String getName() {
-		return field.getName();
-	}
+    @Override
+    public void setValue(ModelPath<?> path, Object value) {
+        try {
+            FieldUtils.writeField(field, path.getLast(), value, true);
+            if (path.getLast() instanceof ModelWrapper<?>) {
+                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
+            }
+            path.saveModel();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public Object getValue(ModelPath<?> path) {
+        Object value = null;
+        try {
+            value = FieldUtils.readField(field, path.getLast(), true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    @Override
+    public String getName() {
+        return field.getName();
+    }
 
 }

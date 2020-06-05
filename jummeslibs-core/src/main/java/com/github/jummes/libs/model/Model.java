@@ -17,53 +17,52 @@ import com.google.common.collect.Lists;
  * Represents a class that contains data, usually configured as a Java Bean
  * object, from this class data managers and databases can be built it has to be
  * configuration serializable
- * 
- * @author Marco
  *
+ * @author Marco
  */
 @SuppressWarnings("unused")
 public interface Model extends ConfigurationSerializable {
 
-	public default ItemStack getGUIItem() {
-		return null;
-	}
+    public default ItemStack getGUIItem() {
+        return null;
+    }
 
-	public default void beforeComponentCreation(Class<? extends Model> modelClass) {
-	}
+    public default void beforeComponentCreation(Class<? extends Model> modelClass) {
+    }
 
-	public default void afterComponentCreation(Model model) {
-	}
+    public default void afterComponentCreation(Model model) {
+    }
 
-	public default void beforeComponentSetting(Model model) {
-	}
+    public default void beforeComponentSetting(Model model) {
+    }
 
-	public default void afterComponentSetting(Model model) {
-	}
+    public default void afterComponentSetting(Model model) {
+    }
 
-	public default void onModify() {
-	}
+    public default void onModify() {
+    }
 
-	public default void onCreation() {
-	}
+    public default void onCreation() {
+    }
 
-	public default void onRemoval() {
-	}
+    public default void onRemoval() {
+    }
 
-	public default Map<String, Object> serialize() {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		List<Field> fields = Lists.newArrayList(getClass().getDeclaredFields());
-		ClassUtils.getAllSuperclasses(getClass()).forEach(
-				superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
-		fields.stream().filter(field -> field.isAnnotationPresent(Serializable.class)).forEach(field -> {
-			try {
-				Object value = FieldUtils.readField(field, this, true);
-				map.put(field.getName(),
-						field.getAnnotation(Serializable.class).stringValue() ? value.toString() : value);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-		return map;
-	}
+    public default Map<String, Object> serialize() {
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        List<Field> fields = Lists.newArrayList(getClass().getDeclaredFields());
+        ClassUtils.getAllSuperclasses(getClass()).forEach(
+                superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
+        fields.stream().filter(field -> field.isAnnotationPresent(Serializable.class)).forEach(field -> {
+            try {
+                Object value = FieldUtils.readField(field, this, true);
+                map.put(field.getName(),
+                        field.getAnnotation(Serializable.class).stringValue() ? value.toString() : value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return map;
+    }
 
 }

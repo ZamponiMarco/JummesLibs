@@ -10,5 +10,5 @@ import com.github.jummes.libs.model.Model;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Enumerable {
-	public Class<? extends Model>[] classArray() default {};
+    public Class<? extends Model>[] classArray() default {};
 }

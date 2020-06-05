@@ -17,41 +17,41 @@ import lombok.Getter;
 @Getter
 public class Libs {
 
-	private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
+    private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
 
-	@Getter
-	private static VersionWrapper wrapper;
-	
-	@Getter
-	private static PluginLocale locale;
+    @Getter
+    private static VersionWrapper wrapper;
 
-	public static void registerSerializables() {
-		ConfigurationSerialization.registerClass(LocationWrapper.class);
-		ConfigurationSerialization.registerClass(ItemStackWrapper.class);
-		ConfigurationSerialization.registerClass(ItemMetaWrapper.class);
-		ConfigurationSerialization.registerClass(IntRange.class);
-	}
+    @Getter
+    private static PluginLocale locale;
 
-	public static void initializeLibrary(JavaPlugin plugin, PluginLocale thisLocale) {
-		setUpWrapper(plugin);
-		locale = thisLocale;
-		registerEvents(plugin);
-	}
+    public static void registerSerializables() {
+        ConfigurationSerialization.registerClass(LocationWrapper.class);
+        ConfigurationSerialization.registerClass(ItemStackWrapper.class);
+        ConfigurationSerialization.registerClass(ItemMetaWrapper.class);
+        ConfigurationSerialization.registerClass(IntRange.class);
+    }
 
-	private static void registerEvents(JavaPlugin plugin) {
-		plugin.getServer().getPluginManager().registerEvents(new PluginInventoryHolderClickListener(), plugin);
-		plugin.getServer().getPluginManager().registerEvents(new StringSettingChangeChatListener(plugin), plugin);
-	}
+    public static void initializeLibrary(JavaPlugin plugin, PluginLocale thisLocale) {
+        setUpWrapper(plugin);
+        locale = thisLocale;
+        registerEvents(plugin);
+    }
 
-	private static void setUpWrapper(JavaPlugin plugin) {
-		String serverVersion = plugin.getServer().getClass().getPackage().getName();
-		String version = serverVersion.substring(serverVersion.lastIndexOf('.') + 1);
+    private static void registerEvents(JavaPlugin plugin) {
+        plugin.getServer().getPluginManager().registerEvents(new PluginInventoryHolderClickListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new StringSettingChangeChatListener(plugin), plugin);
+    }
 
-		try {
-			wrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private static void setUpWrapper(JavaPlugin plugin) {
+        String serverVersion = plugin.getServer().getClass().getPackage().getName();
+        String version = serverVersion.substring(serverVersion.lastIndexOf('.') + 1);
+
+        try {
+            wrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

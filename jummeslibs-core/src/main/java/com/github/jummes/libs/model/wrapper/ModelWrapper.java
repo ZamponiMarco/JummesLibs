@@ -25,47 +25,47 @@ import lombok.Setter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 public abstract class ModelWrapper<T> extends Observable {
 
-	@EqualsAndHashCode.Include
-	protected T wrapped;
+    @EqualsAndHashCode.Include
+    protected T wrapped;
 
-	public ModelWrapper(T wrapped) {
-		this.wrapped = wrapped;
-		addObserver(getObserver());
-	}
+    public ModelWrapper(T wrapped) {
+        this.wrapped = wrapped;
+        addObserver(getObserver());
+    }
 
-	@Override
-	public void notifyObservers(Object arg) {
-		setChanged();
-		super.notifyObservers(arg);
-	}
+    @Override
+    public void notifyObservers(Object arg) {
+        setChanged();
+        super.notifyObservers(arg);
+    }
 
-	protected Observer getObserver() {
-		return (o, arg) -> {
-			Field field = (Field) arg;
-			try {
-				Object value = FieldUtils.readField(field, this, true);
-				if (field.isAnnotationPresent(SetterMappable.class)) {
-					Method method = wrapped.getClass()
-							.getMethod(field.getAnnotation(SetterMappable.class).setterMethod(), field.getType());
-					method.setAccessible(true);
-					method.invoke(wrapped, value);
-				} else {
-					Field toWrite = ReflectUtils.getField(wrapped, field.getName());
-					FieldUtils.writeField(toWrite, wrapped, value, true);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+    protected Observer getObserver() {
+        return (o, arg) -> {
+            Field field = (Field) arg;
+            try {
+                Object value = FieldUtils.readField(field, this, true);
+                if (field.isAnnotationPresent(SetterMappable.class)) {
+                    Method method = wrapped.getClass()
+                            .getMethod(field.getAnnotation(SetterMappable.class).setterMethod(), field.getType());
+                    method.setAccessible(true);
+                    method.invoke(wrapped, value);
+                } else {
+                    Field toWrite = ReflectUtils.getField(wrapped, field.getName());
+                    FieldUtils.writeField(toWrite, wrapped, value, true);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-		};
-	}
+        };
+    }
 
-	public static Map<Class<?>, Class<? extends ModelWrapper<?>>> getWrappers() {
-		Map<Class<?>, Class<? extends ModelWrapper<?>>> map = new HashMap<Class<?>, Class<? extends ModelWrapper<?>>>();
-		map.put(Location.class, LocationWrapper.class);
-		map.put(ItemStack.class, ItemStackWrapper.class);
-		map.put(ItemMeta.class, ItemMetaWrapper.class);
-		return map;
-	}
+    public static Map<Class<?>, Class<? extends ModelWrapper<?>>> getWrappers() {
+        Map<Class<?>, Class<? extends ModelWrapper<?>>> map = new HashMap<Class<?>, Class<? extends ModelWrapper<?>>>();
+        map.put(Location.class, LocationWrapper.class);
+        map.put(ItemStack.class, ItemStackWrapper.class);
+        map.put(ItemMeta.class, ItemMetaWrapper.class);
+        return map;
+    }
 
 }
