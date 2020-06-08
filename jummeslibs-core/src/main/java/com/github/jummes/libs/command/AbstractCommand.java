@@ -46,7 +46,7 @@ public abstract class AbstractCommand {
      * @return true if he has
      */
     protected boolean hasPermission() {
-        return sender.hasPermission(getPermission());
+        return getPermission() == null || (getPermission() != null && sender.hasPermission(getPermission()));
     }
 
     /**

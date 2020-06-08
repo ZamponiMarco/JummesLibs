@@ -64,15 +64,17 @@ public class LocationWrapper extends ModelWrapper<Location> implements Model {
             path.addModel(this);
             return new ModelObjectInventoryHolder(plugin, parent, path);
         } else if (e.getClick().equals(ClickType.RIGHT)) {
-            Block b = e.getWhoClicked().rayTraceBlocks(30).getHitBlock();
-            if (b != null) {
-                this.wrapped = b.getLocation();
-                this.x = wrapped.getX();
-                this.y = wrapped.getY();
-                this.z = wrapped.getZ();
-                this.yaw = wrapped.getYaw();
-                this.pitch = wrapped.getPitch();
-            }
+            Block b = e.getWhoClicked().getLocation().getBlock();
+            this.wrapped = b.getLocation();
+            this.x = wrapped.getX();
+            this.y = wrapped.getY();
+            this.z = wrapped.getZ();
+            this.yaw = wrapped.getYaw();
+            this.pitch = wrapped.getPitch();
+            path.saveModel();
+            return parent;
+        } else if (e.getClick().equals(ClickType.MIDDLE)){
+            e.getWhoClicked().teleport(this.wrapped);
             return parent;
         }
         return null;
