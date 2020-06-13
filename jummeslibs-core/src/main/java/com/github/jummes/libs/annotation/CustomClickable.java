@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface CustomClickable {
 
-    public String customFieldClickConsumer() default "";
+    String customFieldClickConsumer() default "";
 
-    public String customCollectionClickConsumer() default "";
+    String customCollectionClickConsumer() default "";
 
 }

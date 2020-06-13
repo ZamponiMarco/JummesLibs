@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface GUINameable {
 
-    public String GUIName() default "";
+    String GUIName() default "";
 
     boolean stringValue() default false;
 }

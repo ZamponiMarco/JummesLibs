@@ -63,10 +63,17 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
             try {
                 ItemStack displayItem = !toPrint[i].getAnnotation(Serializable.class).headTexture().equals("") ?
                         wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) : (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
+                String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
+                List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
+                if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()){
+                    lore.add(MessageUtils.color("&6&lLeft click &eto modify."));
+                    lore.add(MessageUtils.color("&6&lRight click &eto select"));
+                    lore.add(MessageUtils.color("&eanother type of this object."));
+                }
                 registerClickConsumer(itemPositions[i],
                         ItemUtils.getNamedItem(displayItem,
-                                MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i])),
-                                Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description())),
+                                itemName,
+                                lore),
                         e -> {
                             e.getWhoClicked().openInventory(FieldInventoryHolderFactory
                                     .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).getInventory());

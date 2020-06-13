@@ -44,6 +44,49 @@ public class YamlDatabase<T extends Model> extends Database<T> {
         }
 
         this.yamlConfiguration = new YamlConfiguration();
+    }
+
+    @Override
+    protected void closeConnection() {
+        try {
+            yamlConfiguration.save(dataFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<T> loadObjects() {
+        loadConfiguration();
+        return yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+    }
+
+    @Override
+    public void saveObject(@NonNull T object) {
+        List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+        list.remove(object);
+        list.add(object);
+        yamlConfiguration.set(name, list);
+        try {
+            yamlConfiguration.save(dataFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void deleteObject(@NonNull T object) {
+        List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+        list.remove(object);
+        yamlConfiguration.set(name, list);
+        try {
+            yamlConfiguration.save(dataFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadConfiguration(){
         try {
             this.yamlConfiguration.load(dataFile);
         } catch (InvalidConfigurationException e) {
@@ -68,45 +111,6 @@ public class YamlDatabase<T extends Model> extends Database<T> {
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void closeConnection() {
-        try {
-            yamlConfiguration.save(dataFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public List<T> loadObjects() {
-        return yamlConfiguration.getObject(name, List.class, new ArrayList<>());
-    }
-
-    @Override
-    public void saveObject(@NonNull T object) {
-        List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
-        list.remove(object);
-        list.add(object);
-        yamlConfiguration.set(name, list);
-        try {
-            yamlConfiguration.save(dataFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void deleteObject(@NonNull T object) {
-        List<T> list = yamlConfiguration.getObject(name, List.class, new ArrayList<>());
-        list.remove(object);
-        yamlConfiguration.set(name, list);
-        try {
-            yamlConfiguration.save(dataFile);
         } catch (IOException e) {
             e.printStackTrace();
         }

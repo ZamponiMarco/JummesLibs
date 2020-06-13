@@ -22,6 +22,8 @@ public @interface Serializable {
 
     public String description() default "";
 
+    public boolean recreateTooltip() default false;
+
     public String fromList() default "";
 
     public String fromListMapper() default "";
