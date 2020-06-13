@@ -78,7 +78,7 @@ public class FieldInventoryHolderFactory {
                 Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
                         .getRawType();
                 if (ClassUtils.isAssignable(containedClass, Model.class)) {
-                    return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1);
+                    return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1, obj -> true);
                 }
                 return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
             }
