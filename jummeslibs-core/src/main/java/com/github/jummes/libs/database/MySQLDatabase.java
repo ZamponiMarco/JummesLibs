@@ -16,10 +16,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,12 +42,17 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
     protected void openConnection() {
         synchronized (this) {
             try {
-                if (connection != null && !connection.isClosed()) {
-                    return;
+                if (connection == null || connection.isClosed()) {
+                    Class.forName("com.mysql.jdbc.Driver");
+                    connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
+                    executorThread = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::startOperationsCycle, 0, 600).getTaskId();
                 }
-                Class.forName("com.mysql.jdbc.Driver");
-                connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
-                executorThread = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::startOperationsCycle, 0, 300).getTaskId();
+                DatabaseMetaData dbm = connection.getMetaData();
+                ResultSet tables = dbm.getTables(null, null, getTableName(), null);
+                if (!tables.next()) {
+                    String query = "CREATE TABLE " + getTableName() + " (id VARCHAR(36), OBJECT MEDIUMBLOB);";
+                    connection.createStatement().execute(query);
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -94,7 +96,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
                 List<T> list = new ArrayList<>();
                 ResultSet result = connection.createStatement().executeQuery("SELECT * FROM " + getTableName());
                 while (result.next()) {
-                    ByteArrayInputStream b = new ByteArrayInputStream(result.getBytes("OBJECT"));
+                    ByteArrayInputStream b = new ByteArrayInputStream(Base64.getDecoder().decode(result.getString("OBJECT")));
                     BukkitObjectInputStream stream = new BukkitObjectInputStream(b);
                     T obj = (T) stream.readObject();
                     list.add(obj);
@@ -172,7 +174,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
                         toReturn = connection.prepareStatement(query);
                         ByteArrayOutputStream s1 = new ByteArrayOutputStream();
                         new BukkitObjectOutputStream(s1).writeObject(model);
-                        toReturn.setBytes(1, s1.toByteArray());
+                        toReturn.setString(1, new String(Base64.getEncoder().encode(s1.toByteArray())));
                         toReturn.setString(2, ((IdentifiableModel) model).getId().toString());
                         break;
                     case INSERT:
@@ -181,7 +183,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
                         ByteArrayOutputStream s2 = new ByteArrayOutputStream();
                         new BukkitObjectOutputStream(s2).writeObject(model);
                         toReturn.setString(1, ((IdentifiableModel) model).getId().toString());
-                        toReturn.setBytes(2, s2.toByteArray());
+                        toReturn.setString(2, new String(Base64.getEncoder().encode(s2.toByteArray())));
                         break;
                 }
             } catch (SQLException | IOException throwables) {
