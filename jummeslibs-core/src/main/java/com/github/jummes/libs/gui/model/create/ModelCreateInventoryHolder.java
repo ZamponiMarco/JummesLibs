@@ -1,20 +1,5 @@
 package com.github.jummes.libs.gui.model.create;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.annotation.Enumerable;
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
@@ -28,6 +13,20 @@ import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Class that handles the creation of new Model objects throught the use of a
@@ -95,15 +94,15 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
                 // Determine one of the suitable constructors
                 Constructor<?> cons;
                 Model newModel = null;
-                if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
-                    cons = model.getConstructor();
-                    newModel = (Model) cons.newInstance();
-                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{Player.class}) != null) {
+                if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{Player.class}) != null) {
                     cons = model.getConstructor(Player.class);
                     newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
                 } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{ModelPath.class}) != null) {
                     cons = model.getConstructor(ModelPath.class);
                     newModel = (Model) cons.newInstance(path);
+                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
+                    cons = model.getConstructor();
+                    newModel = (Model) cons.newInstance();
                 } else {
                     throw new NoSuchMethodException();
                 }

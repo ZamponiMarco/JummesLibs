@@ -31,4 +31,7 @@ public abstract class ModelManager<T extends Model> {
         database.deleteObject(object);
     }
 
+    public void closeConnection() {
+        database.closeConnection();
+    }
 }

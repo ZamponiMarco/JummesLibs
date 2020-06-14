@@ -1,6 +1,7 @@
 package com.github.jummes.libs.database;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,9 +23,9 @@ public abstract class Database<T extends Model> {
 
     protected abstract void openConnection();
 
-    protected abstract void closeConnection();
+    public abstract void closeConnection();
 
-    public abstract List<T> loadObjects();
+    public abstract Future<List<T>> loadObjects();
 
     public abstract void saveObject(@NonNull T object);
 

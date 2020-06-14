@@ -7,6 +7,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -24,6 +28,8 @@ import lombok.NonNull;
 public class YamlDatabase<T extends Model> extends Database<T> {
 
     private static final String FILE_SUFFIX = ".yml";
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private String name;
     private File dataFile;
@@ -47,7 +53,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    protected void closeConnection() {
+    public void closeConnection() {
         try {
             yamlConfiguration.save(dataFile);
         } catch (IOException e) {
@@ -56,9 +62,15 @@ public class YamlDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    public List<T> loadObjects() {
-        loadConfiguration();
-        return yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+    public Future<List<T>> loadObjects() {
+        return executor.submit(getCallable());
+    }
+
+    private Callable<List<T>> getCallable() {
+        return () -> {
+            loadConfiguration();
+            return yamlConfiguration.getObject(name, List.class, new ArrayList<>());
+        };
     }
 
     @Override

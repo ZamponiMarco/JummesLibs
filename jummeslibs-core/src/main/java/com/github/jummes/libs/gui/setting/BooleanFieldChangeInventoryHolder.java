@@ -51,7 +51,7 @@ public class BooleanFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 
     private ItemStack getBooleanItem(boolean value) {
         return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(value ? TRUE_HEAD : FALSE_HEAD),
-                MessageUtils.color("&6&lModify -> &e&l" + String.valueOf(value)), new ArrayList<String>());
+                MessageUtils.color("&6&lModify -> &e&l" + value), new ArrayList<>());
     }
 
 }

@@ -1,18 +1,26 @@
 package com.github.jummes.libs.database.factory;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.database.Database;
+import com.github.jummes.libs.database.MySQLDatabase;
 import com.github.jummes.libs.database.YamlDatabase;
 import com.github.jummes.libs.model.Model;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class DatabaseFactory {
 
     public static <T extends Model> Database<T> createDatabase(String databaseType, Class<T> modelClass, JavaPlugin plugin) {
-        switch (databaseType) {
-            case "yaml":
-            default:
-                return new YamlDatabase<T>(modelClass, plugin);
+        try {
+            switch (databaseType) {
+                case "mysql":
+                    return new MySQLDatabase<>(modelClass, plugin);
+                case "yaml":
+                default:
+                    return new YamlDatabase<>(modelClass, plugin);
+            }
+        } catch (IllegalArgumentException e) {
+            Bukkit.getLogger().warning("Something went bad in database initialization, trying to create a YamlDatabase");
+            return new YamlDatabase<>(modelClass, plugin);
         }
     }
 
