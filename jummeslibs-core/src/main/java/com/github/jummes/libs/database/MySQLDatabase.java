@@ -44,7 +44,11 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
             try {
                 if (connection == null || connection.isClosed()) {
                     Class.forName("com.mysql.jdbc.Driver");
-                    connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/test", "root", "password");
+                    connection = DriverManager.getConnection("jdbc:mysql://localhost:" +
+                                    plugin.getConfig().getString("sql.port") + "/" +
+                            plugin.getConfig().getString("sql.database"),
+                            plugin.getConfig().getString("sql.user"),
+                            plugin.getConfig().getString("sql.password"));
                     executorThread = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::startOperationsCycle, 0, 600).getTaskId();
                 }
                 DatabaseMetaData dbm = connection.getMetaData();
@@ -61,7 +65,6 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
 
     public void startOperationsCycle() {
         try {
-            System.out.println("Cleaning db actions");
             while (!operations.isEmpty()) {
                 operations.poll().prepareStatement().execute();
             }
