@@ -23,33 +23,34 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("unused")
 public interface Model extends ConfigurationSerializable {
 
-    public default ItemStack getGUIItem() {
+    default ItemStack getGUIItem() {
         return null;
     }
 
-    public default void beforeComponentCreation(Class<? extends Model> modelClass) {
+    default void beforeComponentCreation(Class<? extends Model> modelClass) {
     }
 
-    public default void afterComponentCreation(Model model) {
+    default void afterComponentCreation(Model model) {
     }
 
-    public default void beforeComponentSetting(Model model) {
+    default void beforeComponentSetting(Model model) {
     }
 
-    public default void afterComponentSetting(Model model) {
+    default void afterComponentSetting(Model model) {
     }
 
-    public default void onModify() {
+    default void onModify() {
     }
 
-    public default void onCreation() {
+    default void onCreation() {
     }
 
-    public default void onRemoval() {
+    default void onRemoval() {
     }
 
-    public default Map<String, Object> serialize() {
+    default Map<String, Object> serialize() {
         Map<String, Object> map = new LinkedHashMap<String, Object>();
+        map.put("==", getClass().getName());
         List<Field> fields = Lists.newArrayList(getClass().getDeclaredFields());
         ClassUtils.getAllSuperclasses(getClass()).forEach(
                 superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));

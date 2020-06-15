@@ -11,5 +11,18 @@ import com.github.jummes.libs.model.Model;
 @Target(ElementType.TYPE)
 public @interface Enumerable {
 
-    Class<? extends Model>[] classArray() default {};
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface Parent {
+        Class<? extends Model>[] classArray() default {};
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface Child {
+        String name() default "";
+        String description() default "";
+        String headTexture() default "";
+    }
+
 }

@@ -1,20 +1,5 @@
 package com.github.jummes.libs.gui.model.create;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.annotation.Enumerable;
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
@@ -28,6 +13,21 @@ import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.ConstructorUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Class that handles the creation of new Model objects throught the use of a
@@ -55,13 +55,12 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
             Class<Model> model = getModelClassFromField(field, isCollection);
             this.inventory = Bukkit.createInventory(this, 27,
                     MessageUtils.color("&6Create a &c&l" + model.getSimpleName()));
-            if (model.isAnnotationPresent(Enumerable.class)) {
+            if (model.isAnnotationPresent(Enumerable.Parent.class)) {
                 List<Class<? extends Model>> classes = Lists
-                        .newArrayList(model.getAnnotation(Enumerable.class).classArray());
+                        .newArrayList(model.getAnnotation(Enumerable.Parent.class).classArray());
                 classes.forEach(clazz -> {
                     registerClickConsumer(classes.indexOf(clazz),
-                            ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ITEM_HEAD),
-                                    MessageUtils.color("&6new &c&l" + clazz.getSimpleName()), new ArrayList<String>()),
+                            getEnumerableChildItem(clazz),
                             getModelCreateConsumer(clazz, isCollection));
                 });
             } else {
@@ -75,6 +74,22 @@ public class ModelCreateInventoryHolder extends ModelObjectInventoryHolder {
         }
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+    }
+
+    private ItemStack getEnumerableChildItem(Class<?> clazz) {
+        String name = clazz.isAnnotationPresent(Enumerable.Child.class)
+                && !clazz.getAnnotation(Enumerable.Child.class).name().equals("")
+                ? MessageUtils.color(clazz.getAnnotation(Enumerable.Child.class).name())
+                : MessageUtils.color("&6new &c&l" + clazz.getSimpleName());
+        List<String> lore = clazz.isAnnotationPresent(Enumerable.Child.class)
+                && !clazz.getAnnotation(Enumerable.Child.class).description().equals("")
+                ? Libs.getLocale().getList(clazz.getAnnotation(Enumerable.Child.class).description())
+                : new ArrayList<>();
+        ItemStack item = clazz.isAnnotationPresent(Enumerable.Child.class)
+                && !clazz.getAnnotation(Enumerable.Child.class).headTexture().equals("")
+                ? Libs.getWrapper().skullFromValue(clazz.getAnnotation(Enumerable.Child.class).headTexture())
+                : Libs.getWrapper().skullFromValue(ITEM_HEAD);
+        return ItemUtils.getNamedItem(item, name, lore);
     }
 
     private Class<Model> getModelClassFromField(Field field, boolean isCollection) {
