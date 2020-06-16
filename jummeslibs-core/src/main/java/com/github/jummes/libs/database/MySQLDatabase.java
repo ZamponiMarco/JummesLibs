@@ -1,11 +1,9 @@
 package com.github.jummes.libs.database;
 
+import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.model.IdentifiableModel;
 import com.github.jummes.libs.model.Model;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import org.apache.commons.lang.ClassUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,46 +14,48 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class MySQLDatabase<T extends Model> extends Database<T> {
 
-    private static Connection connection;
-    private static Queue<SQLOperation> operations = new LinkedList<>();
-    private static int executorThread;
+    private static final Object lock = new Object();
 
-    ExecutorService executor = Executors.newSingleThreadExecutor();
+    private static volatile Connection connection;
+    private static final Queue<Runnable> operations = new LinkedList<>();
+    private static volatile int executorThread;
 
-
-    public MySQLDatabase(@NonNull Class classObject, @NonNull JavaPlugin plugin) throws IllegalArgumentException {
+    public MySQLDatabase(@NonNull Class<T> classObject, @NonNull JavaPlugin plugin) {
         super(classObject, plugin);
         if (!ClassUtils.isAssignable(classObject, IdentifiableModel.class)) {
             throw new IllegalArgumentException();
         }
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, this::openConnection);
     }
 
     @Override
     protected void openConnection() {
-        synchronized (this) {
+        synchronized (lock) {
             try {
                 if (connection == null || connection.isClosed()) {
                     Class.forName("com.mysql.jdbc.Driver");
                     connection = DriverManager.getConnection("jdbc:mysql://localhost:" +
                                     plugin.getConfig().getString("sql.port") + "/" +
-                            plugin.getConfig().getString("sql.database"),
+                                    plugin.getConfig().getString("sql.database"),
                             plugin.getConfig().getString("sql.user"),
                             plugin.getConfig().getString("sql.password"));
-                    executorThread = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::startOperationsCycle, 0, 600).getTaskId();
                 }
                 DatabaseMetaData dbm = connection.getMetaData();
                 ResultSet tables = dbm.getTables(null, null, getTableName(), null);
                 if (!tables.next()) {
-                    String query = "CREATE TABLE " + getTableName() + " (id VARCHAR(36), OBJECT MEDIUMBLOB);";
+                    String query = "CREATE TABLE " + getTableName() + " (id VARCHAR(36) PRIMARY KEY, OBJECT MEDIUMBLOB);";
                     connection.createStatement().execute(query);
+                }
+                if (executorThread == 0) {
+                    executorThread = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::clearOperationQueue, 0, 600).getTaskId();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -63,13 +63,9 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
         }
     }
 
-    public void startOperationsCycle() {
-        try {
-            while (!operations.isEmpty()) {
-                operations.poll().prepareStatement().execute();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void clearOperationQueue() {
+        while (!operations.isEmpty()) {
+            operations.poll().run();
         }
     }
 
@@ -77,9 +73,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
-                while (!operations.isEmpty()) {
-                    operations.poll().prepareStatement().execute();
-                }
+                clearOperationQueue();
                 connection.close();
                 Bukkit.getScheduler().cancelTask(executorThread);
             }
@@ -89,45 +83,23 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    public Future<List<T>> loadObjects() {
-        return executor.submit(getCallable());
-    }
-
-    private Callable<List<T>> getCallable() {
-        return () -> {
-            try {
-                List<T> list = new ArrayList<>();
-                ResultSet result = connection.createStatement().executeQuery("SELECT * FROM " + getTableName());
-                while (result.next()) {
-                    ByteArrayInputStream b = new ByteArrayInputStream(Base64.getDecoder().decode(result.getString("OBJECT")));
-                    BukkitObjectInputStream stream = new BukkitObjectInputStream(b);
-                    T obj = (T) stream.readObject();
-                    list.add(obj);
-                }
-                return list;
-            } catch (SQLException | IOException | ClassNotFoundException throwables) {
-                throwables.printStackTrace();
-            }
-            return null;
-        };
+    public void loadObjects(List<T> list) {
+        operations.add(() -> loadEverything(list));
     }
 
     @Override
     public void saveObject(T object) {
-
         try {
-            String query = "SELECT count(*) FROM " + getTableName() + " " + conditionQuery(object);
+            String query = "SELECT count(*) FROM " + getTableName() + " " + conditionQuery();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, ((IdentifiableModel) object).getId().toString());
             ResultSet result = preparedStatement.executeQuery();
             if (result.next()) {
                 final int count = result.getInt(1);
                 if (count != 0) {
-                    operations.removeIf(operation -> operation.getOperation().equals(Operation.MODIFY) && operation.getModel().equals(object));
-                    operations.add(new SQLOperation(object, Operation.MODIFY));
+                    operations.add(() -> modifyObject(object));
                 } else {
-                    operations.removeIf(operation -> operation.getOperation().equals(Operation.INSERT) && operation.getModel().equals(object));
-                    operations.add(new SQLOperation(object, Operation.INSERT));
+                    operations.add(() -> insertObject(object));
                 }
             }
         } catch (SQLException throwables) {
@@ -138,79 +110,81 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
 
     @Override
     public void deleteObject(T object) {
-        operations.removeIf(operation -> operation.getModel().equals(object));
-        operations.add(new SQLOperation(object, Operation.DELETE));
+        operations.add(() -> deleteModel(object));
     }
 
-    private String conditionQuery(Model object) {
+    private String conditionQuery() {
         return "WHERE id=?;";
+    }
+
+    private String values() {
+        return "(?,?)";
+    }
+
+    private String columnsList() {
+        return " (id,OBJECT)";
     }
 
     private String getTableName() {
         return classObject.getSimpleName().toLowerCase();
     }
 
-    public enum Operation {
-        INSERT, MODIFY, DELETE;
+    private void loadEverything(List<T> list) {
+        try {
+            ResultSet result = connection.createStatement().executeQuery("SELECT * FROM " + getTableName());
+            Bukkit.getScheduler().runTask(Libs.getPlugin(), () -> {
+                try {
+                    while (result.next()) {
+                        ByteArrayInputStream b = new ByteArrayInputStream(Base64.getDecoder().decode(result.getString("OBJECT")));
+                        BukkitObjectInputStream stream = new BukkitObjectInputStream(b);
+                        T obj = (T) stream.readObject();
+                        list.add(obj);
+                    }
+                } catch (Exception throwables) {
+                    throwables.printStackTrace();
+                }
+            });
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 
-    @Setter
-    @Getter
-    @AllArgsConstructor
-    private static class SQLOperation {
-
-        private Model model;
-        private Operation operation;
-
-        public PreparedStatement prepareStatement() {
-            String query;
-            PreparedStatement toReturn = null;
-            try {
-                switch (operation) {
-                    case DELETE:
-                        query = "DELETE FROM " + getTableName() + " " + conditionQuery();
-                        toReturn = connection.prepareStatement(query);
-                        toReturn.setString(1, ((IdentifiableModel) model).getId().toString());
-                        break;
-                    case MODIFY:
-                        query = "UPDATE " + getTableName() + " SET OBJECT=? " + conditionQuery();
-                        toReturn = connection.prepareStatement(query);
-                        ByteArrayOutputStream s1 = new ByteArrayOutputStream();
-                        new BukkitObjectOutputStream(s1).writeObject(model);
-                        toReturn.setString(1, new String(Base64.getEncoder().encode(s1.toByteArray())));
-                        toReturn.setString(2, ((IdentifiableModel) model).getId().toString());
-                        break;
-                    case INSERT:
-                        query = "INSERT INTO " + getTableName() + columnsList() + " VALUES " + values() + ";";
-                        toReturn = connection.prepareStatement(query);
-                        ByteArrayOutputStream s2 = new ByteArrayOutputStream();
-                        new BukkitObjectOutputStream(s2).writeObject(model);
-                        toReturn.setString(1, ((IdentifiableModel) model).getId().toString());
-                        toReturn.setString(2, new String(Base64.getEncoder().encode(s2.toByteArray())));
-                        break;
-                }
-            } catch (SQLException | IOException throwables) {
-                throwables.printStackTrace();
-            }
-            System.out.println(toReturn);
-            return toReturn;
+    private void deleteModel(Model object) {
+        try {
+            String query = "DELETE FROM " + getTableName() + " " + conditionQuery();
+            PreparedStatement toReturn = connection.prepareStatement(query);
+            toReturn.setString(1, ((IdentifiableModel) object).getId().toString());
+            toReturn.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
+    }
 
-        private String getTableName() {
-            return model.getClass().getSimpleName().toLowerCase();
+    private void modifyObject(Model object) {
+        try {
+            String query = "UPDATE " + getTableName() + " SET OBJECT=? " + conditionQuery();
+            PreparedStatement toReturn = connection.prepareStatement(query);
+            ByteArrayOutputStream s1 = new ByteArrayOutputStream();
+            new BukkitObjectOutputStream(s1).writeObject(object);
+            toReturn.setString(1, new String(Base64.getEncoder().encode(s1.toByteArray())));
+            toReturn.setString(2, ((IdentifiableModel) object).getId().toString());
+            toReturn.execute();
+        } catch (SQLException | IOException throwables) {
+            throwables.printStackTrace();
         }
+    }
 
-        private String values() {
-            return "(?,?)";
+    private void insertObject(Model object) {
+        try {
+            String query = "INSERT INTO " + getTableName() + columnsList() + " VALUES " + values() + ";";
+            PreparedStatement toReturn = connection.prepareStatement(query);
+            ByteArrayOutputStream s2 = new ByteArrayOutputStream();
+            new BukkitObjectOutputStream(s2).writeObject(object);
+            toReturn.setString(1, ((IdentifiableModel) object).getId().toString());
+            toReturn.setString(2, new String(Base64.getEncoder().encode(s2.toByteArray())));
+            toReturn.execute();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
         }
-
-        private String conditionQuery() {
-            return "WHERE id=?;";
-        }
-
-        private String columnsList() {
-            return " (id,OBJECT)";
-        }
-
     }
 }

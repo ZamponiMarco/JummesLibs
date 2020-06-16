@@ -20,6 +20,9 @@ public class Libs {
     private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
 
     @Getter
+    private static JavaPlugin plugin;
+
+    @Getter
     private static VersionWrapper wrapper;
 
     @Getter
@@ -32,7 +35,8 @@ public class Libs {
         ConfigurationSerialization.registerClass(IntRange.class);
     }
 
-    public static void initializeLibrary(JavaPlugin plugin, PluginLocale thisLocale) {
+    public static void initializeLibrary(JavaPlugin thisPlugin, PluginLocale thisLocale) {
+        plugin = thisPlugin;
         setUpWrapper(plugin);
         locale = thisLocale;
         registerEvents(plugin);

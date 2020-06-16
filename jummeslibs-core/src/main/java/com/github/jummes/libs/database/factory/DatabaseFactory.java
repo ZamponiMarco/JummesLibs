@@ -18,9 +18,15 @@ public class DatabaseFactory {
                 default:
                     return new YamlDatabase<>(modelClass, plugin);
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             Bukkit.getLogger().warning("Something went bad in database initialization, trying to create a YamlDatabase");
-            return new YamlDatabase<>(modelClass, plugin);
+            try {
+                return new YamlDatabase<>(modelClass, plugin);
+            } catch (Exception exception) {
+                Bukkit.getLogger().severe("Couldn't create a YamlDatabase");
+                Bukkit.getPluginManager().disablePlugin(plugin);
+                return null;
+            }
         }
     }
 

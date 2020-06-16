@@ -1,5 +1,16 @@
 package com.github.jummes.libs.database;
 
+import com.github.jummes.libs.model.Model;
+import com.github.jummes.libs.model.math.IntRange;
+import com.github.jummes.libs.model.wrapper.ItemMetaWrapper;
+import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
+import com.github.jummes.libs.model.wrapper.LocationWrapper;
+import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -10,20 +21,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.github.jummes.libs.model.Model;
-import com.github.jummes.libs.model.math.IntRange;
-import com.github.jummes.libs.model.wrapper.ItemMetaWrapper;
-import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
-import com.github.jummes.libs.model.wrapper.LocationWrapper;
-
-import lombok.NonNull;
 
 public class YamlDatabase<T extends Model> extends Database<T> {
 
@@ -37,6 +34,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 
     public YamlDatabase(Class<T> classObject, JavaPlugin plugin) {
         super(classObject, plugin);
+        openConnection();
     }
 
     @Override
@@ -62,15 +60,13 @@ public class YamlDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    public Future<List<T>> loadObjects() {
-        return executor.submit(getCallable());
-    }
-
-    private Callable<List<T>> getCallable() {
-        return () -> {
+    public void loadObjects(List<T> list) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             loadConfiguration();
-            return yamlConfiguration.getObject(name, List.class, new ArrayList<>());
-        };
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                list.addAll(yamlConfiguration.getObject(name, List.class, new ArrayList<>()));
+            });
+        });
     }
 
     @Override
@@ -98,7 +94,7 @@ public class YamlDatabase<T extends Model> extends Database<T> {
         }
     }
 
-    private void loadConfiguration(){
+    private void loadConfiguration() {
         try {
             this.yamlConfiguration.load(dataFile);
         } catch (InvalidConfigurationException e) {
