@@ -3,6 +3,7 @@ package com.github.jummes.libs.gui.setting.change;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
+import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
@@ -21,6 +22,9 @@ public class CollectionRemoveInformation implements ChangeInformation {
         Collection<Object> collection;
         try {
             collection = (Collection<Object>) field.get(path.getLast());
+            if (path.getRoot() != null) {
+                path.getRoot().beforeModify();
+            }
             collection.remove(currentValue);
             if (path.getLast() instanceof ModelWrapper<?>) {
                 ((ModelWrapper<?>) path.getLast()).notifyObservers(field);

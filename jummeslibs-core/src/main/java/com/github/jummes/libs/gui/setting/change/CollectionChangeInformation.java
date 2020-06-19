@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
+import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
@@ -22,6 +23,9 @@ public class CollectionChangeInformation implements ChangeInformation {
         Collection<Object> collection;
         try {
             collection = (Collection<Object>) field.get(path.getLast());
+            if (path.getRoot() != null) {
+                path.getRoot().beforeModify();
+            }
             if (collection instanceof List) {
                 List<Object> list = (List<Object>) collection;
                 int i = list.indexOf(currentValue);
@@ -46,7 +50,7 @@ public class CollectionChangeInformation implements ChangeInformation {
 
     @Override
     public String getName() {
-        return "sas";
+        return field.getName();
     }
 
 }

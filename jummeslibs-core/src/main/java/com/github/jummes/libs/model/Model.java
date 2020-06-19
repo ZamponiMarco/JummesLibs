@@ -39,6 +39,9 @@ public interface Model extends ConfigurationSerializable {
     default void afterComponentSetting(Model model) {
     }
 
+    default void beforeModify(){
+    }
+
     default void onModify() {
     }
 
