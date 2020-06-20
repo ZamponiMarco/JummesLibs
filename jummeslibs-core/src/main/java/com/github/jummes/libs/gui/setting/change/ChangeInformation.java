@@ -4,10 +4,10 @@ import com.github.jummes.libs.model.ModelPath;
 
 public interface ChangeInformation {
 
-    public void setValue(ModelPath<?> path, Object value);
+    void setValue(ModelPath<?> path, Object value);
 
-    public Object getValue(ModelPath<?> path);
+    Object getValue(ModelPath<?> path);
 
-    public String getName();
+    String getName();
 
 }

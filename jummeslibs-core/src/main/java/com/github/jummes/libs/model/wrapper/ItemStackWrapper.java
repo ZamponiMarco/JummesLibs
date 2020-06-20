@@ -36,6 +36,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     private static final String META_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4MzM0MTUxYzIzNGY0MTY0NzExM2JlM2VhZGYyODdkMTgxNzExNWJhYzk0NDVmZmJiYmU5Y2IyYjI4NGIwIn19fQ=====";
 
     @Serializable(headTexture = MATERIAL_HEAD, fromList = "materialList", fromListMapper = "materialListMapper")
+    @SetterMappable(setterMethod = "setType")
     private Material type;
     @Serializable(headTexture = AMOUNT_HEAD)
     @SetterMappable(setterMethod = "setAmount")

@@ -77,7 +77,6 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
         return e -> {
             HumanEntity p = e.getWhoClicked();
             changeInformation.setValue(path, result);
-            path.saveModel();
             p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(result)));
             getBackConsumer().accept(e);
         };
