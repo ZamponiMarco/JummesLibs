@@ -1,14 +1,14 @@
 package com.github.jummes.libs.database;
 
-import java.util.List;
-
+import com.github.jummes.libs.model.Model;
+import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.jummes.libs.model.Model;
-
-import lombok.NonNull;
+import java.util.List;
 
 public abstract class Database<T extends Model> {
+
+    protected static final Object lock = new Object();
 
     protected final Class<T> classObject;
     protected JavaPlugin plugin;
@@ -22,7 +22,12 @@ public abstract class Database<T extends Model> {
 
     public abstract void closeConnection();
 
-    public abstract void loadObjects(List<T> list);
+    public void loadObjects(List<T> list) {
+        loadObjects(list, () -> {
+        });
+    }
+
+    public abstract void loadObjects(List<T> list, Runnable r);
 
     public abstract void saveObject(@NonNull T object);
 

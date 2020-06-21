@@ -18,15 +18,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class YamlDatabase<T extends Model> extends Database<T> {
 
     private static final String FILE_SUFFIX = ".yml";
-
-    ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private String name;
     private File dataFile;
@@ -39,15 +34,17 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 
     @Override
     protected void openConnection() {
-        this.name = classObject.getSimpleName().toLowerCase();
+        synchronized (lock) {
+            this.name = classObject.getSimpleName().toLowerCase();
 
-        this.dataFile = new File(plugin.getDataFolder(), name.concat(FILE_SUFFIX));
+            this.dataFile = new File(plugin.getDataFolder(), name.concat(FILE_SUFFIX));
 
-        if (!this.dataFile.exists()) {
-            plugin.saveResource(classObject.getSimpleName().toLowerCase().concat(FILE_SUFFIX), false);
+            if (!this.dataFile.exists()) {
+                plugin.saveResource(classObject.getSimpleName().toLowerCase().concat(FILE_SUFFIX), false);
+            }
+
+            this.yamlConfiguration = new YamlConfiguration();
         }
-
-        this.yamlConfiguration = new YamlConfiguration();
     }
 
     @Override
@@ -60,12 +57,15 @@ public class YamlDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    public void loadObjects(List<T> list) {
+    public void loadObjects(List<T> list, Runnable r) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            loadConfiguration();
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                list.addAll(yamlConfiguration.getObject(name, List.class, new ArrayList<>()));
-            });
+            synchronized (lock) {
+                loadConfiguration();
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    list.addAll(yamlConfiguration.getObject(name, List.class, new ArrayList<>()));
+                    r.run();
+                });
+            }
         });
     }
 

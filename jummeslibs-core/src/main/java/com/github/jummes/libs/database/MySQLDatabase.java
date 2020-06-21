@@ -83,8 +83,8 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
     }
 
     @Override
-    public void loadObjects(List<T> list) {
-        operations.add(() -> loadEverything(list));
+    public void loadObjects(List<T> list, Runnable r) {
+        operations.add(() -> loadEverything(list, r));
     }
 
     @Override
@@ -129,7 +129,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
         return classObject.getSimpleName().toLowerCase();
     }
 
-    private void loadEverything(List<T> list) {
+    private void loadEverything(List<T> list, Runnable r) {
         try {
             ResultSet result = connection.createStatement().executeQuery("SELECT * FROM " + getTableName());
             Bukkit.getScheduler().runTask(Libs.getPlugin(), () -> {
@@ -140,6 +140,7 @@ public class MySQLDatabase<T extends Model> extends Database<T> {
                         T obj = (T) stream.readObject();
                         list.add(obj);
                     }
+                    r.run();
                 } catch (Exception throwables) {
                     throwables.printStackTrace();
                 }
