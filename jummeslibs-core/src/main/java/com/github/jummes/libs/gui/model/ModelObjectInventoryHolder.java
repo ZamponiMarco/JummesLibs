@@ -129,7 +129,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
      *
      * @author dmitry-mingazov
      */
-    private int[] getItemPositions(int items) {
+    protected int[] getItemPositions(int items) {
 
         if (items > 17 || items < 0)
             throw new IllegalArgumentException("Number of items not valid");

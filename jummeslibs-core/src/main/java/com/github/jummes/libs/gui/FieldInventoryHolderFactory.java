@@ -1,26 +1,11 @@
 package com.github.jummes.libs.gui;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.gui.model.ModelCollectionInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.ObjectCollectionInventoryHolder;
-import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
+import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.gui.setting.FieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.FromListFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
@@ -31,6 +16,20 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldInventoryHolderFactory {
 
@@ -99,7 +98,7 @@ public class FieldInventoryHolderFactory {
                     path.addModel((Model) FieldUtils.readField(field, path.getLast(), true));
                     return new ModelObjectInventoryHolder(plugin, parent, path);
                 } else if (e.getClick().equals(ClickType.RIGHT)) {
-                    return new ModelCreateInventoryHolder(plugin, parent, path, field);
+                    return ModelCreateInventoryHolderFactory.create(plugin, parent, path, field);
                 }
             }
             /*

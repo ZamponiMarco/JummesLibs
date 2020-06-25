@@ -33,7 +33,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
     public ItemMetaWrapper(ItemMeta wrapped) {
         super(wrapped);
         this.displayName = wrapped.getDisplayName();
-        this.lore = wrapped.getLore() == null ? new ArrayList<String>() : wrapped.getLore();
+        this.lore = wrapped.getLore() == null ? new ArrayList<>() : wrapped.getLore();
     }
 
     @Override

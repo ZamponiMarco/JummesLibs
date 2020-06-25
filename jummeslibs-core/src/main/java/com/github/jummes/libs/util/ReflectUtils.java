@@ -1,11 +1,11 @@
 package com.github.jummes.libs.util;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.ClassUtils;
 
-import com.google.common.collect.Lists;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.List;
 
 public class ReflectUtils {
 
@@ -14,6 +14,13 @@ public class ReflectUtils {
         ClassUtils.getAllSuperclasses(target.getClass()).forEach(
                 superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
         return fields;
+    }
+
+    public static List<Annotation> getAnnotationsList(Object target) {
+        List<Annotation> annotations = Lists.newArrayList(target.getClass().getAnnotations());
+        ClassUtils.getAllSuperclasses(target.getClass()).forEach(
+                superClass -> annotations.addAll(0, Lists.newArrayList(((Class<?>) superClass).getAnnotations())));
+        return annotations;
     }
 
     public static Field getField(Object target, String fieldName) {

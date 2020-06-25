@@ -1,30 +1,27 @@
 package com.github.jummes.libs.model.wrapper;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.google.common.collect.Lists;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
-import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
+import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-
 import lombok.ToString;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @ToString
 @CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
@@ -44,11 +41,34 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     @Serializable(headTexture = META_HEAD)
     private ItemMetaWrapper meta;
 
+    public ItemStackWrapper() {
+        this(new ItemStack(Material.STONE));
+    }
+
     public ItemStackWrapper(ItemStack wrapped) {
         super(wrapped);
         this.type = wrapped.getType();
         this.amount = wrapped.getAmount();
         this.meta = new ItemMetaWrapper(wrapped.getItemMeta());
+    }
+
+    public static ItemStackWrapper deserialize(Map<String, Object> map) {
+        ItemStack wrapped = ItemStack.deserialize(map);
+        ItemMetaWrapper metaWrapper = (ItemMetaWrapper) map.getOrDefault("meta", null);
+        wrapped.setItemMeta(metaWrapper != null ? metaWrapper.wrapped : null);
+        ItemStackWrapper wrapper = new ItemStackWrapper(wrapped);
+        return wrapper;
+    }
+
+    public static List<Object> materialList(ModelPath<?> path) {
+        return Arrays.stream(Material.values()).filter(m -> !m.name().toLowerCase().contains("legacy") && m.isItem()).collect(Collectors.toList());
+    }
+
+    public static Function<Object, ItemStack> materialListMapper() {
+        return obj -> {
+            Material m = (Material) obj;
+            return new ItemStack(m);
+        };
     }
 
     public PluginInventoryHolder getCustomClickConsumer(JavaPlugin plugin, PluginInventoryHolder parent,
@@ -69,9 +89,9 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
                 path.addModel(this);
                 return new ModelObjectInventoryHolder(plugin, parent, path);
             } else if (e.getClick().equals(ClickType.RIGHT)) {
-                return new ModelCreateInventoryHolder(plugin, parent, path, field);
+                return ModelCreateInventoryHolderFactory.create(plugin, parent, path, field);
             }
-        } catch (Exception e1) {
+        } catch (Exception ignored) {
         }
         return null;
     }
@@ -81,25 +101,6 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
         Map<String, Object> map = wrapped.serialize();
         map.put("meta", meta);
         return map;
-    }
-
-    public static ItemStackWrapper deserialize(Map<String, Object> map) {
-        ItemStack wrapped = ItemStack.deserialize(map);
-        ItemMetaWrapper metaWrapper = (ItemMetaWrapper) map.getOrDefault("meta", null);
-        wrapped.setItemMeta(metaWrapper != null ? metaWrapper.wrapped : null);
-        ItemStackWrapper wrapper = new ItemStackWrapper(wrapped);
-        return wrapper;
-    }
-
-    public static List<Object> materialList(ModelPath<?> path) {
-        return Arrays.stream(Material.values()).filter(m -> !m.name().toLowerCase().contains("legacy") && m.isItem()).collect(Collectors.toList());
-    }
-
-    public static Function<Object, ItemStack> materialListMapper() {
-        return obj -> {
-            Material m = (Material) obj;
-            return new ItemStack(m);
-        };
     }
 
     @Override

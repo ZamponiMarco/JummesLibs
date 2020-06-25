@@ -3,12 +3,13 @@ package com.github.jummes.libs.gui.model;
 import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
-import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolder;
+import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -50,12 +52,12 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
 
     public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<S> manager, String fieldName)
             throws NoSuchFieldException, SecurityException {
-        this(plugin, null, new ModelPath<S>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, obj -> true);
+        this(plugin, null, new ModelPath<>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, obj -> true);
     }
 
     public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<S> manager, String fieldName, Predicate<S> filter)
             throws NoSuchFieldException, SecurityException {
-        this(plugin, null, new ModelPath<S>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, filter);
+        this(plugin, null, new ModelPath<>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, filter);
     }
 
     @Override
@@ -73,22 +75,7 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
 
             toList.forEach(model -> {
                 registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
-                    try {
-                        if (model.getClass().isAnnotationPresent(CustomClickable.class) && !model.getClass()
-                                .getAnnotation(CustomClickable.class).customCollectionClickConsumer().equals("")) {
-                            model.getClass()
-                                    .getMethod(
-                                            model.getClass().getAnnotation(CustomClickable.class)
-                                                    .customCollectionClickConsumer(),
-                                            JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
-                                            InventoryClickEvent.class)
-                                    .invoke(model, plugin, this, path, field, e);
-                        } else {
-                            defaultClickConsumer(model, e);
-                        }
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    executeClickConsumer(model, e);
                 });
             });
             placeCollectionOnlyItems(maxPage);
@@ -99,9 +86,38 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
+    /**
+     * If a custom clickable is present execute it, execute default one otherwise
+     *
+     * @param model
+     * @param e
+     */
+    private void executeClickConsumer(S model, InventoryClickEvent e) {
+        try {
+            List<Annotation> annotations = ReflectUtils.getAnnotationsList(model);
+            Annotation a = annotations.stream().filter(annotation ->
+                    annotation instanceof CustomClickable
+                            && !((CustomClickable) annotation).customCollectionClickConsumer().equals("")).
+                    findFirst().orElse(null);
+            if (a != null) {
+                model.getClass()
+                        .getMethod(
+                                ((CustomClickable) a).customCollectionClickConsumer(),
+                                JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
+                                InventoryClickEvent.class)
+                        .invoke(model, plugin, this, path, field, e);
+            } else {
+                defaultClickConsumer(model, e);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     private void placeCollectionOnlyItems(int maxPage) {
         registerClickConsumer(50, getAddItem(), e -> {
-            e.getWhoClicked().openInventory(new ModelCreateInventoryHolder(plugin, this, path, field).getInventory());
+            e.getWhoClicked().openInventory(
+                    ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
         });
         if (page != maxPage) {
             registerClickConsumer(52,
