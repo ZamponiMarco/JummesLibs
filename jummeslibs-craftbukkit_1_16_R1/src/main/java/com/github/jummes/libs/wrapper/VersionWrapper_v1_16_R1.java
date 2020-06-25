@@ -1,6 +1,5 @@
-package wrapper;
+package com.github.jummes.libs.wrapper;
 
-import com.github.jummes.libs.wrapper.VersionWrapper;
 import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import net.minecraft.server.v1_16_R1.NBTTagList;
 import org.bukkit.Material;
@@ -25,17 +24,27 @@ public class VersionWrapper_v1_16_R1 implements VersionWrapper {
         textures.add(textureValue);
         texturesCompound.set("textures", textures);
         skullOwner.set("Properties", texturesCompound);
-        skullOwner.setString("Id", id.toString());
+        skullOwner.setIntArray("Id", getUUIDIntArray(id));
         tag.set("SkullOwner", skullOwner);
         nmsItem.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsItem);
+    }
+
+    private int[] getUUIDIntArray(UUID id) {
+        int[] ints = new int[4];
+        int leastSignificantBitsMask = 0xFF;
+        ints[0] = (int) (id.getMostSignificantBits() >> 8);
+        ints[1] = (int) (id.getMostSignificantBits() & leastSignificantBitsMask);
+        ints[2] = (int) (id.getLeastSignificantBits() >> 8);
+        ints[3] = (int) (id.getLeastSignificantBits() & leastSignificantBitsMask);
+        return ints;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public Class<? extends ItemMeta> getCraftMetaItemClass() {
         try {
-            return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_15_R1.inventory.CraftMetaItem");
+            return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_16_R1.inventory.CraftMetaItem");
         } catch (Exception e) {
             return null;
         }
