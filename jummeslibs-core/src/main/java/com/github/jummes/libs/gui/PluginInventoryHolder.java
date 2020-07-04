@@ -87,7 +87,7 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
      */
     protected ItemStack getBackItem() {
         return ItemUtils.getNamedItem(wrapper.skullFromValue(BACK_HEAD), MessageUtils.color("&6&lBack"),
-                new ArrayList<String>());
+                new ArrayList<>());
     }
 
     /**

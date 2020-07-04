@@ -23,10 +23,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.IntStream;
 
 /**
@@ -54,18 +51,16 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
         ClassUtils.getAllSuperclasses(clazz).forEach(
                 superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
-        Field[] toPrint = fields.stream()
-                .filter(field -> field.isAnnotationPresent(Serializable.class)
-                        && (!field.getAnnotation(Serializable.class).headTexture().equals("") || !field.getAnnotation(Serializable.class).displayItem().equals("")))
-                .toArray(Field[]::new);
+        Field[] toPrint = fields.stream().filter(getItemFilter(clazz)).toArray(Field[]::new);
         int[] itemPositions = getItemPositions(toPrint.length);
         IntStream.range(0, toPrint.length).forEach(i -> {
             try {
                 ItemStack displayItem = !toPrint[i].getAnnotation(Serializable.class).headTexture().equals("") ?
-                        wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) : (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
+                        wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) :
+                        (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
                 String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
                 List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
-                if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()){
+                if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()) {
                     lore.add(MessageUtils.color("&6&lLeft click &eto modify."));
                     lore.add(MessageUtils.color("&6&lRight click &eto select"));
                     lore.add(MessageUtils.color("&eanother type of this object."));
@@ -84,6 +79,18 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         });
         registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+    }
+
+    private Predicate<Field> getItemFilter(Class<?> clazz) {
+        return field -> {
+            try {
+                return field.isAnnotationPresent(Serializable.class)
+                        && (!field.getAnnotation(Serializable.class).headTexture().equals("") || (!field.getAnnotation(Serializable.class).displayItem().equals("") &&
+                        clazz.getMethod(field.getAnnotation(Serializable.class).displayItem()).invoke(path.getLast()) != null));
+            } catch (Exception e) {
+                return false;
+            }
+        };
     }
 
     private String getTitleString(Class<?> clazz) {
