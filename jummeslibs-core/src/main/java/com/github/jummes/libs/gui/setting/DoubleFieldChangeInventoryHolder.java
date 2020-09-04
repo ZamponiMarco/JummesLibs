@@ -1,8 +1,12 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.util.ArrayList;
-import java.util.function.Consumer;
-
+import com.github.jummes.libs.annotation.Serializable;
+import com.github.jummes.libs.gui.PluginInventoryHolder;
+import com.github.jummes.libs.gui.setting.change.ChangeInformation;
+import com.github.jummes.libs.model.Model;
+import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -11,12 +15,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.jummes.libs.gui.PluginInventoryHolder;
-import com.github.jummes.libs.gui.setting.change.ChangeInformation;
-import com.github.jummes.libs.model.Model;
-import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.util.ItemUtils;
-import com.github.jummes.libs.util.MessageUtils;
+import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
@@ -36,11 +36,19 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
     private static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
 
     private double result;
+    private boolean annotationPresent;
+    private int minValue;
+    private int maxValue;
 
     public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                             ModelPath<? extends Model> path, ChangeInformation changeInformation) {
         super(plugin, parent, path, changeInformation);
         result = (double) changeInformation.getValue(path);
+        if (changeInformation.getField().isAnnotationPresent(Serializable.Number.class)) {
+            annotationPresent = true;
+            minValue = changeInformation.getField().getAnnotation(Serializable.Number.class).minValue();
+            maxValue = changeInformation.getField().getAnnotation(Serializable.Number.class).maxValue();
+        }
     }
 
     @Override
@@ -48,29 +56,54 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 
         this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
 
-        registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
-        registerClickConsumer(10, getModifyItem(-0.1, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
-                getModifyConsumer(-0.1));
-        registerClickConsumer(11, getModifyItem(-0.01, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
-                getModifyConsumer(-0.01));
-        registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
-        registerClickConsumer(15, getModifyItem(+0.01, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
-                getModifyConsumer(+0.01));
-        registerClickConsumer(16, getModifyItem(+0.1, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
-                getModifyConsumer(+0.1));
-        registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
+        fillModifyButtons();
         registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
     }
 
+    private void fillModifyButtons() {
+        if (!annotationPresent || (annotationPresent && result != minValue)) {
+            registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
+            registerClickConsumer(10, getModifyItem(-0.1, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
+                    getModifyConsumer(-0.1));
+            registerClickConsumer(11, getModifyItem(-0.01, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
+                    getModifyConsumer(-0.01));
+        } else {
+            registerEmptySlot(9);
+            registerEmptySlot(10);
+            registerEmptySlot(11);
+        }
+
+        registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
+
+        if (!annotationPresent || (annotationPresent && result != maxValue)) {
+            registerClickConsumer(15, getModifyItem(+0.01, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
+                    getModifyConsumer(+0.01));
+            registerClickConsumer(16, getModifyItem(+0.1, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
+                    getModifyConsumer(+0.1));
+            registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
+        } else {
+            registerEmptySlot(15);
+            registerEmptySlot(16);
+            registerEmptySlot(17);
+        }
+    }
+
     private Consumer<InventoryClickEvent> getModifyConsumer(double addition) {
         return e -> {
             if (e.getClick().equals(ClickType.LEFT)) {
-                result += addition;
-                result = Math.round(result * 100d) / 100d;
-                inventory.setItem(13, getConfirmItem());
+                double operationResult = result + addition;
+                if (annotationPresent) {
+                    if (operationResult > maxValue) {
+                        operationResult = maxValue;
+                    } else if (operationResult < minValue) {
+                        operationResult = minValue;
+                    }
+                }
+                result = Math.round(operationResult * 100d) / 100d;
+                fillModifyButtons();
             }
         };
     }
@@ -79,22 +112,22 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
         return e -> {
             HumanEntity p = e.getWhoClicked();
             changeInformation.setValue(path, result);
-            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(result)));
+            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), result));
             getBackConsumer().accept(e);
         };
     }
 
     private ItemStack getModifyItem(double i, ItemStack item) {
-        return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, String.valueOf(i)), new ArrayList<String>());
+        return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, i), new ArrayList<>());
     }
 
     private ItemStack getConfirmItem() {
         return ItemUtils.getNamedItem(wrapper.skullFromValue(SUBMIT_HEAD),
-                String.format(CONFIRM_ITEM, String.valueOf(result)), new ArrayList<String>());
+                String.format(CONFIRM_ITEM, result), new ArrayList<>());
     }
 
     private ItemStack getZeroItem() {
-        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<String>());
+        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<>());
     }
 
 }

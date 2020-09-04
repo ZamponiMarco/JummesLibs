@@ -1,13 +1,25 @@
 package com.github.jummes.libs.gui.setting.change;
 
 import com.github.jummes.libs.model.ModelPath;
+import lombok.Getter;
+import lombok.Setter;
 
-public interface ChangeInformation {
+import java.lang.reflect.Field;
 
-    void setValue(ModelPath<?> path, Object value);
+@Getter
+@Setter
+public abstract class ChangeInformation {
 
-    Object getValue(ModelPath<?> path);
+    protected Field field;
 
-    String getName();
+    public ChangeInformation(Field field) {
+        this.field = field;
+    }
+
+    public abstract void setValue(ModelPath<?> path, Object value);
+
+    public abstract Object getValue(ModelPath<?> path);
+
+    public abstract String getName();
 
 }

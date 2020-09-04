@@ -1,11 +1,9 @@
 package com.github.jummes.libs.gui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.IntStream;
-
+import com.github.jummes.libs.core.Libs;
+import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MessageUtils;
+import com.github.jummes.libs.wrapper.VersionWrapper;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -13,17 +11,16 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.jummes.libs.core.Libs;
-import com.github.jummes.libs.util.ItemUtils;
-import com.github.jummes.libs.util.MessageUtils;
-import com.github.jummes.libs.wrapper.VersionWrapper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public abstract class PluginInventoryHolder implements InventoryHolder {
 
-    private static final String BACK_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19";
-
     protected static final VersionWrapper wrapper = Libs.getWrapper();
-
+    private static final String BACK_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RjOWU0ZGNmYTQyMjFhMWZhZGMxYjViMmIxMWQ4YmVlYjU3ODc5YWYxYzQyMzYyMTQyYmFlMWVkZDUifX19";
     protected JavaPlugin plugin;
     protected PluginInventoryHolder parent;
 
@@ -64,6 +61,11 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
     protected void registerClickConsumer(int slot, ItemStack item, Consumer<InventoryClickEvent> clickConsumer) {
         inventory.setItem(slot, item);
         clickMap.put(slot, clickConsumer);
+    }
+
+    protected void registerEmptySlot(int slot) {
+        inventory.setItem(slot, null);
+        clickMap.remove(slot);
     }
 
     /**

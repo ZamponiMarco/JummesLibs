@@ -8,12 +8,10 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-public class CollectionAddInformation implements ChangeInformation {
-
-    private Field field;
+public class CollectionAddInformation extends ChangeInformation {
 
     public CollectionAddInformation(Field field) {
-        this.field = field;
+        super(field);
     }
 
     @Override

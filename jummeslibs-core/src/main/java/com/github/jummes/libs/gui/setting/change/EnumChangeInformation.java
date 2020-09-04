@@ -8,12 +8,10 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
-public class EnumChangeInformation implements ChangeInformation {
-
-    private Field field;
+public class EnumChangeInformation extends ChangeInformation {
 
     public EnumChangeInformation(Field field) {
-        this.field = field;
+        super(field);
     }
 
     @SuppressWarnings("rawtypes")

@@ -8,13 +8,12 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
-public class CollectionChangeInformation implements ChangeInformation {
+public class CollectionChangeInformation extends ChangeInformation {
 
-    private Field field;
     private Object currentValue;
 
     public CollectionChangeInformation(Field field, Object currentValue) {
-        this.field = field;
+        super(field);
         this.currentValue = currentValue;
     }
 

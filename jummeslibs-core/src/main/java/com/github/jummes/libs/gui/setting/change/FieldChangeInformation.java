@@ -8,12 +8,10 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
-public class FieldChangeInformation implements ChangeInformation {
-
-    private Field field;
+public class FieldChangeInformation extends ChangeInformation {
 
     public FieldChangeInformation(Field field) {
-        this.field = field;
+        super(field);
     }
 
     @Override

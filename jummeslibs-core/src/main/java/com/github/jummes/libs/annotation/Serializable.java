@@ -14,17 +14,28 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Serializable {
 
-    public boolean stringValue() default false;
+    boolean stringValue() default false;
 
-    public String headTexture() default "";
+    String headTexture() default "";
 
-    public String displayItem() default "";
+    String displayItem() default "";
 
-    public String description() default "";
+    String description() default "";
 
-    public boolean recreateTooltip() default false;
+    boolean recreateTooltip() default false;
 
-    public String fromList() default "";
+    String fromList() default "";
 
-    public String fromListMapper() default "";
+    String fromListMapper() default "";
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface Number {
+
+        int minValue() default Integer.MIN_VALUE;
+
+        int maxValue() default Integer.MAX_VALUE;
+
+    }
+
 }

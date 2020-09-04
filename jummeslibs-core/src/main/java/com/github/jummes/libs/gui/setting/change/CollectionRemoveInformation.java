@@ -7,13 +7,12 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
-public class CollectionRemoveInformation implements ChangeInformation {
+public class CollectionRemoveInformation extends ChangeInformation {
 
-    private Field field;
     private Object currentValue;
 
     public CollectionRemoveInformation(Field field, Object currentValue) {
-        this.field = field;
+        super(field);
         this.currentValue = currentValue;
     }
 
