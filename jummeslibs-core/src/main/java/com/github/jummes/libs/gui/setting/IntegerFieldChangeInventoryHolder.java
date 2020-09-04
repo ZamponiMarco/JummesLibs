@@ -79,7 +79,7 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
 
         registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
 
-        if (!annotationPresent || (annotationPresent && result != minValue)) {
+        if (!annotationPresent || (annotationPresent && result != maxValue)) {
             registerClickConsumer(15, getModifyItem(+1, wrapper.skullFromValue(ARROW_RIGHT_HEAD)), getModifyConsumer(+1));
             registerClickConsumer(16, getModifyItem(+10, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
                     getModifyConsumer(+10));
@@ -90,7 +90,7 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
             registerEmptySlot(16);
             registerEmptySlot(17);
         }
-
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
     private Consumer<InventoryClickEvent> getModifyConsumer(int i) {

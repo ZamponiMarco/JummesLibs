@@ -78,7 +78,7 @@ public class FloatFieldChangeInventoryHolder extends FieldChangeInventoryHolder 
 
         registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
 
-        if (!annotationPresent || (annotationPresent && result != minValue)) {
+        if (!annotationPresent || (annotationPresent && result != maxValue)) {
             registerClickConsumer(15, getModifyItem(+0.01f, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
                     getModifyConsumer(+0.01f));
             registerClickConsumer(16, getModifyItem(+0.1f, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
@@ -89,6 +89,7 @@ public class FloatFieldChangeInventoryHolder extends FieldChangeInventoryHolder 
             registerEmptySlot(16);
             registerEmptySlot(17);
         }
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
     private Consumer<InventoryClickEvent> getModifyConsumer(float addition) {

@@ -89,6 +89,7 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
             registerEmptySlot(16);
             registerEmptySlot(17);
         }
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
     private Consumer<InventoryClickEvent> getModifyConsumer(double addition) {
