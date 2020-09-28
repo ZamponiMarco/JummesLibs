@@ -44,14 +44,14 @@ public class BooleanFieldChangeInventoryHolder extends FieldChangeInventoryHolde
         return e -> {
             HumanEntity p = e.getWhoClicked();
             changeInformation.setValue(path, value);
-            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), String.valueOf(value)));
+            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), value));
             getBackConsumer().accept(e);
         };
     }
 
     private ItemStack getBooleanItem(boolean value) {
         return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(value ? TRUE_HEAD : FALSE_HEAD),
-                MessageUtils.color("&6&lModify -> &e&l" + String.valueOf(value)), new ArrayList<String>());
+                MessageUtils.color("&6&lModify -> &e&l" + value), new ArrayList<>());
     }
 
 }

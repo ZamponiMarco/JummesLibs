@@ -9,7 +9,7 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-import com.google.common.collect.Lists;
+import com.github.jummes.libs.util.ReflectUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -36,51 +37,66 @@ import java.util.stream.IntStream;
 public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 
     protected ModelPath<? extends Model> path;
+    private Class<?> clazz;
 
     public ModelObjectInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                       ModelPath<? extends Model> path) {
         super(plugin, parent);
         this.path = path;
+        this.clazz = path.getLast().getClass();
     }
 
     @Override
     protected void initializeInventory() {
-        Class<?> clazz = path.getLast().getClass();
+        // If path changed, get back to original path
+        while (!path.getLast().getClass().equals(this.clazz)) {
+            path.popModel();
+        }
+
+        // Get title and create inventory
         String title = getTitleString(clazz);
         this.inventory = Bukkit.createInventory(this, 27, title);
-        List<Field> fields = Lists.newArrayList(clazz.getDeclaredFields());
-        ClassUtils.getAllSuperclasses(clazz).forEach(
-                superClass -> fields.addAll(0, Lists.newArrayList(((Class<?>) superClass).getDeclaredFields())));
+
+        // List displayable fields and print them in GUI
+        List<Field> fields = ReflectUtils.getFieldsList(path.getLast());
         Field[] toPrint = fields.stream().filter(getItemFilter(clazz)).toArray(Field[]::new);
         int[] itemPositions = getItemPositions(toPrint.length);
+
         IntStream.range(0, toPrint.length).forEach(i -> {
             try {
-                ItemStack displayItem = !toPrint[i].getAnnotation(Serializable.class).headTexture().equals("") ?
-                        wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) :
-                        (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
+                ItemStack displayItem = getFieldDisplayItem(toPrint, i);
                 if (displayItem != null) {
-                    String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
-                    List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
-                    if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()) {
-                        lore.add(MessageUtils.color("&6&lLeft click &eto modify."));
-                        lore.add(MessageUtils.color("&6&lRight click &eto select"));
-                        lore.add(MessageUtils.color("&eanother type of this object."));
-                    }
                     registerClickConsumer(itemPositions[i],
-                            ItemUtils.getNamedItem(displayItem,
-                                    itemName,
-                                    lore),
-                            e -> {
-                                e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-                                        .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).getInventory());
-                            });
+                            displayItem,
+                            e -> e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+                                    .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).
+                                            getInventory()));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+
+        // Back button and fill the rest
         registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+    }
+
+    private ItemStack getFieldDisplayItem(Field[] toPrint, int i) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        ItemStack item = !toPrint[i].getAnnotation(Serializable.class).headTexture().equals("") ?
+                wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) :
+                (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
+        if (item != null) {
+            String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
+            List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
+            if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()) {
+                lore.add(MessageUtils.color("&6&lLeft click &eto modify."));
+                lore.add(MessageUtils.color("&6&lRight click &eto select"));
+                lore.add(MessageUtils.color("&eanother type of this object."));
+            }
+            return ItemUtils.getNamedItem(item, itemName, lore);
+        }
+        return null;
     }
 
     private Predicate<Field> getItemFilter(Class<?> clazz) {
@@ -111,7 +127,8 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                     && field.getType().getAnnotation(GUINameable.class).stringValue())) {
                 valueToPrint = field.getType().isAnnotationPresent(GUINameable.class)
                         && !field.getType().getAnnotation(GUINameable.class).GUIName().equalsIgnoreCase("")
-                        ? field.getType().getAnnotation(GUINameable.class).GUIName()
+                        ? (String) field.getType().getMethod(field.getType().getAnnotation(GUINameable.class).
+                        GUIName()).invoke(FieldUtils.readField(field, path.getLast(), true))
                         : FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
             } else {
                 Object obj = FieldUtils.readField(field, path.getLast(), true);

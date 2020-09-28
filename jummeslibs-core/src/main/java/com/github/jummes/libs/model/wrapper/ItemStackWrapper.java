@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @ToString
 @CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
-@GUINameable(GUIName = "Item")
+@GUINameable(GUIName = "getName")
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 
     private static final String MATERIAL_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E2ZTUzYmZiN2MxM2ZlZGJkZmU4OTY3NmY4MWZjMmNhNzk3NDYzNGE2ODQxNDFhZDFmNTE2NGYwZWRmNGEyIn19fQ=====";
@@ -69,6 +69,10 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
             Material m = (Material) obj;
             return new ItemStack(m);
         };
+    }
+
+    public String getName() {
+        return "Item";
     }
 
     public PluginInventoryHolder getCustomClickConsumer(JavaPlugin plugin, PluginInventoryHolder parent,
