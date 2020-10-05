@@ -43,14 +43,16 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                                       ModelPath<? extends Model> path) {
         super(plugin, parent);
         this.path = path;
-        this.clazz = path.getLast().getClass();
+        this.clazz = path.getLast() != null ? path.getLast().getClass() : null;
     }
 
     @Override
     protected void initializeInventory() {
         // If path changed, get back to original path
-        while (!path.getLast().getClass().equals(this.clazz)) {
-            path.popModel();
+        if (this.clazz != null) {
+            while (!path.getLast().getClass().equals(this.clazz)) {
+                path.popModel();
+            }
         }
 
         // Get title and create inventory
