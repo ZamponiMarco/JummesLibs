@@ -10,6 +10,7 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.github.jummes.libs.util.ReflectUtils;
+import lombok.SneakyThrows;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -56,7 +57,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         }
 
         // Get title and create inventory
-        String title = getTitleString(clazz);
+        String title = getTitleString(path.getLast());
         this.inventory = Bukkit.createInventory(this, 27, title);
 
         // List displayable fields and print them in GUI
@@ -113,9 +114,15 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         };
     }
 
-    private String getTitleString(Class<?> clazz) {
-        String name = clazz.isAnnotationPresent(GUINameable.class) ? clazz.getAnnotation(GUINameable.class).GUIName()
-                : clazz.getSimpleName();
+    @SneakyThrows
+    private String getTitleString(Model object) {
+        String name;
+        Class<?> clazz = object.getClass();
+        if (clazz.isAnnotationPresent(GUINameable.class)) {
+            name = (String) clazz.getMethod(clazz.getAnnotation(GUINameable.class).GUIName()).invoke(object);
+        }else {
+            name = clazz.getSimpleName();
+        }
         return MessageUtils.color("&c&l" + name);
     }
 

@@ -4,11 +4,13 @@ import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
+import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import lombok.NonNull;
 import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -28,36 +30,46 @@ import java.util.stream.Collectors;
 @GUINameable(GUIName = "getName")
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
 
-    private static final String MATERIAL_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2E2ZTUzYmZiN2MxM2ZlZGJkZmU4OTY3NmY4MWZjMmNhNzk3NDYzNGE2ODQxNDFhZDFmNTE2NGYwZWRmNGEyIn19fQ=====";
+    private static final boolean DEFAULT_NO_AMOUNT = true;
+
     private static final String AMOUNT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdkYzNlMjlhMDkyM2U1MmVjZWU2YjRjOWQ1MzNhNzllNzRiYjZiZWQ1NDFiNDk1YTEzYWJkMzU5NjI3NjUzIn19fQ===";
     private static final String META_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4MzM0MTUxYzIzNGY0MTY0NzExM2JlM2VhZGYyODdkMTgxNzExNWJhYzk0NDVmZmJiYmU5Y2IyYjI4NGIwIn19fQ=====";
 
-    @Serializable(headTexture = MATERIAL_HEAD, fromList = "materialList", fromListMapper = "materialListMapper")
+    @Serializable(displayItem = "getMaterialItem", fromList = "materialList", fromListMapper = "materialListMapper")
     @SetterMappable(setterMethod = "setType")
     private Material type;
-    @Serializable(headTexture = AMOUNT_HEAD)
+    @Serializable(displayItem = "getAmountItem")
     @SetterMappable(setterMethod = "setAmount")
+    @Serializable.Number(minValue = 1)
     private int amount;
     @Serializable(headTexture = META_HEAD)
     private ItemMetaWrapper meta;
+    @Serializable
+    @Serializable.Optional(defaultValue = "DEFAULT_NO_AMOUNT")
+    private boolean noAmount;
 
     public ItemStackWrapper() {
-        this(new ItemStack(Material.STONE));
+        this(DEFAULT_NO_AMOUNT);
     }
 
-    public ItemStackWrapper(ItemStack wrapped) {
+    public ItemStackWrapper(boolean noAmount) {
+        this(new ItemStack(Material.STONE), noAmount);
+    }
+
+    public ItemStackWrapper(@NonNull ItemStack wrapped, boolean noAmount) {
         super(wrapped);
         this.type = wrapped.getType();
         this.amount = wrapped.getAmount();
         this.meta = new ItemMetaWrapper(wrapped.getItemMeta());
+        this.noAmount = noAmount;
     }
 
     public static ItemStackWrapper deserialize(Map<String, Object> map) {
         ItemStack wrapped = ItemStack.deserialize(map);
         ItemMetaWrapper metaWrapper = (ItemMetaWrapper) map.getOrDefault("meta", null);
-        wrapped.setItemMeta(metaWrapper != null ? metaWrapper.wrapped : null);
-        ItemStackWrapper wrapper = new ItemStackWrapper(wrapped);
-        return wrapper;
+        wrapped.setItemMeta(metaWrapper.wrapped);
+        boolean noAmount = (boolean) map.getOrDefault("noAmount", DEFAULT_NO_AMOUNT);
+        return new ItemStackWrapper(wrapped, noAmount);
     }
 
     public static List<Object> materialList(ModelPath<?> path) {
@@ -69,6 +81,17 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
             Material m = (Material) obj;
             return new ItemStack(m);
         };
+    }
+
+    public ItemStack getAmountItem() {
+        if (!noAmount) {
+            return Libs.getWrapper().skullFromValue(AMOUNT_HEAD);
+        }
+        return null;
+    }
+
+    public ItemStack getMaterialItem() {
+        return new ItemStack(type);
     }
 
     public String getName() {
@@ -104,6 +127,9 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     public Map<String, Object> serialize() {
         Map<String, Object> map = wrapped.serialize();
         map.put("meta", meta);
+        if (noAmount != DEFAULT_NO_AMOUNT) {
+            map.put("noAmount", noAmount);
+        }
         return map;
     }
 

@@ -5,6 +5,7 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.model.Model;
+import lombok.NonNull;
 import lombok.ToString;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -28,7 +29,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
     @SetterMappable(setterMethod = "setLore")
     private List<String> lore;
 
-    public ItemMetaWrapper(ItemMeta wrapped) {
+    public ItemMetaWrapper(@NonNull ItemMeta wrapped) {
         super(wrapped);
         this.displayName = wrapped.getDisplayName();
         this.lore = wrapped.getLore() == null ? new ArrayList<>() : wrapped.getLore();
@@ -47,7 +48,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Model {
     }
 
     public String getName() {
-        return "Item";
+        return "ItemMeta";
     }
 
     @Override

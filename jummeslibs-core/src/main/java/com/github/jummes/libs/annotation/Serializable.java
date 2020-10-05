@@ -30,6 +30,13 @@ public @interface Serializable {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
+    @interface Optional {
+
+        String defaultValue();
+
+    }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
     @interface Number {
 
         int minValue() default Integer.MIN_VALUE;
