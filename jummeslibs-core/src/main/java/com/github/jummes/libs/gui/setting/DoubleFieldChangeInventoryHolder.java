@@ -39,6 +39,7 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
     private boolean annotationPresent;
     private int minValue;
     private int maxValue;
+    private double scale;
 
     public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                             ModelPath<? extends Model> path, ChangeInformation changeInformation) {
@@ -48,7 +49,21 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
             annotationPresent = true;
             minValue = changeInformation.getField().getAnnotation(Serializable.Number.class).minValue();
             maxValue = changeInformation.getField().getAnnotation(Serializable.Number.class).maxValue();
+            scale = changeInformation.getField().getAnnotation(Serializable.Number.class).scale();
+        } else {
+            scale = 0.01;
         }
+    }
+
+    public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
+                                            ModelPath<? extends Model> path, ChangeInformation changeInformation,
+                                            Serializable.Number values) {
+        super(plugin, parent, path, changeInformation);
+        result = (double) changeInformation.getValue(path);
+        annotationPresent = true;
+        minValue = values.minValue();
+        maxValue = values.maxValue();
+        scale = values.scale();
     }
 
     @Override
@@ -64,12 +79,12 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
     }
 
     private void fillModifyButtons() {
-        if (!annotationPresent || (annotationPresent && result != minValue)) {
-            registerClickConsumer(9, getModifyItem(-1, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-1));
-            registerClickConsumer(10, getModifyItem(-0.1, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
-                    getModifyConsumer(-0.1));
-            registerClickConsumer(11, getModifyItem(-0.01, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
-                    getModifyConsumer(-0.01));
+        if (!annotationPresent || result != minValue) {
+            registerClickConsumer(9, getModifyItem(-scale * 100, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-scale * 100));
+            registerClickConsumer(10, getModifyItem(-scale * 10, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
+                    getModifyConsumer(-scale * 10));
+            registerClickConsumer(11, getModifyItem(-scale, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
+                    getModifyConsumer(-scale));
         } else {
             registerEmptySlot(9);
             registerEmptySlot(10);
@@ -78,12 +93,12 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
 
         registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
 
-        if (!annotationPresent || (annotationPresent && result != maxValue)) {
-            registerClickConsumer(15, getModifyItem(+0.01, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
-                    getModifyConsumer(+0.01));
-            registerClickConsumer(16, getModifyItem(+0.1, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
-                    getModifyConsumer(+0.1));
-            registerClickConsumer(17, getModifyItem(+1, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+1));
+        if (!annotationPresent || result != maxValue) {
+            registerClickConsumer(15, getModifyItem(+scale, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
+                    getModifyConsumer(+scale));
+            registerClickConsumer(16, getModifyItem(+scale * 10, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
+                    getModifyConsumer(scale * 10));
+            registerClickConsumer(17, getModifyItem(+scale * 100, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+scale * 100));
         } else {
             registerEmptySlot(15);
             registerEmptySlot(16);

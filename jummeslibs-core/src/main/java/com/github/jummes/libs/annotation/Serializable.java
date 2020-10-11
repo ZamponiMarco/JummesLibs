@@ -43,6 +43,8 @@ public @interface Serializable {
 
         int maxValue() default Integer.MAX_VALUE;
 
+        double scale() default 0.01;
+
     }
 
 }

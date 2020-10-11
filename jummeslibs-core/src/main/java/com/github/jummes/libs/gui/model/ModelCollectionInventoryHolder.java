@@ -140,13 +140,8 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
             path.addModel(model);
             e.getWhoClicked().openInventory(new ModelObjectInventoryHolder(plugin, this, path).getInventory());
         } else if (e.getClick().equals(ClickType.RIGHT)) {
-            ((Collection<S>) FieldUtils.readField(field,
-                    path.getLast() != null ? path.getLast() : path.getModelManager(), true)).remove(model);
-            path.addModel(model);
-            path.deleteModel();
-            path.popModel();
-            model.onRemoval();
-            e.getWhoClicked().openInventory(getInventory());
+            e.getWhoClicked().openInventory(new RemoveConfirmationInventoryHolder(plugin, this, path, model,
+                    field).getInventory());
         } else if (ClassUtils.isAssignable(model.getClass(), Cloneable.class)
                 && e.getClick().equals(ClickType.MIDDLE)) {
             try {
