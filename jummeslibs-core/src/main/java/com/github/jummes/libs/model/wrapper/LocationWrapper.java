@@ -15,7 +15,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
-import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.model.Model;
@@ -33,19 +32,14 @@ public class LocationWrapper extends ModelWrapper<Location> implements Model {
     private static final String PITCH_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTk5YWFmMjQ1NmE2MTIyZGU4ZjZiNjI2ODNmMmJjMmVlZDlhYmI4MWZkNWJlYTFiNGMyM2E1ODE1NmI2NjkifX19===";
 
     @Serializable(headTexture = Y_HEAD)
-    @SetterMappable(setterMethod = "setY")
     private double y;
     @Serializable(headTexture = X_HEAD)
-    @SetterMappable(setterMethod = "setX")
     private double x;
     @Serializable(headTexture = Z_HEAD)
-    @SetterMappable(setterMethod = "setZ")
     private double z;
     @Serializable(headTexture = YAW_HEAD)
-    @SetterMappable(setterMethod = "setYaw")
     private float yaw;
     @Serializable(headTexture = PITCH_HEAD)
-    @SetterMappable(setterMethod = "setPitch")
     private float pitch;
 
     public LocationWrapper(Location wrapped) {
@@ -57,7 +51,29 @@ public class LocationWrapper extends ModelWrapper<Location> implements Model {
         this.pitch = wrapped.getPitch();
     }
 
-    @SuppressWarnings("unused")
+    @Override
+    public void onModify(Field field) {
+        if (field.getDeclaringClass().equals(LocationWrapper.class)){
+            switch (field.getName()){
+                case "x":
+                    wrapped.setX(x);
+                    break;
+                case "y":
+                    wrapped.setY(y);
+                    break;
+                case "z":
+                    wrapped.setZ(z);
+                    break;
+                case "yaw":
+                    wrapped.setYaw(yaw);
+                    break;
+                case "pitch":
+                    wrapped.setPitch(pitch);
+                    break;
+            }
+        }
+    }
+
     public PluginInventoryHolder getCustomClickConsumer(JavaPlugin plugin, PluginInventoryHolder parent,
                                                         ModelPath<? extends Model> path, Field field, InventoryClickEvent e) {
         if (e.getClick().equals(ClickType.LEFT)) {

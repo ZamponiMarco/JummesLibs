@@ -24,12 +24,9 @@ public class CollectionAddInformation extends ChangeInformation {
             collection = (Collection<Object>) FieldUtils.readField(field,
                     path.getLast() == null ? path.getModelManager() : path.getLast(), true);
             collection.add(value);
-            if (path.getLast() instanceof ModelWrapper<?>) {
-                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-            }
             if (value instanceof Model)
                 path.addModel((Model) value);
-            path.saveModel();
+            path.saveModel(field);
         } catch (Exception e) {
             e.printStackTrace();
         }

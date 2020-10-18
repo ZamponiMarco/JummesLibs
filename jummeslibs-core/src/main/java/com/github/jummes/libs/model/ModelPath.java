@@ -1,10 +1,12 @@
 package com.github.jummes.libs.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.ToString;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class to describe the path of models that contains other models in
@@ -51,10 +53,14 @@ public class ModelPath<T extends Model> {
         return false;
     }
 
-    public void saveModel() {
-        root.onModify();
-        modelPath.forEach(Model::onModify);
+    public void saveModel(Field field) {
+        Lists.reverse(modelPath).forEach(model -> model.onModify(field));
+        root.onModify(field);
         modelManager.saveModel(root);
+    }
+
+    public void saveModel() {
+        saveModel(null);
     }
 
     public void deleteModel() {

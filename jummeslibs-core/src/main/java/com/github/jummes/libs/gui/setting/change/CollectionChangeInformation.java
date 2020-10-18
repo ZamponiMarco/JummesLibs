@@ -33,10 +33,7 @@ public class CollectionChangeInformation extends ChangeInformation {
                 collection.remove(currentValue);
                 collection.add(value);
             }
-            if (path.getLast() instanceof ModelWrapper<?>) {
-                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-            }
-            path.saveModel();
+            path.saveModel(field);
         } catch (Exception e) {
             e.printStackTrace();
         }

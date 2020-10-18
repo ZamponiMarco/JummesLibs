@@ -3,7 +3,6 @@ package com.github.jummes.libs.model.wrapper;
 import com.github.jummes.libs.annotation.CustomClickable;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
-import com.github.jummes.libs.annotation.SetterMappable;
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
@@ -11,6 +10,7 @@ import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @ToString
+@Setter
 @CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
 @GUINameable(GUIName = "getName")
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
@@ -36,10 +37,8 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     private static final String META_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4MzM0MTUxYzIzNGY0MTY0NzExM2JlM2VhZGYyODdkMTgxNzExNWJhYzk0NDVmZmJiYmU5Y2IyYjI4NGIwIn19fQ=====";
 
     @Serializable(displayItem = "getMaterialItem", fromList = "materialList", fromListMapper = "materialListMapper")
-    @SetterMappable(setterMethod = "setType")
     private Material type;
     @Serializable(displayItem = "getAmountItem")
-    @SetterMappable(setterMethod = "setAmount")
     @Serializable.Number(minValue = 1)
     private int amount;
     @Serializable(headTexture = META_HEAD)
@@ -81,6 +80,23 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
             Material m = (Material) obj;
             return new ItemStack(m);
         };
+    }
+
+    @Override
+    public void onModify(Field field) {
+        Class<?> clazz = field.getDeclaringClass();
+        if (clazz.equals(ItemMetaWrapper.class)) {
+            this.wrapped.setItemMeta(this.meta.wrapped);
+        } else if (clazz.equals(ItemStackWrapper.class)) {
+            switch (field.getName()){
+                case "type":
+                    wrapped.setType(type);
+                    break;
+                case "amount":
+                    wrapped.setAmount(amount);
+                    break;
+            }
+        }
     }
 
     public ItemStack getAmountItem() {
@@ -131,11 +147,6 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
             map.put("noAmount", noAmount);
         }
         return map;
-    }
-
-    @Override
-    public ItemStack getGUIItem() {
-        return null;
     }
 
 }

@@ -25,10 +25,7 @@ public class CollectionRemoveInformation extends ChangeInformation {
                 path.getRoot().beforeModify();
             }
             collection.remove(currentValue);
-            if (path.getLast() instanceof ModelWrapper<?>) {
-                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-            }
-            path.saveModel();
+            path.saveModel(field);
         } catch (Exception e) {
             e.printStackTrace();
         }

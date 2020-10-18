@@ -18,7 +18,6 @@ import java.util.Map;
  *
  * @author Marco
  */
-@SuppressWarnings("unused")
 public interface Model extends ConfigurationSerializable {
 
     default ItemStack getGUIItem() {
@@ -40,7 +39,7 @@ public interface Model extends ConfigurationSerializable {
     default void beforeModify() {
     }
 
-    default void onModify() {
+    default void onModify(Field field) {
     }
 
     default void onCreation() {

@@ -21,10 +21,7 @@ public class FieldChangeInformation extends ChangeInformation {
                 path.getRoot().beforeModify();
             }
             FieldUtils.writeField(field, path.getLast(), value, true);
-            if (path.getLast() instanceof ModelWrapper<?>) {
-                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-            }
-            path.saveModel();
+            path.saveModel(field);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

@@ -14,7 +14,6 @@ public class EnumChangeInformation extends ChangeInformation {
         super(field);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public void setValue(ModelPath<?> path, Object value) {
         Object enumerableValue = Enum.valueOf((Class<? extends Enum>) field.getType(), value.toString());
@@ -23,10 +22,7 @@ public class EnumChangeInformation extends ChangeInformation {
                 path.getRoot().beforeModify();
             }
             FieldUtils.writeField(field, path.getLast(), enumerableValue, true);
-            if (path.getLast() instanceof ModelWrapper<?>) {
-                ((ModelWrapper<?>) path.getLast()).notifyObservers(field);
-            }
-            path.saveModel();
+            path.saveModel(field);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
