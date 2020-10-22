@@ -1,11 +1,15 @@
 package com.github.jummes.libs.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.Lists;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ItemUtils {
 
@@ -47,6 +51,23 @@ public class ItemUtils {
             sameItemMeta = first.getItemMeta().toString().equals(second.getItemMeta().toString());
         }
         return sameType && sameHasItemMeta && sameItemMeta && sameEnchantments;
+    }
+
+    public static List<Object> getMaterialList() {
+        return Arrays.stream(Material.values()).filter(
+                m -> !m.name().contains("LEGACY") && m.isItem())
+                .collect(Collectors.toList());
+    }
+
+    public static Function<Object, ItemStack> getMaterialMapper() {
+        return obj -> {
+            Material material = (Material) obj;
+            if (material.equals(Material.AIR)) {
+                return ItemUtils.getNamedItem(new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE),
+                        "&6&lAir", Lists.newArrayList());
+            }
+            return new ItemStack(material);
+        };
     }
 
 }

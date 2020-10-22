@@ -14,6 +14,7 @@ import com.github.jummes.libs.gui.setting.change.FieldChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
+import com.github.jummes.libs.util.ItemUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.ClassUtils;
@@ -135,14 +136,15 @@ public class FieldInventoryHolderFactory {
                                 ChangeInformation.class)
                         .newInstance(plugin, parent, path, new CollectionChangeInformation(field, currentValue));
             } else if (containedClass.isEnum()) {
-                Function<Object, ItemStack> mapper = null;
-                List<Object> objects = Arrays.stream(containedClass.getEnumConstants())
-                        .map(obj -> ((Enum<?>) obj).name()).collect(Collectors.toList());
+                Function<Object, ItemStack> mapper;
+                List<Object> objects;
                 if (containedClass.equals(Material.class)) {
-                    mapper = obj -> new ItemStack(Material.valueOf((String) obj));
-                    objects = objects.stream().filter(
-                            obj -> !((String) obj).contains("LEGACY") && Material.valueOf((String) obj).isItem())
-                            .collect(Collectors.toList());
+                    mapper = ItemUtils.getMaterialMapper();
+                    objects = ItemUtils.getMaterialList();
+                } else {
+                    mapper = null;
+                    objects = Arrays.stream(containedClass.getEnumConstants())
+                            .map(obj -> ((Enum<?>) obj).name()).collect(Collectors.toList());
                 }
                 return new FromListFieldChangeInventoryHolder(plugin, parent, path,
                         new CollectionChangeInformation(field, currentValue), 1, objects, mapper);

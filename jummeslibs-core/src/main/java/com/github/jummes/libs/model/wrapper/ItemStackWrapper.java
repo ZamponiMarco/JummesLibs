@@ -9,6 +9,7 @@ import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.ItemUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,11 +20,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @ToString
 @Setter
@@ -72,14 +71,11 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
     }
 
     public static List<Object> materialList(ModelPath<?> path) {
-        return Arrays.stream(Material.values()).filter(m -> !m.name().toLowerCase().contains("legacy") && m.isItem()).collect(Collectors.toList());
+        return ItemUtils.getMaterialList();
     }
 
     public static Function<Object, ItemStack> materialListMapper() {
-        return obj -> {
-            Material m = (Material) obj;
-            return new ItemStack(m);
-        };
+        return ItemUtils.getMaterialMapper();
     }
 
     @Override
@@ -88,7 +84,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
         if (clazz.equals(ItemMetaWrapper.class)) {
             this.wrapped.setItemMeta(this.meta.wrapped);
         } else if (clazz.equals(ItemStackWrapper.class)) {
-            switch (field.getName()){
+            switch (field.getName()) {
                 case "type":
                     wrapped.setType(type);
                     break;

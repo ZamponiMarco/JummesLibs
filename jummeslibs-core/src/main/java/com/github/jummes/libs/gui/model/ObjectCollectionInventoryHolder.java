@@ -1,19 +1,5 @@
 package com.github.jummes.libs.gui.model;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.FieldInventoryHolderFactory;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
@@ -26,6 +12,21 @@ import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder {
 
@@ -54,28 +55,20 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
                     Math.min(objects.size(), page * OBJECTS_NUMBER));
             int maxPage = (int) Math.ceil((objects.size() > 0 ? objects.size() : 1) / (double) OBJECTS_NUMBER);
             this.inventory = Bukkit.createInventory(this, 54, MessageUtils.color("&c&l" + field.getName()));
+
+            Class<?> containedClass = TypeToken.of(field.getGenericType())
+                    .resolveType(field.getType().getTypeParameters()[0]).getRawType();
+
             IntStream.range(0, toList.size()).forEach(i -> {
-                registerClickConsumer(i, ItemUtils.getNamedItem(new ItemStack(Material.PAPER), toList.get(i).toString(),
-                        new ArrayList<String>()), e -> {
-                    if (e.getClick().equals(ClickType.LEFT)) {
-                        e.getWhoClicked().openInventory(
-                                FieldInventoryHolderFactory.createFieldInCollectionInventoryHolder(plugin, this,
-                                        path, field, toList.get(i)).getInventory());
-                    } else if (e.getClick().equals(ClickType.RIGHT)) {
-                        new CollectionRemoveInformation(field, toList.get(i)).setValue(path, null);
-                        e.getWhoClicked().openInventory(getInventory());
-                    }
-                });
+                registerClickConsumer(i, getEnumItem(toList.get(i), containedClass),
+                        getClickConsumer(toList, i));
             });
 
             registerClickConsumer(50, getAddItem(), e -> {
-                Class<?> containedClass = TypeToken.of(field.getGenericType())
-                        .resolveType(field.getType().getTypeParameters()[0]).getRawType();
                 ChangeInformation info = new CollectionAddInformation(field);
                 if (containedClass.isEnum()) {
                     if (containedClass.getEnumConstants().length > 0) {
                         info.setValue(path, ((Enum<?>) containedClass.getEnumConstants()[0]).name());
-                    } else {
                     }
                 } else {
                     try {
@@ -90,7 +83,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
             if (page != maxPage) {
                 registerClickConsumer(52,
                         ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
-                                MessageUtils.color("&6&lNext page"), new ArrayList<String>()),
+                                MessageUtils.color("&6&lNext page"), new ArrayList<>()),
                         e -> e.getWhoClicked().openInventory(
                                 new ObjectCollectionInventoryHolder(plugin, parent, path, field, page + 1)
                                         .getInventory()));
@@ -98,7 +91,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
             if (page != 1) {
                 registerClickConsumer(51,
                         ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
-                                MessageUtils.color("&6&lPrevious page"), new ArrayList<String>()),
+                                MessageUtils.color("&6&lPrevious page"), new ArrayList<>()),
                         e -> e.getWhoClicked().openInventory(
                                 new ObjectCollectionInventoryHolder(plugin, parent, path, field, page - 1)
                                         .getInventory()));
@@ -110,9 +103,30 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
         }
     }
 
+    private ItemStack getEnumItem(Object s, Class clazz) {
+        if (clazz.equals(Material.class)) {
+            return ItemUtils.getMaterialMapper().apply(Material.valueOf(s.toString()));
+        }
+        return ItemUtils.getNamedItem(new ItemStack(Material.PAPER), s.toString(),
+                Lists.newArrayList());
+    }
+
+    private Consumer<InventoryClickEvent> getClickConsumer(List<Object> toList, int i) {
+        return e -> {
+            if (e.getClick().equals(ClickType.LEFT)) {
+                e.getWhoClicked().openInventory(
+                        FieldInventoryHolderFactory.createFieldInCollectionInventoryHolder(plugin, this,
+                                path, field, toList.get(i)).getInventory());
+            } else if (e.getClick().equals(ClickType.RIGHT)) {
+                new CollectionRemoveInformation(field, toList.get(i)).setValue(path, null);
+                e.getWhoClicked().openInventory(getInventory());
+            }
+        };
+    }
+
     private ItemStack getAddItem() {
         return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ADD_ITEM), MessageUtils.color("&6&lAdd"),
-                new ArrayList<String>());
+                new ArrayList<>());
     }
 
 }
