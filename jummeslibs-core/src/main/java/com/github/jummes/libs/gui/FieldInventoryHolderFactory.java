@@ -54,6 +54,15 @@ public class FieldInventoryHolderFactory {
                         1, objects, mapper);
             }
             /*
+             * Is a boolean
+             */
+            else if (clazz.equals(boolean.class)) {
+                ChangeInformation changeInformation = new FieldChangeInformation(field);
+                boolean current = (boolean) changeInformation.getValue(path);
+                changeInformation.setValue(path, !current);
+                return parent;
+            }
+            /*
              * Is a primitive type
              */
             else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
