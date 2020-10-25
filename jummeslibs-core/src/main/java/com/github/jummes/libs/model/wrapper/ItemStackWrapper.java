@@ -28,7 +28,7 @@ import java.util.function.Function;
 @Setter
 @CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
 @GUINameable(GUIName = "getName")
-public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Model {
+public class ItemStackWrapper extends ModelWrapper<ItemStack> {
 
     private static final boolean DEFAULT_NO_AMOUNT = true;
 
