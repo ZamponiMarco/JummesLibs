@@ -94,7 +94,6 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
             List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
             Arrays.stream(toPrint[i].getAnnotation(Serializable.class).additionalDescription()).forEach(description -> {
                 lore.addAll(Libs.getLocale().getList(description));
-                System.out.println(description);
             });
             return ItemUtils.getNamedItem(item, itemName, lore);
         }
