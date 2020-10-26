@@ -22,7 +22,7 @@ public @interface Serializable {
 
     String description() default "";
 
-    boolean recreateTooltip() default false;
+    String[] additionalDescription() default {};
 
     String fromList() default "";
 

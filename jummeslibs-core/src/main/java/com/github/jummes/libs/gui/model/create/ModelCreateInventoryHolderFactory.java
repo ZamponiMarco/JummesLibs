@@ -17,6 +17,12 @@ public class ModelCreateInventoryHolderFactory {
                                                Field field) {
         boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
         Class<? extends Model> model = getModelClassFromField(field, isCollection);
+        return create(plugin, parent, path, field, model);
+    }
+
+    public static CreateInventoryHolder create(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
+                                               Field field, Class<? extends Model> model) {
+        boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
         if (model.isAnnotationPresent(Enumerable.Parent.class)) {
             return new EnumerableModelCreateInventoryHolder(plugin, parent, path, field, model, isCollection);
         } else {
@@ -24,7 +30,7 @@ public class ModelCreateInventoryHolderFactory {
         }
     }
 
-    private static Class<Model> getModelClassFromField(Field field, boolean isCollection) {
+    private static Class<? extends Model> getModelClassFromField(Field field, boolean isCollection) {
         Class<?> fieldClass = field.getType();
         return isCollection
                 ? (Class<Model>) TypeToken.of(field.getGenericType()).resolveType(fieldClass.getTypeParameters()[0])

@@ -92,11 +92,10 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         if (item != null) {
             String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
             List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
-            if (toPrint[i].getAnnotation(Serializable.class).recreateTooltip()) {
-                lore.add(MessageUtils.color("&6&lLeft click &eto modify."));
-                lore.add(MessageUtils.color("&6&lRight click &eto select"));
-                lore.add(MessageUtils.color("&eanother type of this object."));
-            }
+            Arrays.stream(toPrint[i].getAnnotation(Serializable.class).additionalDescription()).forEach(description -> {
+                lore.addAll(Libs.getLocale().getList(description));
+                System.out.println(description);
+            });
             return ItemUtils.getNamedItem(item, itemName, lore);
         }
         return null;
