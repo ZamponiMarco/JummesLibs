@@ -1,21 +1,21 @@
 package com.github.jummes.libs.model.wrapper;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.tools.DocumentationTool.Location;
-
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
+import com.github.jummes.libs.model.Model;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
+
+import javax.tools.DocumentationTool.Location;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public abstract class ModelWrapper<T>{
+public abstract class ModelWrapper<T> implements Model {
 
     @EqualsAndHashCode.Include
     protected T wrapped;
