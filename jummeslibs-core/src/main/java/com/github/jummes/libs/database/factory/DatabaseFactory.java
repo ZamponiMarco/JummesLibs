@@ -1,19 +1,28 @@
 package com.github.jummes.libs.database.factory;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.database.Database;
 import com.github.jummes.libs.database.YamlDatabase;
 import com.github.jummes.libs.model.Model;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatabaseFactory {
 
+    @Getter
+    private static Map<String, Class<? extends Database>> map = new HashMap<>();
+
+    static {
+        map.put("yaml", YamlDatabase.class);
+    }
+
+    @SneakyThrows
     public static <T extends Model> Database<T> createDatabase(String databaseType, Class<T> modelClass, JavaPlugin plugin) {
-        switch (databaseType) {
-            case "yaml":
-            default:
-                return new YamlDatabase<T>(modelClass, plugin);
-        }
+        return map.getOrDefault(databaseType, YamlDatabase.class).getConstructor(Class.class, JavaPlugin.class).
+                newInstance(modelClass, plugin);
     }
 
 }
