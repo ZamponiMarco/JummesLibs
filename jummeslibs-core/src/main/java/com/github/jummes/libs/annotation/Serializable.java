@@ -47,4 +47,12 @@ public @interface Serializable {
 
     }
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    @interface CustomClickable {
+
+        String customClickConsumer() default "";
+
+    }
+
 }

@@ -68,7 +68,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
                 ChangeInformation info = new CollectionAddInformation(field);
                 if (containedClass.isEnum()) {
                     if (containedClass.getEnumConstants().length > 0) {
-                        info.setValue(path, ((Enum<?>) containedClass.getEnumConstants()[0]).name());
+                        info.setValue(path, containedClass.getEnumConstants()[0]);
                     }
                 } else {
                     try {

@@ -16,6 +16,7 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,9 +72,22 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                 if (displayItem != null) {
                     registerClickConsumer(itemPositions[i],
                             displayItem,
-                            e -> e.getWhoClicked().openInventory(FieldInventoryHolderFactory
-                                    .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).
-                                            getInventory()));
+                            e -> {
+                                if (toPrint[i].isAnnotationPresent(Serializable.CustomClickable.class)) {
+                                    try {
+                                        path.getLast().getClass().getMethod(toPrint[i].getAnnotation(Serializable.CustomClickable.class).
+                                                        customClickConsumer(), JavaPlugin.class, PluginInventoryHolder.class,
+                                                ModelPath.class, Field.class, InventoryClickEvent.class).
+                                                invoke(path.getLast(), plugin, this, path, toPrint[i], e);
+                                    } catch (Exception exception) {
+                                        exception.printStackTrace();
+                                    }
+                                } else {
+                                    e.getWhoClicked().openInventory(FieldInventoryHolderFactory
+                                            .createFieldInventoryHolder(plugin, this, path, toPrint[i], e).
+                                                    getInventory());
+                                }
+                            });
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -118,7 +132,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         Class<?> clazz = object.getClass();
         if (clazz.isAnnotationPresent(GUINameable.class)) {
             name = (String) clazz.getMethod(clazz.getAnnotation(GUINameable.class).GUIName()).invoke(object);
-        }else {
+        } else {
             name = clazz.getSimpleName();
         }
         return MessageUtils.color("&c&l" + name);
