@@ -3,7 +3,7 @@ package com.github.jummes.libs.model.wrapper;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.core.Libs;
-import com.github.jummes.libs.model.Model;
+import com.github.jummes.libs.util.MessageUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ToString
 @Setter
@@ -40,6 +41,14 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> {
             Constructor<?> cons = Libs.getWrapper().getCraftMetaItemClass().getDeclaredConstructor(Map.class);
             cons.setAccessible(true);
             ItemMeta meta = (ItemMeta) cons.newInstance(map);
+            if (map.get("display-name") != null) {
+                meta.setDisplayName(MessageUtils.getColoredString((String)
+                        map.getOrDefault("display-name", null)));
+            }
+            if (map.get("lore") != null) {
+                meta.setLore(((List<String>) map.getOrDefault("lore", null)).stream().map(s ->
+                        MessageUtils.getColoredString(s)).collect(Collectors.toList()));
+            }
             return new ItemMetaWrapper(meta);
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package wrapper;
+package com.github.jummes.libs.wrapper;
 
 
 import com.github.jummes.libs.wrapper.VersionWrapper;
