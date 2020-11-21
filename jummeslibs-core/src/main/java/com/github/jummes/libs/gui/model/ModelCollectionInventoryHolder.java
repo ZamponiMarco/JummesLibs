@@ -9,7 +9,6 @@ import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-import com.github.jummes.libs.util.ReflectUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -19,7 +18,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,11 +28,11 @@ import java.util.stream.Collectors;
 
 public class ModelCollectionInventoryHolder<S extends Model> extends PluginInventoryHolder {
 
-    private static final String ADD_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMGZjNmRjZjczOWMxMWZlY2U0M2NkZDE4NGRlYTc5MWNmNzU3YmY3YmQ5MTUzNmZkYmM5NmZhNDdhY2ZiIn19fQ==";
-    private static final String NEXT_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19==";
-    private static final String PREVIOUS_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19==";
+    protected static final String ADD_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMGZjNmRjZjczOWMxMWZlY2U0M2NkZDE4NGRlYTc5MWNmNzU3YmY3YmQ5MTUzNmZkYmM5NmZhNDdhY2ZiIn19fQ==";
+    protected static final String NEXT_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19==";
+    protected static final String PREVIOUS_PAGE_ITEM = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19==";
 
-    private static final int MODELS_NUMBER = 50;
+    protected static final int MODELS_NUMBER = 50;
 
     protected ModelPath<S> path;
     protected int page;
@@ -92,17 +90,13 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
      * @param model
      * @param e
      */
-    private void executeClickConsumer(S model, InventoryClickEvent e) {
+    protected void executeClickConsumer(S model, InventoryClickEvent e) {
         try {
-            List<Annotation> annotations = ReflectUtils.getAnnotationsList(model);
-            Annotation a = annotations.stream().filter(annotation ->
-                    annotation instanceof CustomClickable
-                            && !((CustomClickable) annotation).customCollectionClickConsumer().equals("")).
-                    findFirst().orElse(null);
-            if (a != null) {
+            if (model.getClass().isAnnotationPresent(CustomClickable.class) && !model.getClass().
+                    getAnnotation(CustomClickable.class).customCollectionClickConsumer().equals("")) {
                 model.getClass()
                         .getMethod(
-                                ((CustomClickable) a).customCollectionClickConsumer(),
+                                model.getClass().getAnnotation(CustomClickable.class).customCollectionClickConsumer(),
                                 JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
                                 InventoryClickEvent.class)
                         .invoke(model, plugin, this, path, field, e);
@@ -114,7 +108,7 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
-    private void placeCollectionOnlyItems(int maxPage) {
+    protected void placeCollectionOnlyItems(int maxPage) {
         registerClickConsumer(50, getAddItem(), e -> {
             e.getWhoClicked().openInventory(
                     ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
@@ -123,19 +117,23 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
             registerClickConsumer(52,
                     ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
                             MessageUtils.color("&6&lNext page"), new ArrayList<>()),
-                    e -> e.getWhoClicked().openInventory(
-                            new ModelCollectionInventoryHolder<S>(plugin, parent, path, field, page + 1, filter).getInventory()));
+                    e -> {
+                        page++;
+                        e.getWhoClicked().openInventory(getInventory());
+                    });
         }
         if (page != 1) {
             registerClickConsumer(51,
                     ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
                             MessageUtils.color("&6&lPrevious page"), new ArrayList<>()),
-                    e -> e.getWhoClicked().openInventory(
-                            new ModelCollectionInventoryHolder<S>(plugin, parent, path, field, page - 1, filter).getInventory()));
+                    e -> {
+                        page--;
+                        e.getWhoClicked().openInventory(getInventory());
+                    });
         }
     }
 
-    private void defaultClickConsumer(S model, InventoryClickEvent e) throws IllegalAccessException {
+    protected void defaultClickConsumer(S model, InventoryClickEvent e) throws IllegalAccessException {
         if (e.getClick().equals(ClickType.LEFT)) {
             path.addModel(model);
             e.getWhoClicked().openInventory(new ModelObjectInventoryHolder(plugin, this, path).getInventory());
@@ -158,7 +156,7 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
-    private ItemStack getAddItem() {
+    protected ItemStack getAddItem() {
         return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ADD_ITEM), MessageUtils.color("&6&lAdd"),
                 new ArrayList<>());
     }

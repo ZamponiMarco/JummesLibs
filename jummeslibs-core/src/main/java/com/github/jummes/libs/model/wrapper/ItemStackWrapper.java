@@ -9,7 +9,7 @@ import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MapperUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -71,11 +71,11 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> {
     }
 
     public static List<Object> materialList(ModelPath<?> path) {
-        return ItemUtils.getMaterialList();
+        return MapperUtils.getMaterialList();
     }
 
     public static Function<Object, ItemStack> materialListMapper() {
-        return ItemUtils.getMaterialMapper();
+        return MapperUtils.getMaterialMapper();
     }
 
     @Override

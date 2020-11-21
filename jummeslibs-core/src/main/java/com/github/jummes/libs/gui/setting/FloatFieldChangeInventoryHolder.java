@@ -58,7 +58,7 @@ public class FloatFieldChangeInventoryHolder extends FieldChangeInventoryHolder 
 
         fillModifyButtons();
         registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
-        registerClickConsumer(26, getBackItem(), getBackConsumer());
+        registerClickConsumer(26, getBackItem(), getZeroConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
     }
@@ -104,6 +104,23 @@ public class FloatFieldChangeInventoryHolder extends FieldChangeInventoryHolder 
                     }
                 }
                 result = Math.round(operationResult * 100f) / 100f;
+                fillModifyButtons();
+            }
+        };
+    }
+
+    private Consumer<InventoryClickEvent> getZeroConsumer() {
+        return e -> {
+            if (e.getClick().equals(ClickType.LEFT)) {
+                float operationResult = 0;
+                if (annotationPresent) {
+                    if (operationResult > maxValue) {
+                        operationResult = maxValue;
+                    } else if (operationResult < minValue) {
+                        operationResult = minValue;
+                    }
+                }
+                result = operationResult;
                 fillModifyButtons();
             }
         };

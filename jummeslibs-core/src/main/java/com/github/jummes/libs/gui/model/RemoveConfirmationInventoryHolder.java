@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.List;
 
 public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
 
@@ -22,14 +23,19 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
     private static final String CONFIRM_ITEM = MessageUtils.color("&6&lConfirm");
 
     protected ModelPath<?> path;
-    protected Model model;
+    protected List<? extends Model> models;
     protected Field field;
 
     public RemoveConfirmationInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<?> path,
                                              Model model, Field field) {
+        this(plugin, parent, path, Lists.newArrayList(model), field);
+    }
+
+    public RemoveConfirmationInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<?> path,
+                                             List<? extends Model> models, Field field) {
         super(plugin, parent);
         this.path = path;
-        this.model = model;
+        this.models = models;
         this.field = field;
     }
 
@@ -40,11 +46,17 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
                 CONFIRM_ITEM, Lists.newArrayList()), e -> {
             try {
                 ((Collection<?>) FieldUtils.readField(field,
-                        path.getLast() != null ? path.getLast() : path.getModelManager(), true)).remove(model);
-                path.addModel(model);
-                path.deleteModel();
-                path.popModel();
-                model.onRemoval();
+                        path.getLast() != null ? path.getLast() : path.getModelManager(), true)).removeAll(models);
+                models.forEach(model -> {
+                    if (path.getLast() == null) {
+                        path.addModel(model);
+                        path.deleteModel();
+                        path.popModel();
+                        model.onRemoval();
+                    } else {
+                        path.saveModel(field);
+                    }
+                });
                 e.getWhoClicked().openInventory(parent.getInventory());
             } catch (IllegalAccessException illegalAccessException) {
                 illegalAccessException.printStackTrace();

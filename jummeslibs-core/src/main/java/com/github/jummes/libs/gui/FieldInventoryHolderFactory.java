@@ -14,7 +14,8 @@ import com.github.jummes.libs.gui.setting.change.FieldChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
-import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MapperUtils;
+import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.ClassUtils;
@@ -22,17 +23,19 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class FieldInventoryHolderFactory {
+
+    public static Map<Class<?>, Class<? extends ModelCollectionInventoryHolder<?>>> collectionGUIMap = new HashMap<>();
 
     public static PluginInventoryHolder createFieldInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                                                    ModelPath<? extends Model> path, Field field, InventoryClickEvent e) {
@@ -76,7 +79,7 @@ public class FieldInventoryHolderFactory {
              * Is a model wrapper
              */
             else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
-                path.addModel((Model) ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
+                path.addModel(ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
                         .newInstance(FieldUtils.readField(field, path.getLast(), true)));
                 return new ModelObjectInventoryHolder(plugin, parent, path);
             }
@@ -86,10 +89,15 @@ public class FieldInventoryHolderFactory {
             else if (ClassUtils.isAssignable(clazz, Collection.class)) {
                 Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
                         .getRawType();
-                if (ClassUtils.isAssignable(containedClass, Model.class)) {
+                if (collectionGUIMap.containsKey(containedClass)) {
+                    return collectionGUIMap.get(containedClass).getConstructor(JavaPlugin.class, PluginInventoryHolder.class,
+                            ModelPath.class, Field.class, int.class, Predicate.class).newInstance(plugin, parent, path,
+                            field, 1, Predicates.alwaysTrue());
+                } else if (ClassUtils.isAssignable(containedClass, Model.class)) {
                     return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1, obj -> true);
+                } else {
+                    return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
                 }
-                return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
             }
             /*
              * Is a model
@@ -101,7 +109,7 @@ public class FieldInventoryHolderFactory {
                             .getMethod(clazz.getAnnotation(CustomClickable.class).customFieldClickConsumer(),
                                     JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
                                     InventoryClickEvent.class)
-                            .invoke(FieldUtils.readDeclaredField(path.getLast(), field.getName(), true), plugin, parent,
+                            .invoke(FieldUtils.readField(path.getLast(), field.getName(), true), plugin, parent,
                                     path, field, e);
                 }
                 if (e.getClick().equals(ClickType.LEFT)) {
@@ -139,12 +147,14 @@ public class FieldInventoryHolderFactory {
                 Function<Object, ItemStack> mapper;
                 List<Object> objects;
                 if (containedClass.equals(Material.class)) {
-                    mapper = ItemUtils.getMaterialMapper();
-                    objects = ItemUtils.getMaterialList();
+                    mapper = MapperUtils.getMaterialMapper();
+                    objects = MapperUtils.getMaterialList();
+                } else if (containedClass.equals(EquipmentSlot.class)) {
+                    mapper = MapperUtils.getEquipmentSlotMapper();
+                    objects = Lists.newArrayList(EquipmentSlot.values());
                 } else {
                     mapper = null;
-                    objects = Arrays.stream(containedClass.getEnumConstants())
-                            .map(obj -> ((Enum<?>) obj).name()).collect(Collectors.toList());
+                    objects = Arrays.stream(containedClass.getEnumConstants()).collect(Collectors.toList());
                 }
                 return new FromListFieldChangeInventoryHolder(plugin, parent, path,
                         new CollectionChangeInformation(field, currentValue), 1, objects, mapper);

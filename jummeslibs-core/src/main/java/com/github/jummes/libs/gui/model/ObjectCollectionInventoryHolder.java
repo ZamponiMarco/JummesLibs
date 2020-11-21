@@ -9,6 +9,7 @@ import com.github.jummes.libs.gui.setting.change.CollectionRemoveInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
+import com.github.jummes.libs.util.MapperUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
@@ -18,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -105,7 +107,10 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
 
     private ItemStack getEnumItem(Object s, Class clazz) {
         if (clazz.equals(Material.class)) {
-            return ItemUtils.getMaterialMapper().apply(Material.valueOf(s.toString()));
+            return MapperUtils.getMaterialMapper().apply(Material.valueOf(s.toString()));
+        }
+        if (clazz.equals(EquipmentSlot.class)) {
+            return MapperUtils.getEquipmentSlotMapper().apply(EquipmentSlot.valueOf(s.toString()));
         }
         return ItemUtils.getNamedItem(new ItemStack(Material.PAPER), s.toString(),
                 Lists.newArrayList());

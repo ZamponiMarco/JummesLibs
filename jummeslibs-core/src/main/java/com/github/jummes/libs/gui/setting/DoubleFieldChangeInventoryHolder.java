@@ -72,7 +72,7 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
         this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
 
         fillModifyButtons();
-        registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
+        registerClickConsumer(22, getZeroItem(), getZeroConsumer());
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
@@ -104,7 +104,6 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
             registerEmptySlot(16);
             registerEmptySlot(17);
         }
-        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
     private Consumer<InventoryClickEvent> getModifyConsumer(double addition) {
@@ -119,6 +118,23 @@ public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder
                     }
                 }
                 result = Math.round(operationResult * 100d) / 100d;
+                fillModifyButtons();
+            }
+        };
+    }
+
+    private Consumer<InventoryClickEvent> getZeroConsumer() {
+        return e -> {
+            if (e.getClick().equals(ClickType.LEFT)) {
+                double operationResult = 0;
+                if (annotationPresent) {
+                    if (operationResult > maxValue) {
+                        operationResult = maxValue;
+                    } else if (operationResult < minValue) {
+                        operationResult = minValue;
+                    }
+                }
+                result = operationResult;
                 fillModifyButtons();
             }
         };

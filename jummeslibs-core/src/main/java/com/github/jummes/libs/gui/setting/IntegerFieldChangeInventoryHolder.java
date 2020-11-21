@@ -58,7 +58,7 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
         this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
 
         fillModifyButtons();
-        registerClickConsumer(22, getZeroItem(), getModifyConsumer(-result));
+        registerClickConsumer(22, getZeroItem(), getZeroConsumer());
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
 
@@ -97,6 +97,23 @@ public class IntegerFieldChangeInventoryHolder extends FieldChangeInventoryHolde
         return e -> {
             if (e.getClick().equals(ClickType.LEFT)) {
                 int operationResult = result + i;
+                if (annotationPresent) {
+                    if (operationResult > maxValue) {
+                        operationResult = maxValue;
+                    } else if (operationResult < minValue) {
+                        operationResult = minValue;
+                    }
+                }
+                result = operationResult;
+                fillModifyButtons();
+            }
+        };
+    }
+
+    private Consumer<InventoryClickEvent> getZeroConsumer() {
+        return e -> {
+            if (e.getClick().equals(ClickType.LEFT)) {
+                int operationResult = 0;
                 if (annotationPresent) {
                     if (operationResult > maxValue) {
                         operationResult = maxValue;

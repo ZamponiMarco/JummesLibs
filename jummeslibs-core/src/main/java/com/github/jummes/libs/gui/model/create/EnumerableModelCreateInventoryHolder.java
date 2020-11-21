@@ -16,8 +16,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder {
@@ -45,8 +47,9 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
         this.inventory = Bukkit.createInventory(this, 27,
                 MessageUtils.color("&6Create a &c&l" + modelClass.getSimpleName()));
 
-        List<Class<? extends Model>> classes = Lists
-                .newArrayList(modelClass.getAnnotation(Enumerable.Parent.class).classArray());
+        List<Class<? extends Model>> classes = Arrays.stream(modelClass.getAnnotation(Enumerable.Parent.class).classArray()).
+                filter(clazz -> clazz.isAnnotationPresent(Enumerable.Child.class) || clazz.isAnnotationPresent(Enumerable.Parent.class)).
+                collect(Collectors.toList());
 
         int[] positions = getItemPositions(classes.size());
 
