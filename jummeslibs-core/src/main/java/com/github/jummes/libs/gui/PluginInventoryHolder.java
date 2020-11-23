@@ -47,7 +47,6 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        e.setCancelled(true);
     }
 
     /**
