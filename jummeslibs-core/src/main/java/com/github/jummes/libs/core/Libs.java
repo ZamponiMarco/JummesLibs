@@ -32,9 +32,9 @@ public class Libs {
         ConfigurationSerialization.registerClass(IntRange.class);
     }
 
-    public static void initializeLibrary(JavaPlugin plugin, PluginLocale thisLocale) {
+    public static void initializeLibrary(JavaPlugin plugin) {
         setUpWrapper(plugin);
-        locale = thisLocale;
+        locale = new PluginLocale();
         registerEvents(plugin);
     }
 

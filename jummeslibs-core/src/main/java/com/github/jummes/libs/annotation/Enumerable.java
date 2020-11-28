@@ -30,6 +30,8 @@ public @interface Enumerable {
         String description() default "";
 
         String headTexture() default "";
+
+        String condition() default "";
     }
 
 }

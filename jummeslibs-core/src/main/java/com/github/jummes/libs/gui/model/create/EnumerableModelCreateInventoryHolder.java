@@ -7,7 +7,6 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -15,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,8 +48,9 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
                 MessageUtils.color("&6Create a &c&l" + modelClass.getSimpleName()));
 
         List<Class<? extends Model>> classes = Arrays.stream(modelClass.getAnnotation(Enumerable.Parent.class).classArray()).
-                filter(clazz -> clazz.isAnnotationPresent(Enumerable.Child.class) || clazz.isAnnotationPresent(Enumerable.Parent.class)).
-                collect(Collectors.toList());
+                filter(clazz -> (clazz.isAnnotationPresent(Enumerable.Child.class)
+                        || clazz.isAnnotationPresent(Enumerable.Parent.class))
+                        && isConditionSatisfied(clazz)).collect(Collectors.toList());
 
         int[] positions = getItemPositions(classes.size());
 
@@ -68,6 +69,18 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
         });
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
+    }
+
+    private boolean isConditionSatisfied(Class<? extends Model> clazz) {
+        try {
+            return !(clazz.isAnnotationPresent(Enumerable.Displayable.class)
+                    && !clazz.getAnnotation(Enumerable.Displayable.class).condition().equals(""))
+                    || (boolean) clazz.getMethod(clazz.getAnnotation(Enumerable.Displayable.class).condition()).
+                    invoke(null);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private Consumer<InventoryClickEvent> getEnumerableModelConsumer(Class<? extends Model> clazz) {
