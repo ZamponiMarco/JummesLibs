@@ -21,6 +21,7 @@ import com.google.common.reflect.TypeToken;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -152,6 +153,9 @@ public class FieldInventoryHolderFactory {
                 } else if (containedClass.equals(EquipmentSlot.class)) {
                     mapper = MapperUtils.getEquipmentSlotMapper();
                     objects = Lists.newArrayList(EquipmentSlot.values());
+                } else if (containedClass.equals(EntityType.class)) {
+                    mapper = MapperUtils.getMaterialMapper();
+                    objects = Arrays.stream(EntityType.values()).filter(EntityType::isSpawnable).collect(Collectors.toList());
                 } else {
                     mapper = null;
                     objects = Arrays.stream(containedClass.getEnumConstants()).collect(Collectors.toList());

@@ -75,8 +75,8 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
         try {
             return !(clazz.isAnnotationPresent(Enumerable.Displayable.class)
                     && !clazz.getAnnotation(Enumerable.Displayable.class).condition().equals(""))
-                    || (boolean) clazz.getMethod(clazz.getAnnotation(Enumerable.Displayable.class).condition()).
-                    invoke(null);
+                    || (boolean) clazz.getMethod(clazz.getAnnotation(Enumerable.Displayable.class).condition(),
+                    ModelPath.class).invoke(null, path);
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
             return false;

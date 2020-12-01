@@ -47,11 +47,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.jummes</groupId>
-            <artifactId>jummeslibs-craftbukkit_1_13_R2</artifactId>
-            <version>${project.parent.version}</version>
-    </dependency>
-        <dependency>
-            <groupId>com.github.jummes</groupId>
             <artifactId>jummeslibs-craftbukkit_1_14_R1</artifactId>
             <version>${project.parent.version}</version>
         </dependency>

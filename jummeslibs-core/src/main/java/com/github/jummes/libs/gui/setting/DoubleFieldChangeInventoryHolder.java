@@ -1,12 +1,14 @@
 package com.github.jummes.libs.gui.setting;
 
 import com.github.jummes.libs.annotation.Serializable;
+import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
@@ -18,148 +20,43 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
-public class DoubleFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
+public class DoubleFieldChangeInventoryHolder extends NumberFieldChangeInventoryHolder<Double> {
 
-    private static final String ARROW_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzg2NzExOTgzODJkZTkzZTFkM2M3ODM0ZGU4NjcwNGE2ZWNjNzkxNDE5ZjBkZGI0OWE0MWE5NjA4YWQ0NzIifX19";
-    private static final String ARROW2_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDgzNDhhYTc3ZjlmYjJiOTFlZWY2NjJiNWM4MWI1Y2EzMzVkZGVlMWI5MDVmM2E4YjkyMDk1ZDBhMWYxNDEifX19";
-    private static final String ARROW3_LEFT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGMzMDFhMTdjOTU1ODA3ZDg5ZjljNzJhMTkyMDdkMTM5M2I4YzU4YzRlNmU0MjBmNzE0ZjY5NmE4N2ZkZCJ9fX0";
-    private static final String ARROW_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODEzM2E0MjM2MDY2OTRkYTZjOTFhODRlYTY2ZDQ5ZWZjM2EyM2Y3M2ZhOGFmOGNjMWZlMjk4M2ZlOGJiNWQzIn19fQ";
-    private static final String ARROW2_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdiMDNiNzFkM2Y4NjIyMGVmMTIyZjk4MzFhNzI2ZWIyYjI4MzMxOWM3YjYyZTdkY2QyZDY0ZDk2ODIifX19";
-    private static final String ARROW3_RIGHT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjU0ZmFiYjE2NjRiOGI0ZDhkYjI4ODk0NzZjNmZlZGRiYjQ1MDVlYmE0Mjg3OGM2NTNhNWQ3OTNmNzE5YjE2In19fQ";
-    private static final String ZERO_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY4ODZkOWM0MGVmN2Y1MGMyMzg4MjQ3OTJjNDFmYmZiNTRmNjY1ZjE1OWJmMWJjYjBiMjdiM2VhZDM3M2IifX19";
-    private static final String SUBMIT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
-
-    private static final String MENU_TITLE = MessageUtils.color("&6&lModify &e&l %s");
-    private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified: &6%s: &e%s");
-    private static final String MODIFY_ITEM = MessageUtils.color("&6&lModify -> &e&l%s");
-    private static final String CONFIRM_ITEM = MessageUtils.color("&6&lResult = &e&l%s");
-    private static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
-
-    private double result;
-    private boolean annotationPresent;
-    private int minValue;
-    private int maxValue;
-    private double scale;
-
-    public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-                                            ModelPath<? extends Model> path, ChangeInformation changeInformation) {
+    public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path, ChangeInformation changeInformation) {
         super(plugin, parent, path, changeInformation);
-        result = (double) changeInformation.getValue(path);
-        if (changeInformation.getField().isAnnotationPresent(Serializable.Number.class)) {
-            annotationPresent = true;
-            minValue = changeInformation.getField().getAnnotation(Serializable.Number.class).minValue();
-            maxValue = changeInformation.getField().getAnnotation(Serializable.Number.class).maxValue();
-            scale = changeInformation.getField().getAnnotation(Serializable.Number.class).scale();
-        } else {
-            scale = 0.01;
-        }
     }
 
-    public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-                                            ModelPath<? extends Model> path, ChangeInformation changeInformation,
-                                            Serializable.Number values) {
-        super(plugin, parent, path, changeInformation);
-        result = (double) changeInformation.getValue(path);
-        annotationPresent = true;
-        minValue = values.minValue();
-        maxValue = values.maxValue();
-        scale = values.scale();
+    public DoubleFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path, ChangeInformation changeInformation, Serializable.Number values) {
+        super(plugin, parent, path, changeInformation, values);
     }
 
     @Override
-    protected void initializeInventory() {
-
-        this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
-
-        fillModifyButtons();
-        registerClickConsumer(22, getZeroItem(), getZeroConsumer());
-        registerClickConsumer(26, getBackItem(), getBackConsumer());
-        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
-
+    protected double getDefaultScale() {
+        return 0.01;
     }
 
-    private void fillModifyButtons() {
-        if (!annotationPresent || result != minValue) {
-            registerClickConsumer(9, getModifyItem(-scale * 100, wrapper.skullFromValue(ARROW3_LEFT_HEAD)), getModifyConsumer(-scale * 100));
-            registerClickConsumer(10, getModifyItem(-scale * 10, wrapper.skullFromValue(ARROW2_LEFT_HEAD)),
-                    getModifyConsumer(-scale * 10));
-            registerClickConsumer(11, getModifyItem(-scale, wrapper.skullFromValue(ARROW_LEFT_HEAD)),
-                    getModifyConsumer(-scale));
-        } else {
-            registerEmptySlot(9);
-            registerEmptySlot(10);
-            registerEmptySlot(11);
-        }
-
-        registerClickConsumer(13, getConfirmItem(), getConfirmConsumer());
-
-        if (!annotationPresent || result != maxValue) {
-            registerClickConsumer(15, getModifyItem(+scale, wrapper.skullFromValue(ARROW_RIGHT_HEAD)),
-                    getModifyConsumer(+scale));
-            registerClickConsumer(16, getModifyItem(+scale * 10, wrapper.skullFromValue(ARROW2_RIGHT_HEAD)),
-                    getModifyConsumer(scale * 10));
-            registerClickConsumer(17, getModifyItem(+scale * 100, wrapper.skullFromValue(ARROW3_RIGHT_HEAD)), getModifyConsumer(+scale * 100));
-        } else {
-            registerEmptySlot(15);
-            registerEmptySlot(16);
-            registerEmptySlot(17);
-        }
+    @Override
+    protected void assignResultValue(int value) {
+        this.result = (double) value;
     }
 
-    private Consumer<InventoryClickEvent> getModifyConsumer(double addition) {
-        return e -> {
-            if (e.getClick().equals(ClickType.LEFT)) {
-                double operationResult = result + addition;
-                if (annotationPresent) {
-                    if (operationResult > maxValue) {
-                        operationResult = maxValue;
-                    } else if (operationResult < minValue) {
-                        operationResult = minValue;
-                    }
-                }
-                result = Math.round(operationResult * 100d) / 100d;
-                fillModifyButtons();
-            }
-        };
+    @Override
+    protected int compareTo(Double result, int value) {
+        return result.compareTo((double) value);
     }
 
-    private Consumer<InventoryClickEvent> getZeroConsumer() {
-        return e -> {
-            if (e.getClick().equals(ClickType.LEFT)) {
-                double operationResult = 0;
-                if (annotationPresent) {
-                    if (operationResult > maxValue) {
-                        operationResult = maxValue;
-                    } else if (operationResult < minValue) {
-                        operationResult = minValue;
-                    }
-                }
-                result = operationResult;
-                fillModifyButtons();
-            }
-        };
+    @Override
+    protected Double getZero() {
+        return 0d;
     }
 
-    private Consumer<InventoryClickEvent> getConfirmConsumer() {
-        return e -> {
-            HumanEntity p = e.getWhoClicked();
-            changeInformation.setValue(path, result);
-            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), result));
-            getBackConsumer().accept(e);
-        };
+    @Override
+    protected Double roundNumber(Double operationResult) {
+        return Math.round(operationResult * 100d) / 100d;
     }
 
-    private ItemStack getModifyItem(double i, ItemStack item) {
-        return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, i), new ArrayList<>());
+    @Override
+    protected Double sum(Double result, double addition) {
+        return result + addition;
     }
-
-    private ItemStack getConfirmItem() {
-        return ItemUtils.getNamedItem(wrapper.skullFromValue(SUBMIT_HEAD),
-                String.format(CONFIRM_ITEM, result), new ArrayList<>());
-    }
-
-    private ItemStack getZeroItem() {
-        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<>());
-    }
-
 }

@@ -55,7 +55,6 @@ public class PluginLocale {
             );
             return config1;
         }).orElse(new YamlConfiguration());
-        System.out.println(config.saveToString());
     }
 
     public void registerLocaleFiles(Plugin plugin, List<String> defaultLocales, String filename) {
