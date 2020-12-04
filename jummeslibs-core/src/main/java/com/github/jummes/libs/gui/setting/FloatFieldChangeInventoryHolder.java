@@ -39,7 +39,7 @@ public class FloatFieldChangeInventoryHolder extends NumberFieldChangeInventoryH
 
     @Override
     protected Float roundNumber(Float operationResult) {
-        return Math.round(operationResult * 100f) / 100f;
+        return Math.round(operationResult * 1000f) / 1000f;
     }
 
     @Override

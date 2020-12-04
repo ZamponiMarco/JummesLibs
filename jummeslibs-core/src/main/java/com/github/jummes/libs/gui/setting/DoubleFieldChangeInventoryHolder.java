@@ -52,7 +52,7 @@ public class DoubleFieldChangeInventoryHolder extends NumberFieldChangeInventory
 
     @Override
     protected Double roundNumber(Double operationResult) {
-        return Math.round(operationResult * 100d) / 100d;
+        return Math.round(operationResult * 1000d) / 1000d;
     }
 
     @Override

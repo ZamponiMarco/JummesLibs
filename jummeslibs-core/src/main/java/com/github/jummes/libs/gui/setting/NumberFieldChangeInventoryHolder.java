@@ -147,10 +147,9 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
                 assignResultValue(maxValue);
             } else if (compareTo(operationResult, minValue) < 0) {
                 assignResultValue(minValue);
-            } else {
-                this.result = operationResult;
             }
         }
+        this.result = operationResult;
     }
 
     private Consumer<InventoryClickEvent> getConfirmConsumer() {
