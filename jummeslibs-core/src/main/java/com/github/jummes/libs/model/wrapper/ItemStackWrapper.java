@@ -28,7 +28,7 @@ import java.util.function.Function;
 @Setter
 @CustomClickable(customFieldClickConsumer = "getCustomClickConsumer")
 @GUINameable(GUIName = "getName")
-public class ItemStackWrapper extends ModelWrapper<ItemStack> {
+public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneable {
 
     private static final boolean DEFAULT_NO_AMOUNT = true;
 
@@ -103,7 +103,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> {
     }
 
     public ItemStack getMaterialItem() {
-        return new ItemStack(type);
+        return MapperUtils.getMaterialMapper().apply(type);
     }
 
     public String getName() {
@@ -145,4 +145,8 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> {
         return map;
     }
 
+    @Override
+    public ItemStackWrapper clone() {
+        return new ItemStackWrapper(wrapped.clone(), noAmount);
+    }
 }

@@ -1,5 +1,6 @@
 package com.github.jummes.libs.wrapper;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Material;
@@ -31,14 +32,16 @@ public class VersionWrapper_v1_15_R1 implements VersionWrapper {
         return CraftItemStack.asBukkitCopy(nmsItem);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ItemMeta> getCraftMetaItemClass() {
+    public ItemMeta deserializeItemMeta(Map<String, Object> map) {
+        Class clazz = null;
         try {
-            return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_15_R1.inventory.CraftMetaItem");
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_15_R1.inventory.CraftMetaItem");
+            Class innerClass = clazz.getDeclaredClasses()[1];
+            return (ItemMeta) innerClass.getMethod("deserializeItemMeta", Map.class).invoke(null, map);
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
     }
 
     @Override

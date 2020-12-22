@@ -1,7 +1,6 @@
 package com.github.jummes.libs.wrapper;
 
 
-import com.github.jummes.libs.wrapper.VersionWrapper;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import net.minecraft.server.v1_16_R3.NBTTagList;
 import org.bukkit.Material;
@@ -9,6 +8,7 @@ import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class VersionWrapper_v1_16_R3 implements VersionWrapper {
@@ -42,14 +42,16 @@ public class VersionWrapper_v1_16_R3 implements VersionWrapper {
         return ints;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ItemMeta> getCraftMetaItemClass() {
+    public ItemMeta deserializeItemMeta(Map<String, Object> map) {
+        Class clazz = null;
         try {
-            return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_16_R3.inventory.CraftMetaItem");
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_16_R3.inventory.CraftMetaItem");
+            Class innerClass = clazz.getDeclaredClasses()[1];
+            return (ItemMeta) innerClass.getMethod("deserializeItemMeta", Map.class).invoke(null, map);
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
     }
 
     @Override

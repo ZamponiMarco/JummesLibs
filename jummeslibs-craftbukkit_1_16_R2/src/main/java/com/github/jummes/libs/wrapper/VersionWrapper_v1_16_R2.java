@@ -8,6 +8,7 @@ import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Map;
 import java.util.UUID;
 
 public class VersionWrapper_v1_16_R2 implements VersionWrapper {
@@ -41,14 +42,16 @@ public class VersionWrapper_v1_16_R2 implements VersionWrapper {
         return ints;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class<? extends ItemMeta> getCraftMetaItemClass() {
+    public ItemMeta deserializeItemMeta(Map<String, Object> map) {
+        Class clazz = null;
         try {
-            return (Class<? extends ItemMeta>) Class.forName("org.bukkit.craftbukkit.v1_16_R2.inventory.CraftMetaItem");
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_16_R2.inventory.CraftMetaItem");
+            Class innerClass = clazz.getDeclaredClasses()[1];
+            return (ItemMeta) innerClass.getMethod("deserializeItemMeta", Map.class).invoke(null, map);
         } catch (Exception e) {
-            return null;
+            e.printStackTrace();
         }
+        return null;
     }
 
     @Override

@@ -3,6 +3,8 @@ package com.github.jummes.libs.wrapper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Map;
+
 public interface VersionWrapper {
 
     /**
@@ -13,10 +15,10 @@ public interface VersionWrapper {
      */
     public ItemStack skullFromValue(String value);
 
-    public Class<? extends ItemMeta> getCraftMetaItemClass();
-
     public ItemStack addTagToItem(ItemStack item, String key, String value);
 
     public String getTagItem(ItemStack item, String key);
+
+    public ItemMeta deserializeItemMeta(Map<String, Object> map);
 
 }
