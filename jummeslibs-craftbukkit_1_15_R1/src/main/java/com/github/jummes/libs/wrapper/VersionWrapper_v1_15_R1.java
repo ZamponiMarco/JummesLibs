@@ -37,7 +37,7 @@ public class VersionWrapper_v1_15_R1 implements VersionWrapper {
         try {
             clazz = Class.forName("org.bukkit.craftbukkit.v1_15_R1.inventory.CraftMetaItem");
             Class innerClass = clazz.getDeclaredClasses()[1];
-            return (ItemMeta) innerClass.getMethod("deserializeItemMeta", Map.class).invoke(null, map);
+            return (ItemMeta) innerClass.getMethod("deserialize", Map.class).invoke(null, map);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,7 +3,6 @@ package com.github.jummes.libs.model.wrapper;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.core.Libs;
-import com.github.jummes.libs.util.MessageUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,7 +13,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @ToString
 @Setter
@@ -42,16 +40,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
 
     public static ItemMetaWrapper deserialize(Map<String, Object> map) {
         try {
-            ItemMeta meta = Libs.getWrapper().deserializeItemMeta(map);
-            if (map.get("display-name") != null) {
-                meta.setDisplayName(MessageUtils.getColoredString((String)
-                        map.getOrDefault("display-name", null)));
-            }
-            if (map.get("lore") != null) {
-                meta.setLore(((List<String>) map.getOrDefault("lore", null)).stream().map(
-                        MessageUtils::getColoredString).collect(Collectors.toList()));
-            }
-            return new ItemMetaWrapper(meta);
+            return new ItemMetaWrapper(Libs.getWrapper().deserializeItemMeta(map));
         } catch (Exception e) {
             e.printStackTrace();
             return null;
