@@ -1,8 +1,5 @@
 package com.github.jummes.libs.core;
 
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.listener.PluginInventoryHolderClickListener;
 import com.github.jummes.libs.listener.StringSettingChangeChatListener;
 import com.github.jummes.libs.localization.PluginLocale;
@@ -11,8 +8,9 @@ import com.github.jummes.libs.model.wrapper.ItemMetaWrapper;
 import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
 import com.github.jummes.libs.model.wrapper.LocationWrapper;
 import com.github.jummes.libs.wrapper.VersionWrapper;
-
 import lombok.Getter;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
 public class Libs {
@@ -50,7 +48,9 @@ public class Libs {
         try {
             wrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
         } catch (Exception e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("This plugin is not supported in your server version, please check the " +
+                    "spigot page to find which versions are supported.");
+            plugin.getPluginLoader().disablePlugin(plugin);
         }
     }
 
