@@ -79,7 +79,6 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
         fillModifyButtons();
         registerClickConsumer(22, getZeroItem(), getZeroConsumer());
         registerClickConsumer(26, getBackItem(), getBackConsumer());
-        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
         registerClickConsumer(0, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(MINUS_HEAD), ZOOM_IN, Lists.newArrayList()), e -> {
             scale /= 10;
             fillModifyButtons();
@@ -88,6 +87,7 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
             scale *= 10;
             fillModifyButtons();
         });
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
     private void fillModifyButtons() {
@@ -118,6 +118,7 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
             registerEmptySlot(16);
             registerEmptySlot(17);
         }
+        fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
 

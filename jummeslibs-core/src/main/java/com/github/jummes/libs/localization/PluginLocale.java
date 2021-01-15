@@ -62,8 +62,10 @@ public class PluginLocale {
 
         File dataFile = getDataFile(filename, plugin);
 
-        localeFiles.add(dataFile);
-        loadData();
+        if (dataFile.exists()) {
+            localeFiles.add(dataFile);
+            loadData();
+        }
     }
 
     private File getDataFile(String filename, Plugin plugin) {

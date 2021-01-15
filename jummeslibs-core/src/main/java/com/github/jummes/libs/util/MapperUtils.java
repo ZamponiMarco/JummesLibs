@@ -1,17 +1,16 @@
 package com.github.jummes.libs.util;
 
 import com.github.jummes.libs.core.Libs;
+import com.github.jummes.libs.model.ModelPath;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -163,6 +162,19 @@ public class MapperUtils {
             EntityType type = (EntityType) obj;
             return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(entities.getOrDefault(type.name(), "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTNjOGFhM2ZkZTI5NWZhOWY5YzI3ZjczNGJkYmFiMTFkMzNhMmU0M2U4NTVhY2NkNzQ2NTM1MjM3NzQxM2IifX19")),
                     type.name(), Lists.newArrayList());
+        };
+    }
+
+    public static List<Object> getParticles() {
+        return Arrays.stream(Particle.values()).filter(particle -> !particle.name().toLowerCase().contains("legacy")).
+                collect(Collectors.toList());
+    }
+
+    public static Function<Object, ItemStack> particlesMapper() {
+        return obj -> {
+            Particle type = (Particle) obj;
+            return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDQ2MWQ5ZDA2YzBiZjRhN2FmNGIxNmZkMTI4MzFlMmJlMGNmNDJlNmU1NWU5YzBkMzExYTJhODk2NWEyM2IzNCJ9fX0="),
+                    type.name(), new ArrayList<>());
         };
     }
 }
