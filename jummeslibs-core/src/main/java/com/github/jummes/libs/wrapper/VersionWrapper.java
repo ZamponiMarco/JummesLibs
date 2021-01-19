@@ -13,12 +13,12 @@ public interface VersionWrapper {
      * @param value texture value in base64
      * @return ItemStack of the head
      */
-    public ItemStack skullFromValue(String value);
+    ItemStack skullFromValue(String value);
 
-    public ItemStack addTagToItem(ItemStack item, String key, String value);
+    ItemStack addTagToItem(ItemStack item, String key, String value);
 
-    public String getTagItem(ItemStack item, String key);
+    String getTagItem(ItemStack item, String key);
 
-    public ItemMeta deserializeItemMeta(Map<String, Object> map);
+    ItemMeta deserializeItemMeta(Map<String, Object> map);
 
 }

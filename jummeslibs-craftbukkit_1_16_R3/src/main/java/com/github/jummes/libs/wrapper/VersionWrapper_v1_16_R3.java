@@ -43,7 +43,7 @@ public class VersionWrapper_v1_16_R3 implements VersionWrapper {
     }
 
     public ItemMeta deserializeItemMeta(Map<String, Object> map) {
-        Class clazz = null;
+        Class clazz;
         try {
             clazz = Class.forName("org.bukkit.craftbukkit.v1_16_R3.inventory.CraftMetaItem");
             Class innerClass = clazz.getDeclaredClasses()[1];

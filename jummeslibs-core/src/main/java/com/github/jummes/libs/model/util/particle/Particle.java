@@ -1,30 +1,19 @@
 package com.github.jummes.libs.model.util.particle;
 
-import com.github.jummes.libs.annotation.Enumerable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.model.Model;
-import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.util.particle.options.ParticleOptions;
-import com.github.jummes.libs.model.wrapper.ItemStackWrapper;
 import com.github.jummes.libs.model.wrapper.VectorWrapper;
-import com.github.jummes.libs.util.MapperUtils;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-public class Particle implements Model {
+public class Particle implements Model, Cloneable {
 
     private static final int COUNT_DEFAULT = 1;
     private static final VectorWrapper OFFSET_DEFAULT = new VectorWrapper(new Vector(0, 0, 0));
@@ -61,6 +50,10 @@ public class Particle implements Model {
     @Serializable(displayItem = "getDataObject", description = "gui.action.location.particle.data")
     private ParticleOptions data;
 
+    public Particle() {
+        this(org.bukkit.Particle.FIREWORKS_SPARK, COUNT_DEFAULT, new VectorWrapper(), SPEED_DEFAULT, FORCE_DEFAULT, null);
+    }
+
     public Particle(org.bukkit.Particle type, int count, VectorWrapper offset, double speed, boolean force, ParticleOptions data) {
         this.type = type;
         this.count = count;
@@ -77,6 +70,20 @@ public class Particle implements Model {
         this.offset = (VectorWrapper) map.getOrDefault("offset", OFFSET_DEFAULT.clone());
         this.speed = (double) map.getOrDefault("speed", SPEED_DEFAULT);
         this.data = (ParticleOptions) map.get("data");
+    }
+
+    public void spawnParticle(Location location) {
+        if (location.getWorld() == null) {
+            return;
+        }
+
+        location.getWorld().spawnParticle(type, location, count, offset.getWrapped().getX(), offset.getWrapped().getY(),
+                offset.getWrapped().getZ(), speed, data == null ? null : data.buildData(), force);
+    }
+
+    @Override
+    public Particle clone() {
+        return new Particle(type, count, offset.clone(), speed, force, data == null ? null : data.clone());
     }
 
     public String getName() {

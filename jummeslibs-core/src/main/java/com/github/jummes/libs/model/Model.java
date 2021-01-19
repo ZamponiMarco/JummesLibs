@@ -49,7 +49,7 @@ public interface Model extends ConfigurationSerializable {
     }
 
     default Map<String, Object> serialize() {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("==", getClass().getName());
         List<Field> fields = ReflectUtils.getFieldsList(this);
         fields.stream().filter(field -> field.isAnnotationPresent(Serializable.class)).forEach(field -> {

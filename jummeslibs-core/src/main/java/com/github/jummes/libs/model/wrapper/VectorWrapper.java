@@ -1,12 +1,14 @@
 package com.github.jummes.libs.model.wrapper;
 
 import com.github.jummes.libs.annotation.Serializable;
+import com.github.jummes.libs.util.DeprecationUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Map;
 
 public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
@@ -21,6 +23,10 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
     @Serializable(headTexture = Z_HEAD)
     private double z;
 
+    public VectorWrapper() {
+        this(new Vector(0, 0, 0));
+    }
+
     public VectorWrapper(Vector wrapped) {
         super(wrapped);
         this.x = wrapped.getX();
@@ -29,7 +35,15 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
     }
 
     public static VectorWrapper deserialize(Map<String, Object> map) {
-        return new VectorWrapper(Vector.deserialize(map));
+        try {
+            Map<String, Object> vectorMap = (Map<String, Object>) map.get("vector");
+            if (vectorMap == null) {
+                throw new NullPointerException();
+            }
+            return new VectorWrapper(Vector.deserialize(vectorMap));
+        } catch (Exception ignored) {
+            return DeprecationUtils.handleOldVector(map);
+        }
     }
 
     @Override
@@ -51,7 +65,10 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
 
     @Override
     public Map<String, Object> serialize() {
-        return wrapped.serialize();
+        Map<String, Object> map = new HashMap<>();
+        map.put("==", getClass().getName());
+        map.put("vector", wrapped.serialize());
+        return map;
     }
 
     @Override
@@ -63,6 +80,6 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
 
     @Override
     public VectorWrapper clone() {
-        return new VectorWrapper(new Vector(x,y,z));
+        return new VectorWrapper(new Vector(x, y, z));
     }
 }
