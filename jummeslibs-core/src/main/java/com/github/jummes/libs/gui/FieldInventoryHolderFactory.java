@@ -44,6 +44,15 @@ public class FieldInventoryHolderFactory {
             Class<?> clazz = field.getType();
 
             /*
+             * Is null
+             */
+            if (FieldUtils.readField(field, path.getLast(), true) == null) {
+                ChangeInformation changeInformation = new FieldChangeInformation(field);
+                changeInformation.setValue(path, field.getType().getConstructor().newInstance());
+                return parent;
+            }
+
+            /*
              * Choose from a list
              */
             if (field.isAnnotationPresent(Serializable.class)

@@ -160,8 +160,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
             }
             return valueToPrint;
         } catch (Exception e) {
-            e.printStackTrace();
-            return "";
+            return "null";
         }
     }
 

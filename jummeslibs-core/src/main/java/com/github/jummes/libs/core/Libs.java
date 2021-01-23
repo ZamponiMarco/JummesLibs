@@ -37,15 +37,6 @@ public class Libs {
         ConfigurationSerialization.registerClass(IntRange.class);
 
         ConfigurationSerialization.registerClass(Particle.class);
-
-        ConfigurationSerialization.registerClass(ParticleOptions.class,
-                "com.github.jummes.supremeitem.action.location.ParticleAction$ParticleOptions");
-        ConfigurationSerialization.registerClass(BlockDataOptions.class,
-                "com.github.jummes.supremeitem.action.location.ParticleAction$BlockDataData");
-        ConfigurationSerialization.registerClass(DustDataOptions.class,
-                "com.github.jummes.supremeitem.action.location.ParticleAction$DustOptionsData");
-        ConfigurationSerialization.registerClass(ItemStackOptions.class,
-                "com.github.jummes.supremeitem.action.location.ParticleAction$ItemStackData");
     }
 
     public static void initializeLibrary(JavaPlugin plugin) {
