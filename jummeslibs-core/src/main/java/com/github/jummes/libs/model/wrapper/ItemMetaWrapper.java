@@ -31,6 +31,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
 
     public ItemMetaWrapper(@NonNull ItemMeta wrapped) {
         super(wrapped);
+        this.wrapped = DeprecationUtils.fixJsonItemMeta(wrapped);
         if (wrapped != null) {
             this.displayName = wrapped.getDisplayName();
             this.lore = wrapped.getLore() == null ? new ArrayList<>() : wrapped.getLore();

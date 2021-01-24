@@ -20,18 +20,6 @@ public class MessageUtils {
         return ChatColor.translateAlternateColorCodes('&', string);
     }
 
-    @SneakyThrows
-    public static String getColoredString(String value) {
-        char[] arr = value.toCharArray();
-        Pattern pattern = Pattern.compile("\\?[\\d\\w]");
-        Matcher matcher = pattern.matcher(value);
-        while (matcher.find()) {
-            arr[matcher.start()] = '§';
-        }
-        value = new String(arr);
-        return value;
-    }
-
     public static String header(String string) {
         return color(String.format("&e=--- &c%s &e---=\n", string));
     }

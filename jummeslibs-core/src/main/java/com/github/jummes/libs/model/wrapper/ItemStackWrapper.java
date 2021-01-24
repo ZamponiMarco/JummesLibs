@@ -73,6 +73,8 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
             wrapped = DeprecationUtils.handleOldItemStack(map);
         }
         noAmount = (boolean) map.getOrDefault("noAmount", DEFAULT_NO_AMOUNT);
+
+        wrapped.setItemMeta(DeprecationUtils.fixJsonItemMeta(wrapped.getItemMeta()));
         return new ItemStackWrapper(wrapped, noAmount);
     }
 
