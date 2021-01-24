@@ -1,6 +1,7 @@
 package com.github.jummes.libs.database;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,16 +14,14 @@ public abstract class Database<T extends Model> {
     protected final Class<T> classObject;
     protected JavaPlugin plugin;
 
-    public Database(@NonNull Class<T> classObject, @NonNull JavaPlugin plugin) {
+    public Database(@NonNull Class<T> classObject, @NonNull JavaPlugin plugin, Map<String, Object> args) {
         this.classObject = classObject;
         this.plugin = plugin;
-
-        openConnection();
     }
 
-    protected abstract void openConnection();
+    public abstract void openConnection();
 
-    protected abstract void closeConnection();
+    public abstract void closeConnection();
 
     public abstract List<T> loadObjects();
 

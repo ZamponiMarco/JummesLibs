@@ -20,9 +20,12 @@ public class DatabaseFactory {
     }
 
     @SneakyThrows
-    public static <T extends Model> Database<T> createDatabase(String databaseType, Class<T> modelClass, JavaPlugin plugin) {
-        return map.getOrDefault(databaseType, YamlDatabase.class).getConstructor(Class.class, JavaPlugin.class).
-                newInstance(modelClass, plugin);
+    public static <T extends Model> Database<T> createDatabase(String databaseType, Class<T> modelClass,
+                                                               JavaPlugin plugin, Map<String, Object> args) {
+        Database<T> database = map.getOrDefault(databaseType, YamlDatabase.class).getConstructor(Class.class,
+                JavaPlugin.class, Map.class).newInstance(modelClass, plugin, args);
+        database.openConnection();
+        return database;
     }
 
 }
