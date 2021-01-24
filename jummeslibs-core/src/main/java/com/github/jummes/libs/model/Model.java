@@ -24,19 +24,8 @@ public interface Model extends ConfigurationSerializable {
         return null;
     }
 
-    default void beforeComponentCreation(Class<? extends Model> modelClass) {
-    }
-
-    default void afterComponentCreation(Model model) {
-    }
-
-    default void beforeComponentSetting(Model model) {
-    }
-
-    default void afterComponentSetting(Model model) {
-    }
-
-    default void beforeModify() {
+    default Object beforeModify(Field field, Object value) {
+        return null;
     }
 
     default void onModify(Field field) {

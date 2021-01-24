@@ -3,9 +3,7 @@ package com.github.jummes.libs.gui.setting.change;
 import java.lang.reflect.Field;
 import java.util.Collection;
 
-import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
 public class CollectionRemoveInformation extends ChangeInformation {
 
@@ -21,9 +19,7 @@ public class CollectionRemoveInformation extends ChangeInformation {
         Collection<Object> collection;
         try {
             collection = (Collection<Object>) field.get(path.getLast());
-            if (path.getRoot() != null) {
-                path.getRoot().beforeModify();
-            }
+            callBeforeModify(path, field, null);
             collection.remove(currentValue);
             path.saveModel(field);
         } catch (Exception e) {

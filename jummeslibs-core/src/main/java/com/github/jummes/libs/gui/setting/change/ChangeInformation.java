@@ -18,6 +18,14 @@ public abstract class ChangeInformation {
 
     public abstract void setValue(ModelPath<?> path, Object value);
 
+    protected Object callBeforeModify(ModelPath<?> path, Field field, Object value) {
+        Object modifiedValue = null;
+        if (path.getRoot() != null) {
+            modifiedValue = path.getRoot().beforeModify(field, value);
+        }
+        return modifiedValue == null ? value : modifiedValue;
+    }
+
     public abstract Object getValue(ModelPath<?> path);
 
     public abstract String getName();

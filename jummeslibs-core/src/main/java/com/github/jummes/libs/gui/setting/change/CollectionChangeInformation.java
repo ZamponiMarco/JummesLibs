@@ -4,9 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
 
-import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.ModelWrapper;
 
 public class CollectionChangeInformation extends ChangeInformation {
 
@@ -22,16 +20,14 @@ public class CollectionChangeInformation extends ChangeInformation {
         Collection<Object> collection;
         try {
             collection = (Collection<Object>) field.get(path.getLast());
-            if (path.getRoot() != null) {
-                path.getRoot().beforeModify();
-            }
+            Object finalValue = callBeforeModify(path, field, value);
             if (collection instanceof List) {
                 List<Object> list = (List<Object>) collection;
                 int i = list.indexOf(currentValue);
-                list.set(i, value);
+                list.set(i, finalValue);
             } else {
                 collection.remove(currentValue);
-                collection.add(value);
+                collection.add(finalValue);
             }
             path.saveModel(field);
         } catch (Exception e) {

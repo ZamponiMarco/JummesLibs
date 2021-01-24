@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -61,26 +62,44 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
     @Override
     protected void initializeInventory() {
         try {
-            List<S> models = ((Collection<S>) FieldUtils.readField(field,
-                    path.getLast() != null ? path.getLast() : path.getModelManager(), true)).stream()
-                    .filter(model -> model.getGUIItem() != null && filter.test(model)).collect(Collectors.toList());
-            List<S> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
-                    && models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
+            List<S> models = getModels();
+            List<S> toList = getPageModels(models);
             int maxPage = (int) Math.ceil((models.size() > 0 ? models.size() : 1) / (double) MODELS_NUMBER);
 
             this.inventory = Bukkit.createInventory(this, 54,
                     MessageUtils.color("&6Collection of &c&l" + field.getName() + " &6&l(&c" + page + "&6&l/&c" + maxPage + "&6&l)"));
 
-            toList.forEach(model -> {
-                registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e -> {
-                    executeClickConsumer(model, e);
-                });
-            });
+            toList.forEach(model -> registerClickConsumer(toList.indexOf(model), model.getGUIItem(), e ->
+                    executeClickConsumer(model, e)));
+
             placeCollectionOnlyItems(maxPage);
+
             registerClickConsumer(53, getBackItem(), getBackConsumer());
             fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    protected void placeCollectionOnlyItems(int maxPage) {
+        registerClickConsumer(50, getAddItem(), getAddConsumer());
+        if (page != maxPage) {
+            registerClickConsumer(52,
+                    ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
+                            MessageUtils.color("&6&lNext page"), new ArrayList<>()),
+                    e -> {
+                        page++;
+                        e.getWhoClicked().openInventory(getInventory());
+                    });
+        }
+        if (page != 1) {
+            registerClickConsumer(51,
+                    ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
+                            MessageUtils.color("&6&lPrevious page"), new ArrayList<>()),
+                    e -> {
+                        page--;
+                        e.getWhoClicked().openInventory(getInventory());
+                    });
         }
     }
 
@@ -108,31 +127,6 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
-    protected void placeCollectionOnlyItems(int maxPage) {
-        registerClickConsumer(50, getAddItem(), e -> {
-            e.getWhoClicked().openInventory(
-                    ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
-        });
-        if (page != maxPage) {
-            registerClickConsumer(52,
-                    ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
-                            MessageUtils.color("&6&lNext page"), new ArrayList<>()),
-                    e -> {
-                        page++;
-                        e.getWhoClicked().openInventory(getInventory());
-                    });
-        }
-        if (page != 1) {
-            registerClickConsumer(51,
-                    ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
-                            MessageUtils.color("&6&lPrevious page"), new ArrayList<>()),
-                    e -> {
-                        page--;
-                        e.getWhoClicked().openInventory(getInventory());
-                    });
-        }
-    }
-
     protected void defaultClickConsumer(S model, InventoryClickEvent e) throws IllegalAccessException {
         if (e.getClick().equals(ClickType.LEFT)) {
             path.addModel(model);
@@ -156,8 +150,26 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
+    protected List<S> getModels() throws IllegalAccessException {
+        List<S> models = ((Collection<S>) FieldUtils.readField(field,
+                path.getLast() != null ? path.getLast() : path.getModelManager(), true)).stream()
+                .filter(model -> model.getGUIItem() != null && filter.test(model)).collect(Collectors.toList());
+        return models;
+    }
+
+    protected List<S> getPageModels(List<S> models) {
+        List<S> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
+                && models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
+        return toList;
+    }
+
     protected ItemStack getAddItem() {
         return ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(ADD_ITEM), MessageUtils.color("&6&lAdd"),
                 new ArrayList<>());
+    }
+
+    protected Consumer<InventoryClickEvent> getAddConsumer() {
+        return e -> e.getWhoClicked().openInventory(
+                ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
     }
 }

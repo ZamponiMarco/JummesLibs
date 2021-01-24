@@ -34,9 +34,6 @@ public abstract class CreateInventoryHolder extends ModelObjectInventoryHolder {
     protected Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
         return e -> {
             try {
-                // Call beforeComponentCreation
-                if (path.getLast() != null)
-                    path.getLast().beforeComponentCreation(model);
 
                 // Determine one of the suitable constructors
                 Constructor<?> cons;
@@ -55,9 +52,6 @@ public abstract class CreateInventoryHolder extends ModelObjectInventoryHolder {
                 }
                 newModel.onCreation();
 
-                // Call afterComponentCreation for father class
-                if (path.getLast() != null)
-                    path.getLast().afterComponentCreation(newModel);
 
                 // Put the new model inside the saved data
                 if (isCollection) {
@@ -65,9 +59,7 @@ public abstract class CreateInventoryHolder extends ModelObjectInventoryHolder {
                     e.getWhoClicked()
                             .openInventory(new ModelObjectInventoryHolder(plugin, parent, path).getInventory());
                 } else {
-                    path.getLast().beforeComponentSetting(newModel);
                     new FieldChangeInformation(field).setValue(path, newModel);
-                    path.getLast().afterComponentSetting(newModel);
                     e.getWhoClicked().openInventory(FieldInventoryHolderFactory
                             .createFieldInventoryHolder(plugin, parent, path, field, e).getInventory());
                 }

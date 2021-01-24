@@ -1,12 +1,9 @@
 package com.github.jummes.libs.gui.setting.change;
 
-import java.lang.reflect.Field;
-
-import com.github.jummes.libs.model.Model;
+import com.github.jummes.libs.model.ModelPath;
 import org.apache.commons.lang.reflect.FieldUtils;
 
-import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.model.wrapper.ModelWrapper;
+import java.lang.reflect.Field;
 
 public class FieldChangeInformation extends ChangeInformation {
 
@@ -17,10 +14,8 @@ public class FieldChangeInformation extends ChangeInformation {
     @Override
     public void setValue(ModelPath<?> path, Object value) {
         try {
-            if (path.getRoot() != null) {
-                path.getRoot().beforeModify();
-            }
-            FieldUtils.writeField(field, path.getLast(), value, true);
+            Object finalValue = callBeforeModify(path, field, value);
+            FieldUtils.writeField(field, path.getLast(), finalValue, true);
             path.saveModel(field);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
