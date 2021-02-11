@@ -17,7 +17,7 @@ import java.util.List;
  * @author Marco
  */
 @ToString
-public class ModelPath<T extends Model> {
+public class ModelPath<T extends Model> implements Cloneable {
 
     @Getter
     private ModelManager<T> modelManager;
@@ -25,6 +25,12 @@ public class ModelPath<T extends Model> {
     private T root;
 
     private List<Model> modelPath;
+
+    protected ModelPath(ModelManager<T> modelManager, T root, List<Model> modelPath) {
+        this.modelManager = modelManager;
+        this.root = root;
+        this.modelPath = modelPath;
+    }
 
     public ModelPath(ModelManager<T> modelManager, T root) {
         this.modelManager = modelManager;
@@ -73,5 +79,10 @@ public class ModelPath<T extends Model> {
 
     public Model getLast() {
         return modelPath.isEmpty() ? root : modelPath.get(modelPath.size() - 1);
+    }
+
+    @Override
+    public ModelPath<T> clone() {
+        return new ModelPath<T>(modelManager, root, new ArrayList<>(modelPath));
     }
 }
