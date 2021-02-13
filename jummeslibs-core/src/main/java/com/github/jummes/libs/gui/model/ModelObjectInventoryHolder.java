@@ -16,7 +16,6 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -151,6 +150,9 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                         ? (String) field.getType().getMethod(field.getType().getAnnotation(GUINameable.class).
                         GUIName()).invoke(FieldUtils.readField(field, path.getLast(), true))
                         : FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
+            } else if (field.getType().isEnum()) {
+                Enum<?> obj = (Enum<?>) FieldUtils.readField(field, path.getLast(), true);
+                valueToPrint = obj.name();
             } else {
                 Object obj = FieldUtils.readField(field, path.getLast(), true);
                 valueToPrint = obj == null ? "null" : obj.toString();
