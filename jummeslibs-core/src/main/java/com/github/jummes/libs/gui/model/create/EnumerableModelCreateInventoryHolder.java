@@ -5,8 +5,10 @@ import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.InjectUtils;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
+import com.google.common.collect.Lists;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -21,6 +23,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder {
 
@@ -47,7 +50,11 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
         this.inventory = Bukkit.createInventory(this, 27,
                 MessageUtils.color("&6Create a &c&l" + modelClass.getSimpleName()));
 
-        List<Class<? extends Model>> classes = Arrays.stream(modelClass.getAnnotation(Enumerable.Parent.class).classArray()).
+        List<Class<? extends Model>> injectedList = InjectUtils.getInjectionMap().getOrDefault(modelClass,
+                Lists.newArrayList());
+
+        List<Class<? extends Model>> classes = Stream.concat(Arrays.stream(modelClass.
+                getAnnotation(Enumerable.Parent.class).classArray()), injectedList.stream()).
                 filter(clazz -> (clazz.isAnnotationPresent(Enumerable.Child.class)
                         || clazz.isAnnotationPresent(Enumerable.Parent.class))
                         && isConditionSatisfied(clazz)).collect(Collectors.toList());
