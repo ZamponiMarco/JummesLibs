@@ -4,12 +4,17 @@ import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder.StringFieldChangeInfo;
 import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,17 +33,28 @@ public class StringSettingChangeChatListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String message = e.getMessage();
-        handleChatMessage(e, p, message);
+        handleMessage(e, p, message);
     }
 
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         String message = e.getMessage();
-        handleChatMessage(e, p, message);
+        handleMessage(e, p, message);
     }
 
-    private void handleChatMessage(Cancellable e, Player p, String message) {
+    @EventHandler
+    public void onBlockClick(PlayerInteractEvent e) {
+        if (e.getAction().equals(Action.LEFT_CLICK_BLOCK) || e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            Block b = e.getClickedBlock();
+            if (b != null && b.getType().equals(Material.COMMAND_BLOCK)) {
+                String command = ((CommandBlock) b.getState()).getCommand();
+                handleMessage(e, e.getPlayer(), command);
+            }
+        }
+    }
+
+    private void handleMessage(Cancellable e, Player p, String message) {
         StringFieldChangeInfo changeStringInfo = StringFieldChangeInventoryHolder.getChangeStringInfoSet().stream()
                 .filter(info -> info.getHuman().equals(p)).findFirst().orElse(null);
         if (changeStringInfo != null) {
