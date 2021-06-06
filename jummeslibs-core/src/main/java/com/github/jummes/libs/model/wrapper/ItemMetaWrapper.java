@@ -3,7 +3,6 @@ package com.github.jummes.libs.model.wrapper;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.core.Libs;
-import com.github.jummes.libs.util.DeprecationUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,7 +30,6 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
 
     public ItemMetaWrapper(@NonNull ItemMeta wrapped) {
         super(wrapped);
-        this.wrapped = DeprecationUtils.fixJsonItemMeta(wrapped);
         if (wrapped != null) {
             this.displayName = wrapped.getDisplayName();
             this.lore = wrapped.getLore() == null ? new ArrayList<>() : wrapped.getLore();
@@ -42,15 +40,11 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
     }
 
     public static ItemMetaWrapper deserialize(Map<String, Object> map) {
-        try {
-            Map<String, Object> metaMap = (Map<String, Object>) map.get("meta");
-            if (metaMap == null) {
-                throw new NullPointerException();
-            }
-            return new ItemMetaWrapper(Libs.getWrapper().deserializeItemMeta(metaMap));
-        } catch (Exception ignored) {
-            return DeprecationUtils.handleOldItemMeta(map);
+        Map<String, Object> metaMap = (Map<String, Object>) map.get("meta");
+        if (metaMap == null) {
+            throw new NullPointerException();
         }
+        return new ItemMetaWrapper(Libs.getWrapper().deserializeItemMeta(metaMap));
     }
 
     @Override

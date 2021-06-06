@@ -1,7 +1,6 @@
 package com.github.jummes.libs.model.wrapper;
 
 import com.github.jummes.libs.annotation.Serializable;
-import com.github.jummes.libs.util.DeprecationUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.util.Vector;
 
@@ -35,15 +34,11 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
     }
 
     public static VectorWrapper deserialize(Map<String, Object> map) {
-        try {
-            Map<String, Object> vectorMap = (Map<String, Object>) map.get("vector");
-            if (vectorMap == null) {
-                throw new NullPointerException();
-            }
-            return new VectorWrapper(Vector.deserialize(vectorMap));
-        } catch (Exception ignored) {
-            return DeprecationUtils.handleOldVector(map);
+        Map<String, Object> vectorMap = (Map<String, Object>) map.get("vector");
+        if (vectorMap == null) {
+            throw new NullPointerException();
         }
+        return new VectorWrapper(Vector.deserialize(vectorMap));
     }
 
     @Override

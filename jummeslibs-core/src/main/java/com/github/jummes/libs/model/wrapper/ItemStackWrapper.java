@@ -9,7 +9,6 @@ import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.util.DeprecationUtils;
 import com.github.jummes.libs.util.MapperUtils;
 import lombok.NonNull;
 import lombok.Setter;
@@ -65,16 +64,9 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
     }
 
     public static ItemStackWrapper deserialize(Map<String, Object> map) {
-        ItemStack wrapped;
-        boolean noAmount;
-        try {
-            wrapped = ItemStack.deserialize((Map<String, Object>) map.get("item"));
-        } catch (Exception e) {
-            wrapped = DeprecationUtils.handleOldItemStack(map);
-        }
-        noAmount = (boolean) map.getOrDefault("noAmount", DEFAULT_NO_AMOUNT);
+        ItemStack wrapped = ItemStack.deserialize((Map<String, Object>) map.get("item"));
+        boolean noAmount = (boolean) map.getOrDefault("noAmount", DEFAULT_NO_AMOUNT);
 
-        wrapped.setItemMeta(DeprecationUtils.fixJsonItemMeta(wrapped.getItemMeta()));
         return new ItemStackWrapper(wrapped, noAmount);
     }
 

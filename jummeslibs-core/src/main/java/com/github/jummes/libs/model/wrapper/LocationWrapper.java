@@ -7,7 +7,6 @@ import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.util.DeprecationUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -53,15 +52,11 @@ public class LocationWrapper extends ModelWrapper<Location> {
     }
 
     public static LocationWrapper deserialize(Map<String, Object> map) {
-        try {
-            Map<String, Object> locationMap = (Map<String, Object>) map.get("location");
-            if (locationMap == null) {
-                throw new NullPointerException();
-            }
-            return new LocationWrapper(Location.deserialize(locationMap));
-        } catch (Exception ignored) {
-            return DeprecationUtils.handleOldLocation(map);
+        Map<String, Object> locationMap = (Map<String, Object>) map.get("location");
+        if (locationMap == null) {
+            throw new NullPointerException();
         }
+        return new LocationWrapper(Location.deserialize(locationMap));
     }
 
     @Override
