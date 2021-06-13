@@ -37,6 +37,10 @@ public class Libs {
         ConfigurationSerialization.registerClass(IntRange.class);
 
         ConfigurationSerialization.registerClass(Particle.class);
+        ConfigurationSerialization.registerClass(ParticleOptions.class);
+        ConfigurationSerialization.registerClass(BlockDataOptions.class);
+        ConfigurationSerialization.registerClass(DustDataOptions.class);
+        ConfigurationSerialization.registerClass(ItemStackOptions.class);
     }
 
     public static void initializeLibrary(JavaPlugin plugin) {

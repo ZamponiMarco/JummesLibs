@@ -83,6 +83,6 @@ public class ModelPath<T extends Model> implements Cloneable {
 
     @Override
     public ModelPath<T> clone() {
-        return new ModelPath<T>(modelManager, root, new ArrayList<>(modelPath));
+        return new ModelPath<>(modelManager, root, new ArrayList<>(modelPath));
     }
 }

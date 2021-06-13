@@ -35,6 +35,7 @@ public @interface Serializable {
         String defaultValue();
 
     }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     @interface Number {
