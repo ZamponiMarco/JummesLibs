@@ -32,6 +32,7 @@ import java.util.function.Function;
 public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneable {
 
     private static final boolean DEFAULT_NO_AMOUNT = true;
+    private static final ItemStack DEFAULT_ITEM = new ItemStack(Material.STONE);
 
     private static final String AMOUNT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjdkYzNlMjlhMDkyM2U1MmVjZWU2YjRjOWQ1MzNhNzllNzRiYjZiZWQ1NDFiNDk1YTEzYWJkMzU5NjI3NjUzIn19fQ===";
     private static final String META_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2Y4MzM0MTUxYzIzNGY0MTY0NzExM2JlM2VhZGYyODdkMTgxNzExNWJhYzk0NDVmZmJiYmU5Y2IyYjI4NGIwIn19fQ=====";
@@ -52,7 +53,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
     }
 
     public ItemStackWrapper(boolean noAmount) {
-        this(new ItemStack(Material.STONE), noAmount);
+        this(DEFAULT_ITEM.clone(), noAmount);
     }
 
     public ItemStackWrapper(@NonNull ItemStack wrapped, boolean noAmount) {
@@ -64,7 +65,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
     }
 
     public static ItemStackWrapper deserialize(Map<String, Object> map) {
-        ItemStack wrapped = ItemStack.deserialize((Map<String, Object>) map.get("item"));
+        ItemStack wrapped = ItemStack.deserialize((Map<String, Object>) map.getOrDefault("item", DEFAULT_ITEM.clone()));
         boolean noAmount = (boolean) map.getOrDefault("noAmount", DEFAULT_NO_AMOUNT);
 
         return new ItemStackWrapper(wrapped, noAmount);
