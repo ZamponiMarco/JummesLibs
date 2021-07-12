@@ -94,7 +94,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         });
 
         // Back button and fill the rest
-        registerClickConsumer(26, getBackItem(), getBackConsumerAndPopModel());
+        registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);
     }
 
@@ -270,7 +270,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         return positions;
     }
 
-    protected Consumer<InventoryClickEvent> getBackConsumerAndPopModel() {
+    protected Consumer<InventoryClickEvent> getBackConsumer() {
         return e -> {
             if (parent != null) {
                 path.popModel();

@@ -172,4 +172,16 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         return e -> e.getWhoClicked().openInventory(
                 ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
     }
+
+    @Override
+    protected Consumer<InventoryClickEvent> getBackConsumer() {
+        return e -> {
+            if (parent != null) {
+                path.popField();
+                e.getWhoClicked().openInventory(parent.getInventory());
+            } else {
+                e.getWhoClicked().closeInventory();
+            }
+        };
+    }
 }

@@ -1,15 +1,16 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Class that handles the change of fields of a Model throught the use of a GUI
@@ -36,4 +37,15 @@ public abstract class FieldChangeInventoryHolder extends ModelObjectInventoryHol
         return map;
     }
 
+    @Override
+    protected Consumer<InventoryClickEvent> getBackConsumer() {
+        return e -> {
+            if (parent != null) {
+                path.popField();
+                e.getWhoClicked().openInventory(parent.getInventory());
+            } else {
+                e.getWhoClicked().closeInventory();
+            }
+        };
+    }
 }

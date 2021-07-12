@@ -49,10 +49,7 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
                         path.getLast() != null ? path.getLast() : path.getModelManager(), true)).removeAll(models);
                 models.forEach(model -> {
                     if (path.getLast() == null) {
-                        path.addModel(model);
-                        path.deleteModel();
-                        path.popModel();
-                        model.onRemoval();
+                        path.deleteRoot(model);
                     } else {
                         path.saveModel(field);
                     }

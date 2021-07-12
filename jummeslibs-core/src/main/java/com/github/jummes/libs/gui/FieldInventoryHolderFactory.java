@@ -57,6 +57,7 @@ public class FieldInventoryHolderFactory {
              */
             if (field.isAnnotationPresent(Serializable.class)
                     && !field.getAnnotation(Serializable.class).fromList().equals("")) {
+                path.addField(field);
                 List<Object> objects = (List<Object>) path.getLast().getClass()
                         .getMethod(field.getAnnotation(Serializable.class).fromList(), ModelPath.class)
                         .invoke(null, path);
@@ -80,6 +81,7 @@ public class FieldInventoryHolderFactory {
              * Is a primitive type
              */
             else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
+                path.addField(field);
                 return FieldChangeInventoryHolder.getInventories().get(clazz)
                         .getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
                                 ChangeInformation.class)
@@ -97,6 +99,7 @@ public class FieldInventoryHolderFactory {
              * Is a collection
              */
             else if (ClassUtils.isAssignable(clazz, Collection.class)) {
+                path.addField(field);
                 Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
                         .getRawType();
                 if (collectionGUIMap.containsKey(containedClass)) {
@@ -133,6 +136,7 @@ public class FieldInventoryHolderFactory {
              * Is an enum
              */
             else if (clazz.isEnum()) {
+                path.addField(field);
                 return new FromListFieldChangeInventoryHolder(plugin, parent, path, new FieldChangeInformation(field),
                         1, Lists.newArrayList(clazz.getEnumConstants()), null);
             }
