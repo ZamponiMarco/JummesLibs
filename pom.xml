@@ -5,7 +5,7 @@
 
     <groupId>com.github.jummes</groupId>
     <artifactId>jummeslibs</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>pom</packaging>
     <name>JummesLibs</name>
     <properties>
@@ -13,8 +13,6 @@
     </properties>
     <modules>
         <module>jummeslibs-core</module>
-        <module>jummeslibs-craftbukkit_1_14_R1</module>
-        <module>jummeslibs-craftbukkit_1_15_R1</module>
         <module>jummeslibs-craftbukkit_1_16_R1</module>
         <module>jummeslibs-craftbukkit_1_16_R2</module>
         <module>jummeslibs-craftbukkit_1_16_R3</module>

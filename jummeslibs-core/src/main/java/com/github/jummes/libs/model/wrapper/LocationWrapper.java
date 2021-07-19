@@ -7,7 +7,6 @@ import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.model.ModelObjectInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.inventory.ClickType;
@@ -123,8 +122,8 @@ public class LocationWrapper extends ModelWrapper<Location> {
     @Override
     public String toString() {
         NumberFormat f = new DecimalFormat("#0.00");
-        return MessageUtils
-                .color(String.format("&c%s&6/&c%s&6/&c%s&6/&c%s", wrapped.getWorld().getName(), f.format(x), f.format(y), f.format(z)));
+        return String.format("&c%s&6/&c%s&6/&c%s&6/&c%s", wrapped.getWorld().getName(), f.format(x), f.format(y),
+                f.format(z));
     }
 
 }

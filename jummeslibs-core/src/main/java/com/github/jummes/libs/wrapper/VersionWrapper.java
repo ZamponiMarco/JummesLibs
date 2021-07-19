@@ -15,10 +15,6 @@ public interface VersionWrapper {
      */
     ItemStack skullFromValue(String value);
 
-    ItemStack addTagToItem(ItemStack item, String key, String value);
-
-    String getTagItem(ItemStack item, String key);
-
     ItemMeta deserializeItemMeta(Map<String, Object> map);
 
 }

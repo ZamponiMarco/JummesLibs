@@ -34,7 +34,7 @@ public class ModelCreateInventoryHolder extends CreateInventoryHolder {
                 MessageUtils.color("&6Create a &c&l" + modelClass.getSimpleName()));
         registerClickConsumer(13,
                 ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(CONFIRM_HEAD),
-                        MessageUtils.color("&6&lConfirm"), new ArrayList<String>()),
+                        MessageUtils.color("&6&lConfirm"), new ArrayList<>()),
                 getModelCreateConsumer(modelClass, isCollection));
         registerClickConsumer(26, getBackItem(), getBackConsumer());
         fillInventoryWith(Material.GRAY_STAINED_GLASS_PANE);

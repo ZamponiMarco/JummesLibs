@@ -54,20 +54,4 @@ public class VersionWrapper_v1_16_R3 implements VersionWrapper {
         return null;
     }
 
-    @Override
-    public ItemStack addTagToItem(ItemStack item, String key, String value) {
-        net.minecraft.server.v1_16_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound tag = nmsItem.getOrCreateTag();
-        tag.setString(key, value);
-        nmsItem.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsItem);
-    }
-
-    @Override
-    public String getTagItem(ItemStack item, String key) {
-        net.minecraft.server.v1_16_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound tag = nmsItem.getOrCreateTag();
-        return tag.getString(key);
-    }
-
 }

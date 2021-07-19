@@ -112,7 +112,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
         if (clazz.equals(EquipmentSlot.class)) {
             return MapperUtils.getEquipmentSlotMapper().apply(EquipmentSlot.valueOf(s.toString()));
         }
-        return ItemUtils.getNamedItem(new ItemStack(Material.PAPER), s.toString(),
+        return ItemUtils.getNamedItem(new ItemStack(Material.PAPER), MessageUtils.color(s.toString()),
                 Lists.newArrayList());
     }
 

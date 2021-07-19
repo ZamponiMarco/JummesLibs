@@ -9,6 +9,7 @@ import com.github.jummes.libs.util.InjectUtils;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -101,9 +102,10 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
     private ItemStack getEnumerableItem(Class<?> clazz) {
         String name = clazz.isAnnotationPresent(Enumerable.Displayable.class)
                 && !clazz.getAnnotation(Enumerable.Displayable.class).name().equals("")
-                ? MessageUtils.color(clazz.getAnnotation(Enumerable.Displayable.class).name())
-                : MessageUtils.color("&6new &c&l" + clazz.getSimpleName());
-        List<String> lore = clazz.isAnnotationPresent(Enumerable.Displayable.class)
+                ? clazz.getAnnotation(Enumerable.Displayable.class).name()
+                : "&6new &c&l" + clazz.getSimpleName();
+        Component nameComponent = MessageUtils.color(name);
+        List<Component> lore = clazz.isAnnotationPresent(Enumerable.Displayable.class)
                 && !clazz.getAnnotation(Enumerable.Displayable.class).description().equals("")
                 ? Libs.getLocale().getList(clazz.getAnnotation(Enumerable.Displayable.class).description())
                 : new ArrayList<>();
@@ -111,7 +113,7 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
                 && !clazz.getAnnotation(Enumerable.Displayable.class).headTexture().equals("")
                 ? Libs.getWrapper().skullFromValue(clazz.getAnnotation(Enumerable.Displayable.class).headTexture())
                 : Libs.getWrapper().skullFromValue(ITEM_HEAD);
-        return ItemUtils.getNamedItem(item, name, lore);
+        return ItemUtils.getNamedItem(item, nameComponent, lore);
     }
 
     protected Consumer<InventoryClickEvent> getBackConsumer() {

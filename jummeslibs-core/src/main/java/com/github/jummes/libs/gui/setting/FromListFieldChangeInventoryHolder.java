@@ -1,16 +1,5 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
@@ -19,6 +8,16 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
@@ -61,7 +60,7 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
             toList.forEach(object -> {
                 registerClickConsumer(toList.indexOf(object),
                         mapper == null
-                                ? ItemUtils.getNamedItem(new ItemStack(Material.CARROT), object.toString(),
+                                ? ItemUtils.getNamedItem(new ItemStack(Material.CARROT), MessageUtils.color(object.toString()),
                                 Lists.newArrayList())
                                 : mapper.apply(object),
                         e -> {
@@ -81,14 +80,14 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
             if (page != maxPage) {
                 registerClickConsumer(52,
                         ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(NEXT_PAGE_ITEM),
-                                MessageUtils.color("&6&lNext page"), new ArrayList<String>()),
+                                MessageUtils.color("&6&lNext page"), new ArrayList<>()),
                         e -> e.getWhoClicked().openInventory(new FromListFieldChangeInventoryHolder(plugin, parent,
                                 path, changeInformation, page + 1, objects, mapper).getInventory()));
             }
             if (page != 1) {
                 registerClickConsumer(51,
                         ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PREVIOUS_PAGE_ITEM),
-                                MessageUtils.color("&6&lPrevious page"), new ArrayList<String>()),
+                                MessageUtils.color("&6&lPrevious page"), new ArrayList<>()),
                         e -> e.getWhoClicked().openInventory(new FromListFieldChangeInventoryHolder(plugin, parent,
                                 path, changeInformation, page - 1, objects, mapper).getInventory()));
             }

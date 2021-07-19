@@ -3,6 +3,7 @@ package com.github.jummes.libs.listener;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder;
 import com.github.jummes.libs.gui.setting.StringFieldChangeInventoryHolder.StringFieldChangeInfo;
 import com.github.jummes.libs.util.MessageUtils;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -20,8 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class StringSettingChangeChatListener implements Listener {
 
-    private static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified, &6%s: &e%s");
-    private static final String MODIFY_BLOCKED = MessageUtils.color("&aThe value &6&lhasn't&a been modified.");
+    private static final String MODIFY_SUCCESS = "&aObject modified, &6%s: &e%s";
+    private static final Component MODIFY_BLOCKED = MessageUtils.color("&aThe value &6&lhasn't&a been modified.");
 
     private JavaPlugin plugin;
 
@@ -66,12 +67,11 @@ public class StringSettingChangeChatListener implements Listener {
     private void runModifySyncTask(Player p, String message, StringFieldChangeInfo info) {
         Bukkit.getScheduler().runTask(plugin, () -> {
             String validatedValue = message.trim();
-            validatedValue = MessageUtils.color(validatedValue);
             if (validatedValue.equalsIgnoreCase("exit")) {
                 p.sendMessage(MODIFY_BLOCKED);
             } else {
                 info.getChangeInformation().setValue(info.getPath(), validatedValue);
-                p.sendMessage(String.format(MODIFY_SUCCESS, info.getChangeInformation().getName(), validatedValue));
+                p.sendMessage(MessageUtils.color(String.format(MODIFY_SUCCESS, info.getChangeInformation().getName(), validatedValue)));
             }
             openParentInventory(p, info.getParent());
             StringFieldChangeInventoryHolder.getChangeStringInfoSet().remove(info);

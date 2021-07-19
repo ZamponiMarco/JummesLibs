@@ -7,6 +7,7 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,7 +21,7 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
 
     private static final String CONFIRM_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0=";
 
-    private static final String CONFIRM_ITEM = MessageUtils.color("&6&lConfirm");
+    private static final Component CONFIRM_ITEM = MessageUtils.color("&6&lConfirm");
 
     protected ModelPath<?> path;
     protected List<? extends Model> models;

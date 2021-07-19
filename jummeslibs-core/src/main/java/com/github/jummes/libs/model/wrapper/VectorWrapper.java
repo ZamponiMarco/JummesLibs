@@ -1,7 +1,6 @@
 package com.github.jummes.libs.model.wrapper;
 
 import com.github.jummes.libs.annotation.Serializable;
-import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Field;
@@ -69,8 +68,7 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
     @Override
     public String toString() {
         NumberFormat f = new DecimalFormat("#0.00");
-        return MessageUtils
-                .color(String.format("&6&lVector [&c%s&6/&c%s&6/&c%s&6&l]", f.format(x), f.format(y), f.format(z)));
+        return String.format("&6&lVector [&c%s&6/&c%s&6/&c%s&6&l]", f.format(x), f.format(y), f.format(z));
     }
 
     @Override

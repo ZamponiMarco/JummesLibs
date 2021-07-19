@@ -2,6 +2,7 @@ package com.github.jummes.libs.localization;
 
 import com.github.jummes.libs.util.MessageUtils;
 import com.google.common.collect.Lists;
+import net.kyori.adventure.text.Component;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -25,19 +26,22 @@ public class PluginLocale {
         this.localeFiles = new ArrayList<>();
     }
 
-    public String get(String ref, Object... args) {
+    public Component get(String ref, Object... args) {
         if (config.contains(ref)) {
-            return MessageFormat.format(MessageUtils.color(config.getString(ref)), args);
+            String s = config.getString(ref);
+            if (s != null) {
+                return MessageUtils.color(MessageFormat.format(s, args));
+            }
         }
-        return ref;
+        return MessageUtils.color(ref);
     }
 
-    public List<String> getList(String ref, Object... args) {
+    public List<Component> getList(String ref, Object... args) {
         if (config.contains(ref)) {
             return config.getStringList(ref).stream()
-                    .map(string -> MessageFormat.format(MessageUtils.color(string), args)).collect(Collectors.toList());
+                    .map(string -> MessageUtils.color(MessageFormat.format(string, args))).collect(Collectors.toList());
         }
-        return Lists.newArrayList(ref);
+        return Lists.newArrayList(MessageUtils.color(ref));
     }
 
     private void registerDefaultLocales(Plugin plugin, List<String> locales) {
@@ -68,6 +72,13 @@ public class PluginLocale {
         }
     }
 
+    public void registerLocaleFiles(File file) {
+        if (file.exists()) {
+            localeFiles.add(file);
+            loadData();
+        }
+    }
+
     private File getDataFile(String filename, Plugin plugin) {
         File folder = new File(plugin.getDataFolder(), FOLDERNAME);
 
@@ -80,12 +91,6 @@ public class PluginLocale {
             dataFile = new File(folder, "en-US.yml");
         }
         return dataFile;
-    }
-
-    private void reloadData(String fileName, Plugin plugin) {
-        File file = getDataFile(fileName, plugin);
-        this.localeFiles.remove(file);
-        registerLocaleFiles(plugin, defaultLocales.get(plugin), fileName);
     }
 
 

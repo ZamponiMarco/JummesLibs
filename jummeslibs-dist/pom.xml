@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.github.jummes</groupId>
         <artifactId>jummeslibs</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <artifactId>jummeslibs-dist</artifactId>
     <properties>
@@ -43,16 +43,6 @@
         <dependency>
             <groupId>com.github.jummes</groupId>
             <artifactId>jummeslibs-core</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jummes</groupId>
-            <artifactId>jummeslibs-craftbukkit_1_14_R1</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jummes</groupId>
-            <artifactId>jummeslibs-craftbukkit_1_15_R1</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

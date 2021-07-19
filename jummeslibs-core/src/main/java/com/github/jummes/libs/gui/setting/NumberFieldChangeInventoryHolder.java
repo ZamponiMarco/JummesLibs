@@ -32,13 +32,13 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
     protected static final String SUBMIT_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdiNjJkMjc1ZDg3YzA5Y2UxMGFjYmNjZjM0YzRiYTBiNWYxMzVkNjQzZGM1MzdkYTFmMWRmMzU1YTIyNWU4MiJ9fX0";
     protected static final String MINUS_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQ2YjEyOTNkYjcyOWQwMTBmNTM0Y2UxMzYxYmJjNTVhZTVhOGM4ZjgzYTE5NDdhZmU3YTg2NzMyZWZjMiJ9fX0=";
     protected static final String PLUS_HEAD = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDdhMGZjNmRjZjczOWMxMWZlY2U0M2NkZDE4NGRlYTc5MWNmNzU3YmY3YmQ5MTUzNmZkYmM5NmZhNDdhY2ZiIn19fQ==";
-    protected static final String MENU_TITLE = MessageUtils.color("&6&lModify &e&l %s");
-    protected static final String MODIFY_SUCCESS = MessageUtils.color("&aObject modified: &6%s: &e%s");
-    protected static final String MODIFY_ITEM = MessageUtils.color("&6&lModify -> &e&l%s");
-    protected static final String CONFIRM_ITEM = MessageUtils.color("&6&lResult = &e&l%s");
-    protected static final String ZERO_ITEM = MessageUtils.color("&6Set to &e&l0");
-    protected static final String ZOOM_IN = MessageUtils.color("&6&lDecrease the scale.");
-    protected static final String ZOOM_OUT = MessageUtils.color("&6&lIncrease the scale.");
+    protected static final String MENU_TITLE = "&6&lModify &e&l %s";
+    protected static final String MODIFY_SUCCESS = "&aObject modified: &6%s: &e%s";
+    protected static final String MODIFY_ITEM = "&6&lModify -> &e&l%s";
+    protected static final String CONFIRM_ITEM = "&6&lResult = &e&l%s";
+    protected static final String ZERO_ITEM = "&6Set to &e&l0";
+    protected static final String ZOOM_IN = "&6&lDecrease the scale.";
+    protected static final String ZOOM_OUT = "&6&lIncrease the scale.";
 
     protected S result;
     protected boolean annotationPresent;
@@ -74,16 +74,19 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
     @Override
     protected void initializeInventory() {
 
-        this.inventory = Bukkit.createInventory(this, 27, String.format(MENU_TITLE, changeInformation.getName()));
+        this.inventory = Bukkit.createInventory(this, 27,
+                MessageUtils.color(String.format(MENU_TITLE, changeInformation.getName())));
 
         fillModifyButtons();
         registerClickConsumer(22, getZeroItem(), getZeroConsumer());
         registerClickConsumer(26, getBackItem(), getBackConsumer());
-        registerClickConsumer(0, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(MINUS_HEAD), ZOOM_IN, Lists.newArrayList()), e -> {
+        registerClickConsumer(0, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(MINUS_HEAD),
+                MessageUtils.color(ZOOM_IN), Lists.newArrayList()), e -> {
             scale /= 10;
             fillModifyButtons();
         });
-        registerClickConsumer(8, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PLUS_HEAD), ZOOM_OUT, Lists.newArrayList()), e -> {
+        registerClickConsumer(8, ItemUtils.getNamedItem(Libs.getWrapper().skullFromValue(PLUS_HEAD),
+                MessageUtils.color(ZOOM_OUT), Lists.newArrayList()), e -> {
             scale *= 10;
             fillModifyButtons();
         });
@@ -166,16 +169,17 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
     }
 
     private ItemStack getModifyItem(double i, ItemStack item) {
-        return ItemUtils.getNamedItem(item, String.format(MODIFY_ITEM, i), new ArrayList<>());
+        return ItemUtils.getNamedItem(item, MessageUtils.color(String.format(MODIFY_ITEM, i)), new ArrayList<>());
     }
 
     private ItemStack getConfirmItem() {
         return ItemUtils.getNamedItem(wrapper.skullFromValue(SUBMIT_HEAD),
-                String.format(CONFIRM_ITEM, result), new ArrayList<>());
+                MessageUtils.color(String.format(CONFIRM_ITEM, result)), new ArrayList<>());
     }
 
     private ItemStack getZeroItem() {
-        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD), ZERO_ITEM, new ArrayList<>());
+        return ItemUtils.getNamedItem(wrapper.skullFromValue(ZERO_HEAD),
+                MessageUtils.color(ZERO_ITEM), new ArrayList<>());
     }
 
     protected abstract double getDefaultScale();

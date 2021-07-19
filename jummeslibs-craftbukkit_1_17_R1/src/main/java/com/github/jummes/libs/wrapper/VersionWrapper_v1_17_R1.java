@@ -54,20 +54,4 @@ public class VersionWrapper_v1_17_R1 implements VersionWrapper {
         return null;
     }
 
-    @Override
-    public org.bukkit.inventory.ItemStack addTagToItem(org.bukkit.inventory.ItemStack item, String key, String value) {
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound tag = nmsItem.getOrCreateTag();
-        tag.setString(key, value);
-        nmsItem.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsItem);
-    }
-
-    @Override
-    public String getTagItem(org.bukkit.inventory.ItemStack item, String key) {
-        ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound tag = nmsItem.getOrCreateTag();
-        return tag.getString(key);
-    }
-
 }

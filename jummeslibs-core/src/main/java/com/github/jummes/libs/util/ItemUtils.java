@@ -1,17 +1,12 @@
 package com.github.jummes.libs.util;
 
-import com.google.common.collect.Lists;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class ItemUtils {
 
@@ -22,11 +17,10 @@ public final class ItemUtils {
      * @param name name that will be displayed
      * @return
      */
-    public static ItemStack getNamedItem(ItemStack item, String name, List<String> lore) {
+    public static ItemStack getNamedItem(ItemStack item, Component name, List<Component> lore) {
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName(MessageUtils.color(name));
-        meta.setLore(null);
-        meta.setLore(lore);
+        meta.displayName(name);
+        meta.lore(lore);
         item.setItemMeta(meta);
         return item;
     }
@@ -38,7 +32,7 @@ public final class ItemUtils {
      * @return an item with a blank name
      */
     public static ItemStack getNotNamedItem(Material material) {
-        return getNamedItem(new ItemStack(material), " ", new ArrayList<String>());
+        return getNamedItem(new ItemStack(material), MessageUtils.color(" "), new ArrayList<>());
     }
 
     public static boolean isSimilar(ItemStack first, ItemStack second) {

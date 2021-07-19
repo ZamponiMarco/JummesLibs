@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.jummes</groupId>
         <artifactId>jummeslibs</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <artifactId>jummeslibs-core</artifactId>
     <properties>
@@ -32,8 +32,8 @@
     </build>
     <repositories>
         <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
     </repositories>
     <dependencies>
@@ -44,9 +44,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.14.4-R0.1-SNAPSHOT</version>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -1,5 +1,6 @@
 package com.github.jummes.libs.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.Permission;
 
@@ -7,9 +8,8 @@ import com.github.jummes.libs.util.MessageUtils;
 
 public abstract class AbstractCommand {
 
-    private static final String NO_PERMISSION = MessageUtils.color("&cYou don't have the permission");
-    private static final String ONLY_PLAYER = MessageUtils.color("&cThis command can be used only by a player");
-    private static final String INCORRECT_USAGE = MessageUtils.color("&cIncorrect command syntax, type /mc help");
+    private static final Component NO_PERMISSION = MessageUtils.color("&cYou don't have the permission");
+    private static final Component ONLY_PLAYER = MessageUtils.color("&cThis command can be used only by a player");
 
     protected CommandSender sender;
     protected String subCommand;
@@ -53,7 +53,7 @@ public abstract class AbstractCommand {
      * Checks if the command can be executed, if it can proceeds to execute it
      */
     public void checkExecution() {
-        String errorMessage = "";
+        Component errorMessage = Component.text("");
         errorMessage = !hasPermission() ? NO_PERMISSION : errorMessage;
         errorMessage = !canSenderTypeExecute() ? ONLY_PLAYER : errorMessage;
         if (canSenderTypeExecute() && hasPermission()) {
@@ -61,10 +61,6 @@ public abstract class AbstractCommand {
         } else {
             sender.sendMessage(errorMessage);
         }
-    }
-
-    protected void incorrectUsage() {
-        sender.sendMessage(INCORRECT_USAGE);
     }
 
     /**

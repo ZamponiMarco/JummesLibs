@@ -11,6 +11,7 @@ import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.github.jummes.libs.util.ReflectUtils;
 import lombok.SneakyThrows;
+import net.kyori.adventure.text.Component;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
@@ -57,7 +58,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         }
 
         // Get title and create inventory
-        String title = getTitleString(path.getLast());
+        Component title = getTitleString(path.getLast());
         this.inventory = Bukkit.createInventory(this, 27, title);
 
         // List displayable fields and print them in GUI
@@ -103,8 +104,8 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
                 wrapper.skullFromValue(toPrint[i].getAnnotation(Serializable.class).headTexture()) :
                 (ItemStack) clazz.getMethod(toPrint[i].getAnnotation(Serializable.class).displayItem()).invoke(path.getLast());
         if (item != null) {
-            String itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
-            List<String> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
+            Component itemName = MessageUtils.color("&6&l" + toPrint[i].getName() + " » &c&l" + getValueString(toPrint[i]));
+            List<Component> lore = Libs.getLocale().getList(toPrint[i].getAnnotation(Serializable.class).description());
             Arrays.stream(toPrint[i].getAnnotation(Serializable.class).additionalDescription()).forEach(description -> {
                 lore.addAll(Libs.getLocale().getList(description));
             });
@@ -126,7 +127,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
     }
 
     @SneakyThrows
-    private String getTitleString(Model object) {
+    private Component getTitleString(Model object) {
         String name;
         Class<?> clazz = object.getClass();
         if (clazz.isAnnotationPresent(GUINameable.class)) {
@@ -137,7 +138,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         return MessageUtils.color("&c&l" + name);
     }
 
-    private String getValueString(Field field) {
+    private Component getValueString(Field field) {
         String valueToPrint;
         try {
             if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
@@ -160,9 +161,9 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
             if (valueToPrint.length() > 60) {
                 valueToPrint = valueToPrint.substring(0, 58).concat("...");
             }
-            return valueToPrint;
+            return MessageUtils.color(valueToPrint);
         } catch (Exception e) {
-            return "null";
+            return MessageUtils.color("null");
         }
     }
 
