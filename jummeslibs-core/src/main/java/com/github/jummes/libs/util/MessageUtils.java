@@ -2,6 +2,7 @@ package com.github.jummes.libs.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +13,7 @@ public class MessageUtils {
             LegacyComponentSerializer.legacyAmpersand();
 
     public static Component color(String string) {
-        return serializer.deserialize(string);
+        return Component.text().decoration(TextDecoration.ITALIC, false).append(serializer.deserialize(string)).build();
     }
 
     public static Component header(String string) {

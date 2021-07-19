@@ -3,6 +3,7 @@ package com.github.jummes.libs.model.wrapper;
 import com.github.jummes.libs.annotation.GUINameable;
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.core.Libs;
+import com.github.jummes.libs.util.MessageUtils;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ToString
 @Setter
@@ -61,10 +63,10 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
         if (clazz.equals(ItemMetaWrapper.class)) {
             switch (field.getName()) {
                 case "displayName":
-                    wrapped.setDisplayName(displayName);
+                    wrapped.displayName(MessageUtils.color(displayName));
                     break;
                 case "lore":
-                    wrapped.setLore(lore);
+                    wrapped.lore(lore.stream().map(MessageUtils::color).collect(Collectors.toList()));
                     break;
             }
         }

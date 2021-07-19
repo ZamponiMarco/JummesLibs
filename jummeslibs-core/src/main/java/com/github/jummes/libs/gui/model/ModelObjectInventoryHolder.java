@@ -138,7 +138,7 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
         return MessageUtils.color("&c&l" + name);
     }
 
-    private Component getValueString(Field field) {
+    private String getValueString(Field field) {
         String valueToPrint;
         try {
             if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
@@ -161,9 +161,9 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
             if (valueToPrint.length() > 60) {
                 valueToPrint = valueToPrint.substring(0, 58).concat("...");
             }
-            return MessageUtils.color(valueToPrint);
+            return valueToPrint;
         } catch (Exception e) {
-            return MessageUtils.color("null");
+            return null;
         }
     }
 
