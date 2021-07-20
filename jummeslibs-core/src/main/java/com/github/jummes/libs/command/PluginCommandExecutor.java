@@ -1,43 +1,43 @@
 package com.github.jummes.libs.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
-public class PluginCommandExecutor implements CommandExecutor, TabCompleter {
+import java.util.*;
 
-    private Class<? extends AbstractCommand> defaultCommand;
-    private Map<String, Class<? extends AbstractCommand>> commandMap;
+public class PluginCommandExecutor implements CommandExecutor, TabCompleter, PluginCommand {
 
-    public PluginCommandExecutor(Class<? extends AbstractCommand> defaultCommand, String defaultCommandString) {
-        this.defaultCommand = defaultCommand;
-        commandMap = new HashMap<String, Class<? extends AbstractCommand>>();
-        commandMap.put(defaultCommandString, defaultCommand);
-    }
+    private Map<String, PluginCommand> commandMap = new HashMap<>();
 
-    public void registerCommand(String name, Class<? extends AbstractCommand> commandClass) {
+    public void registerCommand(String name, PluginCommand commandClass) {
         commandMap.put(name, commandClass);
     }
 
+    public PluginCommand getCommand(String name) {
+        return commandMap.get(name);
+    }
+
+    public Set<String> getRegisteredNames() {
+        return commandMap.keySet();
+    }
+
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         boolean isSenderPlayer = sender instanceof Player;
         String subCommand = args.length >= 1 ? args[0] : "";
         String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
         try {
-            commandMap.getOrDefault(subCommand, defaultCommand)
-                    .getConstructor(CommandSender.class, String.class, String[].class, boolean.class)
-                    .newInstance(sender, subCommand, arguments, isSenderPlayer).checkExecution();
+            PluginCommand cmd = getCommand(subCommand);
+            if (cmd instanceof CommandExecutor) {
+                return ((CommandExecutor) cmd).onCommand(sender, command, label, arguments);
+            } else if (cmd instanceof AbstractCommand) {
+                ((AbstractCommand) cmd).checkExecution(sender, arguments, isSenderPlayer);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -45,10 +45,21 @@ public class PluginCommandExecutor implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         final List<String> completions = new ArrayList<>();
         if (args.length == 1) {
-            StringUtil.copyPartialMatches(args[0], commandMap.keySet(), completions);
+            StringUtil.copyPartialMatches(args[0], getRegisteredNames(), completions);
+        } else {
+            String subCommand = args.length >= 1 ? args[0] : "";
+            String[] arguments = args.length >= 2 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+            try {
+                PluginCommand cmd = getCommand(subCommand);
+                if (cmd != null) {
+                    return cmd.onTabComplete(sender, command, alias, arguments);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         Collections.sort(completions);
         return completions;
