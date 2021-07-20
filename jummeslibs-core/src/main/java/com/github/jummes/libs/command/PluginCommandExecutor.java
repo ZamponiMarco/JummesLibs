@@ -13,13 +13,19 @@ import java.util.*;
 public class PluginCommandExecutor implements CommandExecutor, TabCompleter, PluginCommand {
 
     private Map<String, PluginCommand> commandMap = new HashMap<>();
+    private PluginCommand defaultCommand;
+
+    public PluginCommandExecutor(String defaultCommandName, PluginCommand defaultCommand) {
+        this.defaultCommand = defaultCommand;
+        commandMap.put(defaultCommandName, defaultCommand);
+    }
 
     public void registerCommand(String name, PluginCommand commandClass) {
         commandMap.put(name, commandClass);
     }
 
     public PluginCommand getCommand(String name) {
-        return commandMap.get(name);
+        return commandMap.getOrDefault(name, defaultCommand);
     }
 
     public Set<String> getRegisteredNames() {
