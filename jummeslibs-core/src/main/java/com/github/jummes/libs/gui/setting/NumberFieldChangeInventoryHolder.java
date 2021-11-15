@@ -163,7 +163,7 @@ public abstract class NumberFieldChangeInventoryHolder<S extends Number> extends
         return e -> {
             HumanEntity p = e.getWhoClicked();
             changeInformation.setValue(path, result);
-            p.sendMessage(String.format(MODIFY_SUCCESS, changeInformation.getName(), result));
+            p.sendMessage(MessageUtils.color(String.format(MODIFY_SUCCESS, changeInformation.getName(), result)));
             getBackConsumer().accept(e);
         };
     }

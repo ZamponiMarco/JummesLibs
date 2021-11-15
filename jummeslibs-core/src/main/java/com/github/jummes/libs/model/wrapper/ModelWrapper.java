@@ -25,7 +25,7 @@ public abstract class ModelWrapper<T> implements Model {
     }
 
     public static Map<Class<?>, Class<? extends ModelWrapper<?>>> getWrappers() {
-        Map<Class<?>, Class<? extends ModelWrapper<?>>> map = new HashMap<Class<?>, Class<? extends ModelWrapper<?>>>();
+        Map<Class<?>, Class<? extends ModelWrapper<?>>> map = new HashMap<>();
         map.put(Location.class, LocationWrapper.class);
         map.put(ItemStack.class, ItemStackWrapper.class);
         map.put(ItemMeta.class, ItemMetaWrapper.class);

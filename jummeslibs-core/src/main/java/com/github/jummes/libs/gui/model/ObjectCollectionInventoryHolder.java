@@ -138,7 +138,6 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
     protected Consumer<InventoryClickEvent> getBackConsumer() {
         return e -> {
             if (parent != null) {
-                path.popField();
                 e.getWhoClicked().openInventory(parent.getInventory());
             } else {
                 e.getWhoClicked().closeInventory();

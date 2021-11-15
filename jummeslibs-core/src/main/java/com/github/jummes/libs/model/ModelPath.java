@@ -26,29 +26,19 @@ public class ModelPath<T extends Model> implements Cloneable {
     private T root;
 
     private List<Model> modelPath;
-    private List<Field> fieldPath;
 
     protected ModelPath(ModelManager<T> modelManager, T root, List<Model> modelPath) {
         this.modelManager = modelManager;
         this.root = root;
         this.modelPath = modelPath;
-        this.fieldPath = new ArrayList<>();
     }
 
     public ModelPath(ModelManager<T> modelManager, T root) {
         this.modelManager = modelManager;
         this.root = root;
         this.modelPath = new ArrayList<>();
-        this.fieldPath = new ArrayList<>();
     }
 
-    public boolean addField(Field field) {
-        return fieldPath.add(field);
-    }
-
-    public void popField() {
-        fieldPath.remove(fieldPath.size() - 1);
-    }
     public boolean addModel(Model model) {
         if (root == null) {
             root = (T) model;
@@ -97,10 +87,6 @@ public class ModelPath<T extends Model> implements Cloneable {
 
     public Model getLast() {
         return modelPath.isEmpty() ? root : modelPath.get(modelPath.size() - 1);
-    }
-
-    public Field getLastField() {
-        return modelPath.isEmpty() ? null : fieldPath.get(fieldPath.size() - 1);
     }
 
     @Override

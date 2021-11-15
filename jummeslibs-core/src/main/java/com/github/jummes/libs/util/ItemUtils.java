@@ -1,22 +1,19 @@
 package com.github.jummes.libs.util;
 
+import com.github.jummes.libs.core.Libs;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class ItemUtils {
 
-    /**
-     * Gets a named item
-     *
-     * @param item item that works as the base
-     * @param name name that will be displayed
-     * @return
-     */
     public static ItemStack getNamedItem(ItemStack item, Component name, List<Component> lore) {
         ItemMeta meta = item.getItemMeta();
         meta.displayName(name);
@@ -25,12 +22,6 @@ public final class ItemUtils {
         return item;
     }
 
-    /**
-     * Gets an item with no name
-     *
-     * @param material the material of the item
-     * @return an item with a blank name
-     */
     public static ItemStack getNotNamedItem(Material material) {
         return getNamedItem(new ItemStack(material), MessageUtils.color(" "), new ArrayList<>());
     }
@@ -48,6 +39,4 @@ public final class ItemUtils {
         }
         return sameType && sameHasItemMeta && sameItemMeta && sameEnchantments;
     }
-
-
 }

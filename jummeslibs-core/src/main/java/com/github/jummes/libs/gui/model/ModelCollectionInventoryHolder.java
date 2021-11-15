@@ -177,7 +177,6 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
     protected Consumer<InventoryClickEvent> getBackConsumer() {
         return e -> {
             if (parent != null) {
-                path.popField();
                 e.getWhoClicked().openInventory(parent.getInventory());
             } else {
                 e.getWhoClicked().closeInventory();
