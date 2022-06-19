@@ -43,8 +43,6 @@ tasks {
     apply(plugin = "com.github.johnrengelman.shadow")
 
     shadowJar{
-        archiveClassifier.set("")
-        minimize()
     }
 
     build {
@@ -58,8 +56,7 @@ publishing {
             groupId = "com.github.jummes"
             artifactId = rootProject.name
             version = rootProject.properties["version"] as String
-            artifact(tasks["shadowJar"])
-            project.shadow.component(this)
+            from(components["java"])
         }
     }
 }
