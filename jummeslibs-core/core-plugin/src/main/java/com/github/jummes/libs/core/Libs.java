@@ -22,7 +22,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Getter
 public class Libs {
 
-    private static final String PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
+    private static final String VERSION_PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.VersionWrapper_";
+    private static final String PROTOCOL_PACKAGE_PREFIX = "com.github.jummes.libs.wrapper.ProtocolWrapper_";
 
     @Getter
     private static VersionWrapper versionWrapper;
@@ -63,8 +64,8 @@ public class Libs {
         String version = serverVersion.substring(serverVersion.lastIndexOf('.') + 1);
 
         try {
-            versionWrapper = (VersionWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
-            protocolWrapper = (ProtocolWrapper) Class.forName(PACKAGE_PREFIX + version).getConstructor().newInstance();
+            versionWrapper = (VersionWrapper) Class.forName(VERSION_PACKAGE_PREFIX + version).getConstructor().newInstance();
+            protocolWrapper = (ProtocolWrapper) Class.forName(PROTOCOL_PACKAGE_PREFIX + version).getConstructor().newInstance();
         } catch (Exception e) {
             plugin.getLogger().severe("This plugin is not supported in your server version, please check the " +
                     "spigot page to find which versions are supported.");

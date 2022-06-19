@@ -1,31 +1,29 @@
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version "7.1.0"
-    `maven-publish`
+    id("maven-publish")
     id("java")
+    id("com.github.johnrengelman.shadow") version "7.1.0"
 }
 
 dependencies {
-    implementation(project(":jummeslibs-core:core-plugin"))
-    implementation(project(":jummeslibs-core:core-nms:v1_17_R1"))
-    implementation(project(":jummeslibs-core:core-nms:v1_18_R1"))
+    implementation (project(":jummeslibs-core:core-plugin"))
+    implementation (project(":jummeslibs-core:core-nms:v1_18_R1", "reobf"))
+    implementation (project(":jummeslibs-core:core-nms:v1_18_R2", "reobf"))
+    implementation (project(":jummeslibs-core:core-nms:v1_19_R1", "reobf"))
 }
 
 allprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
-    apply(plugin = "com.github.johnrengelman.shadow")
 
     repositories {
         mavenCentral()
         mavenLocal()
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
         maven("https://jitpack.io")
-        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
     }
 
     tasks {
-        shadowJar {
-        }
 
         compileJava {
             dependsOn(clean)
@@ -38,10 +36,19 @@ allprojects {
             targetCompatibility = JavaVersion.VERSION_17
         }
 
-        build {
-            dependsOn(shadowJar)
-        }
+    }
+}
 
+tasks {
+    apply(plugin = "com.github.johnrengelman.shadow")
+
+    shadowJar{
+        archiveClassifier.set("")
+        minimize()
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 }
 
@@ -50,9 +57,9 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.github.jummes"
             artifactId = rootProject.name
-            version = properties["version"] as String
-
-            from(components["java"])
+            version = rootProject.properties["version"] as String
+            artifact(tasks["shadowJar"])
+            project.shadow.component(this)
         }
     }
 }

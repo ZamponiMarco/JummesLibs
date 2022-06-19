@@ -1,17 +1,16 @@
 package com.github.jummes.libs.wrapper;
 
-
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Map;
 import java.util.UUID;
 
-public class VersionWrapper_v1_17_R1 implements VersionWrapper {
+public class VersionWrapper_v1_18_R2 implements VersionWrapper {
 
     @Override
     public org.bukkit.inventory.ItemStack skullFromValue(String value) {
@@ -45,7 +44,7 @@ public class VersionWrapper_v1_17_R1 implements VersionWrapper {
     public ItemMeta deserializeItemMeta(Map<String, Object> map) {
         Class clazz;
         try {
-            clazz = Class.forName("org.bukkit.craftbukkit.v1_18_R1.inventory.CraftMetaItem");
+            clazz = Class.forName("org.bukkit.craftbukkit.v1_18_R2.inventory.CraftMetaItem");
             Class innerClass = clazz.getDeclaredClasses()[1];
             return (ItemMeta) innerClass.getMethod("deserialize", Map.class).invoke(null, map);
         } catch (Exception e) {

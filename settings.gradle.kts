@@ -10,5 +10,6 @@ rootProject.name = "jummeslibs"
 include(":jummeslibs-core")
 include(":jummeslibs-core:core-plugin")
 include(":jummeslibs-core:core-nms")
-include(":jummeslibs-core:core-nms:v1_17_R1")
 include(":jummeslibs-core:core-nms:v1_18_R1")
+include("jummeslibs-core:core-nms:v1_18_R2")
+include("jummeslibs-core:core-nms:v1_19_R1")
