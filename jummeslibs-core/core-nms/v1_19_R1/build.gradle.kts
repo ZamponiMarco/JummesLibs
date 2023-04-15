@@ -1,5 +1,5 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.3.6"
+    id("io.papermc.paperweight.userdev") version "1.5.4"
 }
 
 description = "v1_19_R1"
@@ -7,7 +7,7 @@ version = rootProject.version
 
 
 dependencies {
-    paperDevBundle("1.19-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.19-R0.1-SNAPSHOT")
 }
 
 tasks {

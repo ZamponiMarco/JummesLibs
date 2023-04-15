@@ -10,6 +10,8 @@ dependencies {
     runtimeOnly (project(":jummeslibs-core:core-nms:v1_18_R1", "reobf"))
     runtimeOnly (project(":jummeslibs-core:core-nms:v1_18_R2", "reobf"))
     runtimeOnly (project(":jummeslibs-core:core-nms:v1_19_R1", "reobf"))
+    runtimeOnly (project(":jummeslibs-core:core-nms:v1_19_R2", "reobf"))
+    runtimeOnly (project(":jummeslibs-core:core-nms:v1_19_R3", "reobf"))
 }
 
 subprojects {
