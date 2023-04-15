@@ -2,17 +2,17 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("java")
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 dependencies {
-    implementation (project(":jummeslibs-core:core-plugin"))
-    implementation (project(":jummeslibs-core:core-nms:v1_18_R1", "reobf"))
-    implementation (project(":jummeslibs-core:core-nms:v1_18_R2", "reobf"))
-    implementation (project(":jummeslibs-core:core-nms:v1_19_R1", "reobf"))
+    runtimeOnly (project(":jummeslibs-core:core-plugin"))
+    runtimeOnly (project(":jummeslibs-core:core-nms:v1_18_R1", "reobf"))
+    runtimeOnly (project(":jummeslibs-core:core-nms:v1_18_R2", "reobf"))
+    runtimeOnly (project(":jummeslibs-core:core-nms:v1_19_R1", "reobf"))
 }
 
-allprojects {
+subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
 
@@ -43,20 +43,21 @@ tasks {
     apply(plugin = "com.github.johnrengelman.shadow")
 
     shadowJar{
-    }
-
-    build {
-        dependsOn(shadowJar)
+        archiveName = "${baseName}-${version}.${extension}"
     }
 }
 
 publishing {
+
     publications {
-        create<MavenPublication>("maven") {
+        create<MavenPublication>("shadow") {
+            project.shadow.component(this)
+            artifact(tasks.shadowJar) {
+                classifier = null
+            }
             groupId = "com.github.jummes"
             artifactId = rootProject.name
             version = rootProject.properties["version"] as String
-            from(components["java"])
         }
     }
 }
