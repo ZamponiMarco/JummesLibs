@@ -18,6 +18,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -80,7 +81,7 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
     }
 
     @Override
-    public Map<String, Object> serialize() {
+    public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("==", getClass().getName());
         map.put("item", wrapped.serialize());
@@ -95,12 +96,8 @@ public class ItemStackWrapper extends ModelWrapper<ItemStack> implements Cloneab
             this.wrapped.setItemMeta(this.meta.wrapped);
         } else if (clazz.equals(ItemStackWrapper.class)) {
             switch (field.getName()) {
-                case "type":
-                    wrapped.setType(type);
-                    break;
-                case "amount":
-                    wrapped.setAmount(amount);
-                    break;
+                case "type" -> wrapped.setType(type);
+                case "amount" -> wrapped.setAmount(amount);
             }
         }
     }

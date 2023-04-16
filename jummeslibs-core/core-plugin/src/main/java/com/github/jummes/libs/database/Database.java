@@ -1,13 +1,11 @@
 package com.github.jummes.libs.database;
 
-import java.util.List;
-import java.util.Map;
-
+import com.github.jummes.libs.model.Model;
+import lombok.NonNull;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.jummes.libs.model.Model;
-
-import lombok.NonNull;
+import java.util.List;
+import java.util.Map;
 
 public abstract class Database<T extends Model> {
 

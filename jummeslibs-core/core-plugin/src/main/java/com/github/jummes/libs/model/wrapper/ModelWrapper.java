@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.Vector;
 
 import javax.tools.DocumentationTool.Location;
 import java.util.HashMap;

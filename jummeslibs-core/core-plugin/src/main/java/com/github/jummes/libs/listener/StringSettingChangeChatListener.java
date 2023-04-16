@@ -24,7 +24,7 @@ public class StringSettingChangeChatListener implements Listener {
     private static final String MODIFY_SUCCESS = "&aObject modified, &6%s: &e%s";
     private static final Component MODIFY_BLOCKED = MessageUtils.color("&aThe value &6&lhasn't&a been modified.");
 
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
 
     public StringSettingChangeChatListener(JavaPlugin plugin) {
         this.plugin = plugin;

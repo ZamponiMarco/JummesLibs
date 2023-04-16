@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class PluginInventoryHolderClickListener implements Listener {
 
@@ -33,7 +34,7 @@ public class PluginInventoryHolderClickListener implements Listener {
             return;
         }
 
-        if (e.getClickedInventory().getHolder() instanceof PluginInventoryHolder) {
+        if (Objects.requireNonNull(e.getClickedInventory()).getHolder() instanceof PluginInventoryHolder) {
             if (e.getClick().equals(ClickType.SWAP_OFFHAND)) {
                 savedInventories.put(e.getWhoClicked(), (PluginInventoryHolder) e.getClickedInventory().getHolder());
                 e.getWhoClicked().closeInventory();

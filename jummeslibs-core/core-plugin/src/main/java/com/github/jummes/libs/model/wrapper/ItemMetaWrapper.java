@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
     }
 
     @Override
-    public Map<String, Object> serialize() {
+    public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("==", getClass().getName());
         map.put("meta", wrapped.serialize());
@@ -62,23 +63,14 @@ public class ItemMetaWrapper extends ModelWrapper<ItemMeta> implements Cloneable
         Class<?> clazz = field.getDeclaringClass();
         if (clazz.equals(ItemMetaWrapper.class)) {
             switch (field.getName()) {
-                case "displayName":
-                    wrapped.displayName(MessageUtils.color(displayName));
-                    break;
-                case "lore":
-                    wrapped.lore(lore.stream().map(MessageUtils::color).collect(Collectors.toList()));
-                    break;
+                case "displayName" -> wrapped.displayName(MessageUtils.color(displayName));
+                case "lore" -> wrapped.lore(lore.stream().map(MessageUtils::color).collect(Collectors.toList()));
             }
         }
     }
 
     public String getName() {
         return "ItemMeta";
-    }
-
-    @Override
-    public ItemStack getGUIItem() {
-        return null;
     }
 
     @Override

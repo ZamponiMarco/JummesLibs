@@ -1,15 +1,12 @@
 package com.github.jummes.libs.util;
 
-import com.github.jummes.libs.model.Model;
 import com.google.common.collect.Lists;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ReflectUtils {
 

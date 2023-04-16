@@ -4,6 +4,7 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.util.ReflectUtils;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
@@ -36,7 +37,7 @@ public interface Model extends ConfigurationSerializable {
     default void onRemoval() {
     }
 
-    default Map<String, Object> serialize() {
+    default @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("==", getClass().getName());
         List<Field> fields = ReflectUtils.getFieldsList(this);

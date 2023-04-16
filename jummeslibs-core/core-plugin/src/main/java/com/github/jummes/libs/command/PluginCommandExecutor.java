@@ -12,8 +12,8 @@ import java.util.*;
 
 public class PluginCommandExecutor implements CommandExecutor, TabCompleter, PluginCommand {
 
-    private Map<String, PluginCommand> commandMap = new HashMap<>();
-    private PluginCommand defaultCommand;
+    private final Map<String, PluginCommand> commandMap = new HashMap<>();
+    private final PluginCommand defaultCommand;
 
     public PluginCommandExecutor(String defaultCommandName, PluginCommand defaultCommand) {
         this.defaultCommand = defaultCommand;

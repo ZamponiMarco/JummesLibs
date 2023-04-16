@@ -102,12 +102,6 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
-    /**
-     * If a custom clickable is present execute it, execute default one otherwise
-     *
-     * @param model
-     * @param e
-     */
     protected void executeClickConsumer(S model, InventoryClickEvent e) {
         try {
             if (model.getClass().isAnnotationPresent(CustomClickable.class) && !model.getClass().
@@ -157,9 +151,8 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
     }
 
     protected List<S> getPageModels(List<S> models) {
-        List<S> toList = models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
+        return models.stream().filter(model -> models.indexOf(model) >= (page - 1) * MODELS_NUMBER
                 && models.indexOf(model) <= page * MODELS_NUMBER - 1).collect(Collectors.toList());
-        return toList;
     }
 
     protected ItemStack getAddItem() {
@@ -172,14 +165,4 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
                 ModelCreateInventoryHolderFactory.create(plugin, this, path, field).getInventory());
     }
 
-    @Override
-    protected Consumer<InventoryClickEvent> getBackConsumer() {
-        return e -> {
-            if (parent != null) {
-                e.getWhoClicked().openInventory(parent.getInventory());
-            } else {
-                e.getWhoClicked().closeInventory();
-            }
-        };
-    }
 }

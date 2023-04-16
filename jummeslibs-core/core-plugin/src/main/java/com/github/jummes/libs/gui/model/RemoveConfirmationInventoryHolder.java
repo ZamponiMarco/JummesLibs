@@ -46,7 +46,7 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
         registerClickConsumer(13, ItemUtils.getNamedItem(Libs.getVersionWrapper().skullFromValue(CONFIRM_HEAD),
                 CONFIRM_ITEM, Lists.newArrayList()), e -> {
             try {
-                ((Collection<?>) ReflectUtils.readField(field,
+                ((Collection<? extends Model>) ReflectUtils.readField(field,
                         path.getLast() != null ? path.getLast() : path.getModelManager())).removeAll(models);
                 models.forEach(model -> {
                     if (path.getLast() == null) {

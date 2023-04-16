@@ -1,9 +1,9 @@
 package com.github.jummes.libs.gui.setting.change;
 
+import com.github.jummes.libs.model.ModelPath;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
-
-import com.github.jummes.libs.model.ModelPath;
 
 public class CollectionRemoveInformation extends ChangeInformation {
 

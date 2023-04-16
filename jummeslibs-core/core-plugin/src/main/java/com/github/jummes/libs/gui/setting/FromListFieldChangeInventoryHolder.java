@@ -26,9 +26,9 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
 
     private static final int OBJECTS_NUMBER = 51;
 
-    private int page;
-    private List<Object> objects;
-    private Function<Object, ItemStack> mapper;
+    private final int page;
+    private final List<Object> objects;
+    private final Function<Object, ItemStack> mapper;
 
     public FromListFieldChangeInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                               ModelPath<? extends Model> path, ChangeInformation changeInformation, int page, List<Object> objects,
@@ -46,7 +46,7 @@ public class FromListFieldChangeInventoryHolder extends FieldChangeInventoryHold
          */
         try {
             List<Object> toList = objects.stream().filter(model -> objects.indexOf(model) >= (page - 1) * OBJECTS_NUMBER
-                    && objects.indexOf(model) <= page * OBJECTS_NUMBER - 1).collect(Collectors.toList());
+                    && objects.indexOf(model) <= page * OBJECTS_NUMBER - 1).toList();
             int maxPage = (int) Math.ceil((objects.size() > 0 ? objects.size() : 1) / (double) OBJECTS_NUMBER);
 
             /*

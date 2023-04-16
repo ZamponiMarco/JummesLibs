@@ -2,6 +2,7 @@ package com.github.jummes.libs.model.wrapper;
 
 import com.github.jummes.libs.annotation.Serializable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -44,21 +45,15 @@ public class VectorWrapper extends ModelWrapper<Vector> implements Cloneable {
     public void onModify(Field field) {
         if (field.getDeclaringClass().equals(LocationWrapper.class)) {
             switch (field.getName()) {
-                case "x":
-                    wrapped.setX(x);
-                    break;
-                case "y":
-                    wrapped.setY(y);
-                    break;
-                case "z":
-                    wrapped.setZ(z);
-                    break;
+                case "x" -> wrapped.setX(x);
+                case "y" -> wrapped.setY(y);
+                case "z" -> wrapped.setZ(z);
             }
         }
     }
 
     @Override
-    public Map<String, Object> serialize() {
+    public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("==", getClass().getName());
         map.put("vector", wrapped.serialize());

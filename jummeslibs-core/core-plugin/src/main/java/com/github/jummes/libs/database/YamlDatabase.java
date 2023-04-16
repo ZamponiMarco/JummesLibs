@@ -16,15 +16,14 @@ public class YamlDatabase<T extends Model> extends Database<T> {
 
     private static final String FILE_SUFFIX = ".yml";
 
-    private String name;
-    private String fileName;
-    private File dataFile;
+    private final String name;
+    private final File dataFile;
     private YamlConfiguration yamlConfiguration;
 
     public YamlDatabase(Class<T> classObject, JavaPlugin plugin, Map<String, Object> args) {
         super(classObject, plugin, args);
         this.name = (String) args.getOrDefault("name", classObject.getSimpleName().toLowerCase());
-        this.fileName = (String) args.getOrDefault("fileName", name.concat(FILE_SUFFIX));
+        String fileName = (String) args.getOrDefault("fileName", name.concat(FILE_SUFFIX));
         this.dataFile = new File(plugin.getDataFolder(), fileName);
         if (!this.dataFile.exists()) {
             plugin.saveResource(fileName, false);

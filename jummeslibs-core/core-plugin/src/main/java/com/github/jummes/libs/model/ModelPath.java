@@ -25,7 +25,7 @@ public class ModelPath<T extends Model> implements Cloneable {
     @Getter
     private T root;
 
-    private List<Model> modelPath;
+    private final List<Model> modelPath;
 
     protected ModelPath(ModelManager<T> modelManager, T root, List<Model> modelPath) {
         this.modelManager = modelManager;

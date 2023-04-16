@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class PluginLocale {
 
     private final static String FOLDERNAME = "locale";
-    private Map<Plugin, List<String>> defaultLocales;
-    private List<File> localeFiles;
+    private final Map<Plugin, List<String>> defaultLocales;
+    private final List<File> localeFiles;
     private YamlConfiguration config;
 
     public PluginLocale() {

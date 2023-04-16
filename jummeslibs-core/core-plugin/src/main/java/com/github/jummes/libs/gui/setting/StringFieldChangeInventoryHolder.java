@@ -1,16 +1,5 @@
 package com.github.jummes.libs.gui.setting;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import com.github.jummes.libs.core.Libs;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
@@ -18,11 +7,20 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder {
 
@@ -62,7 +60,7 @@ public class StringFieldChangeInventoryHolder extends FieldChangeInventoryHolder
     @Setter
     @AllArgsConstructor
     @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-    public class StringFieldChangeInfo {
+    public static class StringFieldChangeInfo {
         @EqualsAndHashCode.Include
         private HumanEntity human;
         private ModelPath<? extends Model> path;

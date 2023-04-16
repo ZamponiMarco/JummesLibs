@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,11 +68,6 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
         clickMap.remove(slot);
     }
 
-    /**
-     * Fills the inventory with a material with an empty name
-     *
-     * @param material
-     */
     protected void fillInventoryWith(Material material) {
         IntStream.range(0, inventory.getSize()).forEach(i -> {
             if (inventory.getItem(i) == null) {
@@ -110,7 +106,7 @@ public abstract class PluginInventoryHolder implements InventoryHolder {
      * Returns the updated inventory
      */
     @Override
-    public Inventory getInventory() {
+    public @NotNull Inventory getInventory() {
         initializeInventory();
         return inventory;
     }

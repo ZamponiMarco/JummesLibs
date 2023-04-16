@@ -104,7 +104,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
         }
     }
 
-    private ItemStack getEnumItem(Object s, Class clazz) {
+    private ItemStack getEnumItem(Object s, Class<?> clazz) {
         if (clazz.equals(Material.class)) {
             return MapperUtils.getMaterialMapper().apply(Material.valueOf(s.toString()));
         }

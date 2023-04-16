@@ -5,13 +5,6 @@ import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.gui.setting.change.ChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import com.google.common.collect.Lists;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DoubleFieldChangeInventoryHolder extends NumberFieldChangeInventoryHolder<Double> {

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -58,7 +57,7 @@ public class EnumerableModelCreateInventoryHolder extends CreateInventoryHolder 
                 getAnnotation(Enumerable.Parent.class).classArray()), injectedList.stream()).
                 filter(clazz -> (clazz.isAnnotationPresent(Enumerable.Child.class)
                         || clazz.isAnnotationPresent(Enumerable.Parent.class))
-                        && isConditionSatisfied(clazz)).collect(Collectors.toList());
+                        && isConditionSatisfied(clazz)).toList();
 
         int[] positions = getItemPositions(classes.size());
 

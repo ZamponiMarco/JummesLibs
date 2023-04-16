@@ -5,6 +5,8 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.util.particle.options.ParticleOptions;
 import com.github.jummes.libs.model.wrapper.VectorWrapper;
 import com.github.jummes.libs.util.MessageUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -13,6 +15,8 @@ import org.bukkit.util.Vector;
 import java.lang.reflect.Field;
 import java.util.Map;
 
+@Getter
+@Setter
 public class Particle implements Model, Cloneable {
 
     private static final int COUNT_DEFAULT = 1;

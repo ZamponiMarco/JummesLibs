@@ -34,7 +34,6 @@ public abstract class CreateInventoryHolder extends ModelObjectInventoryHolder {
     protected Consumer<InventoryClickEvent> getModelCreateConsumer(Class<? extends Model> model, boolean isCollection) {
         return e -> {
             try {
-
                 // Determine one of the suitable constructors
                 Constructor<?> cons;
                 Model newModel;

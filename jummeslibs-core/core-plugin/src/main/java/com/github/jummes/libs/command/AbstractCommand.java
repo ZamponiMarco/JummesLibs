@@ -1,6 +1,6 @@
 package com.github.jummes.libs.command;
-
 import com.github.jummes.libs.util.MessageUtils;
+
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public abstract class AbstractCommand implements PluginCommand {
-
     private static final Component NO_PERMISSION = MessageUtils.color("&cYou don't have the permission");
     private static final Component ONLY_PLAYER = MessageUtils.color("&cThis command can be used only by a player");
 

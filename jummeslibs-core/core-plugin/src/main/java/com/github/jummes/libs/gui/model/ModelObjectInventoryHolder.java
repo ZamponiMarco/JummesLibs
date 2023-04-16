@@ -37,7 +37,7 @@ import java.util.stream.IntStream;
 public class ModelObjectInventoryHolder extends PluginInventoryHolder {
 
     protected ModelPath<? extends Model> path;
-    private Class<?> clazz;
+    private final Class<?> clazz;
 
     public ModelObjectInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
                                       ModelPath<? extends Model> path) {

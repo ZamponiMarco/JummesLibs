@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
@@ -62,21 +63,11 @@ public class LocationWrapper extends ModelWrapper<Location> {
     public void onModify(Field field) {
         if (field.getDeclaringClass().equals(LocationWrapper.class)) {
             switch (field.getName()) {
-                case "x":
-                    wrapped.setX(x);
-                    break;
-                case "y":
-                    wrapped.setY(y);
-                    break;
-                case "z":
-                    wrapped.setZ(z);
-                    break;
-                case "yaw":
-                    wrapped.setYaw(yaw);
-                    break;
-                case "pitch":
-                    wrapped.setPitch(pitch);
-                    break;
+                case "x" -> wrapped.setX(x);
+                case "y" -> wrapped.setY(y);
+                case "z" -> wrapped.setZ(z);
+                case "yaw" -> wrapped.setYaw(yaw);
+                case "pitch" -> wrapped.setPitch(pitch);
             }
         }
     }
@@ -107,12 +98,7 @@ public class LocationWrapper extends ModelWrapper<Location> {
     }
 
     @Override
-    public ItemStack getGUIItem() {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> serialize() {
+    public @NotNull Map<String, Object> serialize() {
         Map<String, Object> map = new HashMap<>();
         map.put("==", getClass().getName());
         map.put("location", wrapped.serialize());

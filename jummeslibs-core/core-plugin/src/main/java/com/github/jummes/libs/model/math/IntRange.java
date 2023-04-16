@@ -41,11 +41,6 @@ public class IntRange implements Model {
     }
 
     @Override
-    public ItemStack getGUIItem() {
-        return null;
-    }
-
-    @Override
     public String toString() {
         return String.format("min=%d, max=%d", min, max);
     }

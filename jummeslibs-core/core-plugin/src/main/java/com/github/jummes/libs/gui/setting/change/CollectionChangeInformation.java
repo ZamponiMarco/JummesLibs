@@ -1,10 +1,10 @@
 package com.github.jummes.libs.gui.setting.change;
 
+import com.github.jummes.libs.model.ModelPath;
+
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-
-import com.github.jummes.libs.model.ModelPath;
 
 public class CollectionChangeInformation extends ChangeInformation {
 
@@ -21,8 +21,7 @@ public class CollectionChangeInformation extends ChangeInformation {
         try {
             collection = (Collection<Object>) field.get(path.getLast());
             Object finalValue = callBeforeModify(path, field, value);
-            if (collection instanceof List) {
-                List<Object> list = (List<Object>) collection;
+            if (collection instanceof List<Object> list) {
                 int i = list.indexOf(currentValue);
                 list.set(i, finalValue);
             } else {

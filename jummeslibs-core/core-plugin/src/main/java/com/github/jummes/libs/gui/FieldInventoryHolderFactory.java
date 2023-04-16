@@ -78,7 +78,7 @@ public class FieldInventoryHolderFactory {
             /*
              * Is a primitive type
              */
-            else if (FieldChangeInventoryHolder.getInventories().keySet().contains(clazz)) {
+            else if (FieldChangeInventoryHolder.getInventories().containsKey(clazz)) {
                 return FieldChangeInventoryHolder.getInventories().get(clazz)
                         .getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
                                 ChangeInformation.class)
@@ -87,7 +87,7 @@ public class FieldInventoryHolderFactory {
             /*
              * Is a model wrapper
              */
-            else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
+            else if (ModelWrapper.getWrappers().containsKey(clazz)) {
                 path.addModel(ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
                         .newInstance(ReflectUtils.readField(field, path.getLast())));
                 return new ModelObjectInventoryHolder(plugin, parent, path);
@@ -103,7 +103,7 @@ public class FieldInventoryHolderFactory {
                             ModelPath.class, Field.class, int.class, Predicate.class).newInstance(plugin, parent, path,
                             field, 1, Predicates.alwaysTrue());
                 } else if (ReflectUtils.isAssignable(containedClass, Model.class)) {
-                    return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1, obj -> true);
+                    return new ModelCollectionInventoryHolder<>(plugin, parent, path, field, 1, obj -> true);
                 } else {
                     return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
                 }
@@ -147,7 +147,7 @@ public class FieldInventoryHolderFactory {
         Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
                 .getRawType();
         try {
-            if (FieldChangeInventoryHolder.getInventories().keySet().contains(containedClass)) {
+            if (FieldChangeInventoryHolder.getInventories().containsKey(containedClass)) {
                 return FieldChangeInventoryHolder.getInventories().get(containedClass)
                         .getConstructor(JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class,
                                 ChangeInformation.class)
