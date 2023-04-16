@@ -15,11 +15,10 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.model.wrapper.ModelWrapper;
 import com.github.jummes.libs.util.MapperUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.inventory.ClickType;
@@ -46,7 +45,7 @@ public class FieldInventoryHolderFactory {
             /*
              * Is null
              */
-            if (FieldUtils.readField(field, path.getLast(), true) == null) {
+            if (ReflectUtils.readField(field, path.getLast()) == null) {
                 ChangeInformation changeInformation = new FieldChangeInformation(field);
                 changeInformation.setValue(path, field.getType().getConstructor().newInstance());
                 return parent;
@@ -90,20 +89,20 @@ public class FieldInventoryHolderFactory {
              */
             else if (ModelWrapper.getWrappers().keySet().contains(clazz)) {
                 path.addModel(ModelWrapper.getWrappers().get(clazz).getConstructor(clazz)
-                        .newInstance(FieldUtils.readField(field, path.getLast(), true)));
+                        .newInstance(ReflectUtils.readField(field, path.getLast())));
                 return new ModelObjectInventoryHolder(plugin, parent, path);
             }
             /*
              * Is a collection
              */
-            else if (ClassUtils.isAssignable(clazz, Collection.class)) {
+            else if (ReflectUtils.isAssignable(clazz, Collection.class)) {
                 Class<?> containedClass = TypeToken.of(field.getGenericType()).resolveType(clazz.getTypeParameters()[0])
                         .getRawType();
                 if (collectionGUIMap.containsKey(containedClass)) {
                     return collectionGUIMap.get(containedClass).getConstructor(JavaPlugin.class, PluginInventoryHolder.class,
                             ModelPath.class, Field.class, int.class, Predicate.class).newInstance(plugin, parent, path,
                             field, 1, Predicates.alwaysTrue());
-                } else if (ClassUtils.isAssignable(containedClass, Model.class)) {
+                } else if (ReflectUtils.isAssignable(containedClass, Model.class)) {
                     return new ModelCollectionInventoryHolder(plugin, parent, path, field, 1, obj -> true);
                 } else {
                     return new ObjectCollectionInventoryHolder(plugin, parent, path, field, 1);
@@ -119,11 +118,11 @@ public class FieldInventoryHolderFactory {
                             .getMethod(clazz.getAnnotation(CustomClickable.class).customFieldClickConsumer(),
                                     JavaPlugin.class, PluginInventoryHolder.class, ModelPath.class, Field.class,
                                     InventoryClickEvent.class)
-                            .invoke(FieldUtils.readField(path.getLast(), field.getName(), true), plugin, parent,
+                            .invoke(ReflectUtils.readField(field, path.getLast()), plugin, parent,
                                     path, field, e);
                 }
                 if (e.getClick().equals(ClickType.LEFT)) {
-                    path.addModel((Model) FieldUtils.readField(field, path.getLast(), true));
+                    path.addModel((Model) ReflectUtils.readField(field, path.getLast()));
                     return new ModelObjectInventoryHolder(plugin, parent, path);
                 } else if (e.getClick().equals(ClickType.RIGHT)) {
                     return ModelCreateInventoryHolderFactory.create(plugin, parent, path, field);

@@ -9,8 +9,7 @@ import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -134,13 +133,13 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         } else if (e.getClick().equals(ClickType.RIGHT)) {
             e.getWhoClicked().openInventory(new RemoveConfirmationInventoryHolder(plugin, this, path, model,
                     field).getInventory());
-        } else if (ClassUtils.isAssignable(model.getClass(), Cloneable.class)
+        } else if (ReflectUtils.isAssignable(model.getClass(), Cloneable.class)
                 && e.getClick().equals(ClickType.MIDDLE)) {
             try {
                 Method method = model.getClass().getDeclaredMethod("clone");
                 method.setAccessible(true);
-                ((Collection<S>) FieldUtils.readField(field,
-                        path.getLast() != null ? path.getLast() : path.getModelManager(), true))
+                ((Collection<S>) ReflectUtils.readField(field,
+                        path.getLast() != null ? path.getLast() : path.getModelManager()))
                         .add((S) method.invoke(model));
                 e.getWhoClicked().openInventory(getInventory());
                 path.saveModel();
@@ -151,8 +150,8 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
     }
 
     protected List<S> getModels() throws IllegalAccessException {
-        List<S> models = ((Collection<S>) FieldUtils.readField(field,
-                path.getLast() != null ? path.getLast() : path.getModelManager(), true)).stream()
+        List<S> models = ((Collection<S>) ReflectUtils.readField(field,
+                path.getLast() != null ? path.getLast() : path.getModelManager())).stream()
                 .filter(model -> model.getGUIItem() != null && filter.test(model)).collect(Collectors.toList());
         return models;
     }

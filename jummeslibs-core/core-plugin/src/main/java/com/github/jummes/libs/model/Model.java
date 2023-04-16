@@ -2,7 +2,6 @@ package com.github.jummes.libs.model;
 
 import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.util.ReflectUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 
@@ -43,16 +42,16 @@ public interface Model extends ConfigurationSerializable {
         List<Field> fields = ReflectUtils.getFieldsList(this);
         fields.stream().filter(field -> field.isAnnotationPresent(Serializable.class)).forEach(field -> {
             try {
-                Object value = FieldUtils.readField(field, this, true);
+                Object value = ReflectUtils.readField(field, this);
                 Object defaultValue = null;
                 if (field.isAnnotationPresent(Serializable.Optional.class)) {
                     Class toInspect = getClass();
                     Field defaultField;
                     while (defaultValue == null || toInspect != null) {
-                        defaultField = FieldUtils.getDeclaredField(toInspect,
-                                field.getAnnotation(Serializable.Optional.class).defaultValue(), true);
+                        defaultField = ReflectUtils.getDeclaredField(toInspect,
+                                field.getAnnotation(Serializable.Optional.class).defaultValue());
                         if (defaultField != null) {
-                            defaultValue = FieldUtils.readStaticField(defaultField, true);
+                            defaultValue = ReflectUtils.readField(defaultField, null);
                         }
                         toInspect = toInspect.getSuperclass();
                     }

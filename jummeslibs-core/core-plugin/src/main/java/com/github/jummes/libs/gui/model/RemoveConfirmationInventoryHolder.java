@@ -6,9 +6,9 @@ import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -46,8 +46,8 @@ public class RemoveConfirmationInventoryHolder extends PluginInventoryHolder {
         registerClickConsumer(13, ItemUtils.getNamedItem(Libs.getVersionWrapper().skullFromValue(CONFIRM_HEAD),
                 CONFIRM_ITEM, Lists.newArrayList()), e -> {
             try {
-                ((Collection<?>) FieldUtils.readField(field,
-                        path.getLast() != null ? path.getLast() : path.getModelManager(), true)).removeAll(models);
+                ((Collection<?>) ReflectUtils.readField(field,
+                        path.getLast() != null ? path.getLast() : path.getModelManager())).removeAll(models);
                 models.forEach(model -> {
                     if (path.getLast() == null) {
                         path.deleteRoot(model);

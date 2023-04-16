@@ -4,7 +4,7 @@ import com.github.jummes.libs.annotation.Serializable;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.util.particle.options.ParticleOptions;
 import com.github.jummes.libs.model.wrapper.VectorWrapper;
-import org.apache.commons.lang.WordUtils;
+import com.github.jummes.libs.util.MessageUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -87,7 +87,7 @@ public class Particle implements Model, Cloneable {
     }
 
     public String getName() {
-        return "&6&lParticle: &c" + WordUtils.capitalize(type.toString());
+        return "&6&lParticle: &c" + MessageUtils.capitalize(type.toString());
     }
 
     public ItemStack getDataObject() {

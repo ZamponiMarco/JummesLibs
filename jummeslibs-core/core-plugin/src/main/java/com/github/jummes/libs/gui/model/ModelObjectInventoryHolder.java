@@ -12,8 +12,6 @@ import com.github.jummes.libs.util.MessageUtils;
 import com.github.jummes.libs.util.ReflectUtils;
 import lombok.SneakyThrows;
 import net.kyori.adventure.text.Component;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -141,21 +139,21 @@ public class ModelObjectInventoryHolder extends PluginInventoryHolder {
     private String getValueString(Field field) {
         String valueToPrint;
         try {
-            if (ClassUtils.isAssignable(field.getType(), Collection.class)) {
+            if (ReflectUtils.isAssignable(field.getType(), Collection.class)) {
                 valueToPrint = "Collection";
-            } else if (ClassUtils.isAssignable(field.getType(), Model.class)
+            } else if (ReflectUtils.isAssignable(field.getType(), Model.class)
                     && !(field.getType().isAnnotationPresent(GUINameable.class)
                     && field.getType().getAnnotation(GUINameable.class).stringValue())) {
                 valueToPrint = field.getType().isAnnotationPresent(GUINameable.class)
                         && !field.getType().getAnnotation(GUINameable.class).GUIName().equalsIgnoreCase("")
                         ? (String) field.getType().getMethod(field.getType().getAnnotation(GUINameable.class).
-                        GUIName()).invoke(FieldUtils.readField(field, path.getLast(), true))
-                        : FieldUtils.readField(field, path.getLast(), true).getClass().getSimpleName();
+                        GUIName()).invoke(ReflectUtils.readField(field, path.getLast()))
+                        : ReflectUtils.readField(field, path.getLast()).getClass().getSimpleName();
             } else if (field.getType().isEnum()) {
-                Enum<?> obj = (Enum<?>) FieldUtils.readField(field, path.getLast(), true);
+                Enum<?> obj = (Enum<?>) ReflectUtils.readField(field, path.getLast());
                 valueToPrint = obj.name();
             } else {
-                Object obj = FieldUtils.readField(field, path.getLast(), true);
+                Object obj = ReflectUtils.readField(field, path.getLast());
                 valueToPrint = obj == null ? "null" : obj.toString();
             }
             if (valueToPrint.length() > 60) {

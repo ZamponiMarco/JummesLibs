@@ -4,8 +4,8 @@ import com.github.jummes.libs.annotation.Enumerable;
 import com.github.jummes.libs.gui.PluginInventoryHolder;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.util.ReflectUtils;
 import com.google.common.reflect.TypeToken;
-import org.apache.commons.lang.ClassUtils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
@@ -15,14 +15,14 @@ public class ModelCreateInventoryHolderFactory {
 
     public static CreateInventoryHolder create(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
                                                Field field) {
-        boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
+        boolean isCollection = ReflectUtils.isAssignable(field.getType(), Collection.class);
         Class<? extends Model> model = getModelClassFromField(field, isCollection);
         return create(plugin, parent, path, field, model);
     }
 
     public static CreateInventoryHolder create(JavaPlugin plugin, PluginInventoryHolder parent, ModelPath<? extends Model> path,
                                                Field field, Class<? extends Model> model) {
-        boolean isCollection = ClassUtils.isAssignable(field.getType(), Collection.class);
+        boolean isCollection = ReflectUtils.isAssignable(field.getType(), Collection.class);
         if (model.isAnnotationPresent(Enumerable.Parent.class)) {
             return new EnumerableModelCreateInventoryHolder(plugin, parent, path, field, model, isCollection);
         } else {

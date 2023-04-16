@@ -5,7 +5,9 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.apache.commons.lang.StringUtils;
+
+import java.util.Arrays;
+import java.util.Random;
 
 public class MessageUtils {
 
@@ -21,7 +23,32 @@ public class MessageUtils {
     }
 
     public static Component delimiter(String string) {
-        return color("&e-------" + StringUtils.repeat("-", string.length()));
+        return color("&e-------" + repeatChar('-', string.length()));
+    }
+
+    public static String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
+    public static String repeatChar(char c, int count) {
+        char[] chars = new char[count];
+        Arrays.fill(chars, c);
+        return new String(chars);
+    }
+
+    public static String getRandomString(int length) {
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(alphabet.length());
+            char c = alphabet.charAt(index);
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
 }

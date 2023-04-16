@@ -11,10 +11,9 @@ import com.github.jummes.libs.model.ModelPath;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MapperUtils;
 import com.github.jummes.libs.util.MessageUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -51,8 +50,8 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
     @Override
     protected void initializeInventory() {
         try {
-            List<Object> objects = Lists.newArrayList((Collection<Object>) FieldUtils.readField(field,
-                    path.getLast() != null ? path.getLast() : path.getModelManager(), true));
+            List<Object> objects = Lists.newArrayList((Collection<Object>) ReflectUtils.readField(field,
+                    path.getLast() != null ? path.getLast() : path.getModelManager()));
             List<Object> toList = objects.subList((page - 1) * OBJECTS_NUMBER,
                     Math.min(objects.size(), page * OBJECTS_NUMBER));
             int maxPage = (int) Math.ceil((objects.size() > 0 ? objects.size() : 1) / (double) OBJECTS_NUMBER);
@@ -74,7 +73,7 @@ public class ObjectCollectionInventoryHolder extends ModelObjectInventoryHolder 
                     }
                 } else {
                     try {
-                        info.setValue(path, ClassUtils.primitiveToWrapper(containedClass).newInstance());
+                        info.setValue(path, ReflectUtils.primitiveToWrapper(containedClass).newInstance());
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }

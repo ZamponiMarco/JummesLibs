@@ -7,7 +7,7 @@ import com.github.jummes.libs.gui.setting.change.CollectionAddInformation;
 import com.github.jummes.libs.gui.setting.change.FieldChangeInformation;
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelPath;
-import org.apache.commons.lang.reflect.ConstructorUtils;
+import com.github.jummes.libs.util.ReflectUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,13 +38,13 @@ public abstract class CreateInventoryHolder extends ModelObjectInventoryHolder {
                 // Determine one of the suitable constructors
                 Constructor<?> cons;
                 Model newModel;
-                if (ConstructorUtils.getAccessibleConstructor(model, new Class[0]) != null) {
+                if (ReflectUtils.getAccessibleConstructor(model) != null) {
                     cons = model.getConstructor();
                     newModel = (Model) cons.newInstance();
-                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{Player.class}) != null) {
+                } else if (ReflectUtils.getAccessibleConstructor(model, Player.class) != null) {
                     cons = model.getConstructor(Player.class);
                     newModel = (Model) cons.newInstance((Player) e.getWhoClicked());
-                } else if (ConstructorUtils.getAccessibleConstructor(model, new Class[]{ModelPath.class}) != null) {
+                } else if (ReflectUtils.getAccessibleConstructor(model, ModelPath.class) != null) {
                     cons = model.getConstructor(ModelPath.class);
                     newModel = (Model) cons.newInstance(path);
                 } else {
