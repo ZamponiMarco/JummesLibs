@@ -18,7 +18,7 @@ import java.util.List;
  */
 @ToString
 @Getter
-public class ModelPath<T extends Model> implements Cloneable {
+public class ModelPath<T extends NamedModel> implements Cloneable {
 
     @Getter
     private ModelManager<T> modelManager;

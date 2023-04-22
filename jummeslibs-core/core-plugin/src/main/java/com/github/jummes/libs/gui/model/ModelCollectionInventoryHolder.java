@@ -7,6 +7,7 @@ import com.github.jummes.libs.gui.model.create.ModelCreateInventoryHolderFactory
 import com.github.jummes.libs.model.Model;
 import com.github.jummes.libs.model.ModelManager;
 import com.github.jummes.libs.model.ModelPath;
+import com.github.jummes.libs.model.NamedModel;
 import com.github.jummes.libs.util.ItemUtils;
 import com.github.jummes.libs.util.MessageUtils;
 import com.github.jummes.libs.util.ReflectUtils;
@@ -34,13 +35,13 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
 
     protected static final int MODELS_NUMBER = 50;
 
-    protected ModelPath<S> path;
+    protected ModelPath<? extends NamedModel> path;
     protected int page;
     protected Field field;
     protected Predicate<S> filter;
 
     public ModelCollectionInventoryHolder(JavaPlugin plugin, PluginInventoryHolder parent,
-                                          ModelPath<S> path, Field field, int page, Predicate<S> filter) {
+                                          ModelPath<? extends NamedModel> path, Field field, int page, Predicate<S> filter) {
         super(plugin, parent);
         this.path = path;
         this.field = field;
@@ -48,12 +49,14 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         this.filter = filter;
     }
 
-    public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<S> manager, String fieldName)
+    public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<? extends NamedModel> manager,
+                                          String fieldName)
             throws NoSuchFieldException, SecurityException {
         this(plugin, null, new ModelPath<>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, obj -> true);
     }
 
-    public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<S> manager, String fieldName, Predicate<S> filter)
+    public ModelCollectionInventoryHolder(JavaPlugin plugin, ModelManager<? extends NamedModel> manager,
+                                          String fieldName, Predicate<S> filter)
             throws NoSuchFieldException, SecurityException {
         this(plugin, null, new ModelPath<>(manager, null), manager.getClass().getDeclaredField(fieldName), 1, filter);
     }
@@ -120,7 +123,7 @@ public class ModelCollectionInventoryHolder<S extends Model> extends PluginInven
         }
     }
 
-    protected void defaultClickConsumer(S model, InventoryClickEvent e) throws IllegalAccessException {
+    protected void defaultClickConsumer(S model, InventoryClickEvent e) {
         if (e.getClick().equals(ClickType.LEFT)) {
             path.addModel(model);
             e.getWhoClicked().openInventory(new ModelObjectInventoryHolder(plugin, this, path).getInventory());
