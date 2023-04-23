@@ -59,6 +59,21 @@ public class CompressedYamlDatabase<T extends NamedModel> extends YamlDatabase<T
     }
 
     @SneakyThrows
+    @Override
+    public void saveObject(@NonNull T object) {
+        if (!object.getName().equals(object.getOldName())) {
+            yamlConfiguration.set(object.getOldName(), null);
+            usedNames.remove(object.getOldName());
+        }
+        yamlConfiguration.set(object.getName(), new String(Base64.getEncoder().encode(CompressUtils.
+                compress(object.toSerializedString().getBytes())), Charset.defaultCharset()));
+        yamlConfiguration.save(dataFile);
+
+        usedNames.add(object.getName());
+        object.setOldName(object.getName());
+    }
+
+    @SneakyThrows
     private void loadConfiguration() {
         this.yamlConfiguration.load(dataFile);
     }

@@ -62,7 +62,7 @@ public class YamlDatabase<T extends NamedModel> extends Database<T> {
         loadConfiguration();
 
         try {
-            return (T) yamlConfiguration.get(name);
+            return (T) NamedModel.fromSerializedString(yamlConfiguration.getString(name));
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             return null;
@@ -77,7 +77,7 @@ public class YamlDatabase<T extends NamedModel> extends Database<T> {
 
         try {
             yamlConfiguration.getKeys(false).forEach(key -> {
-                        T obj = (T) yamlConfiguration.get(key);
+                        T obj = (T) NamedModel.fromSerializedString(yamlConfiguration.getString(key));
                         if (obj != null) {
                             list.add(obj);
                             saveObject(obj);
@@ -97,8 +97,7 @@ public class YamlDatabase<T extends NamedModel> extends Database<T> {
             yamlConfiguration.set(object.getOldName(), null);
             usedNames.remove(object.getOldName());
         }
-        yamlConfiguration.set(object.getName(), new String(Base64.getEncoder().encode(CompressUtils.
-                compress(object.toSerializedString().getBytes())), Charset.defaultCharset()));
+        yamlConfiguration.set(object.getName(), object.toSerializedString());
         yamlConfiguration.save(dataFile);
 
         usedNames.add(object.getName());
